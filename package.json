@@ -1,0 +1,28 @@
+{
+  "name": "idv-ttdl-wildfire-disaster-dashboard",
+  "version": "1.0.0",
+  "description": "Interactive Data Visualization Dashboard for Global Wildfire & Natural Disasters (2006-2025)",
+  "scripts": {
+    "start": "http-server dashboard -p 8080 -c-1 -o",
+    "lint": "eslint dashboard/js/**/*.js",
+    "format": "prettier --write dashboard/**/*.{html,css,js}",
+    "vendor": "node scripts/copy_vendor.js"
+  },
+  "keywords": [
+    "echarts",
+    "data-visualization",
+    "wildfire",
+    "natural-disasters",
+    "interactive-dashboard"
+  ],
+  "author": "IDV_TTDL Team",
+  "license": "MIT",
+  "dependencies": {
+    "echarts": "6.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.20.0",
+    "http-server": "^14.1.1",
+    "prettier": "^3.5.0"
+  }
+}

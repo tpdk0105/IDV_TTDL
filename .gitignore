@@ -1,0 +1,46 @@
+# Environment variables and API keys
+.env
+.env.local
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Node dependencies and build artifacts
+node_modules/
+npm-debug.log*
+
+# Testing & Linting caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Large Raw Data & SQLite Database (To stay well under 90MB Git limit)
+data/raw/*
+!data/raw/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+*.sqlite
+*.sqlite3
+*.db
+
+# Temporary and log files
+*.log
+scratch/
+tmp/
