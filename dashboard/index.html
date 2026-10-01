@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bảng Điều Khiển Trực Quan Hóa Thảm Họa Thiên Nhiên & Cháy Rừng (2006–2025)</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Thư viện Apache ECharts cục bộ (ưu tiên vendor) -->
+  <script src="js/vendor/echarts.min.js"></script>
+</head>
+<body class="theme-light">
+  <!-- Header chính -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>Nghiên Cứu & Phân Tích Thảm Họa Thiên Nhiên & Cháy Rừng Toàn Cầu</h1>
+        <p class="subtitle">Dữ liệu 20 năm (2006–2025) • Đồ án cuối kỳ môn Tương tác Dữ liệu Trực quan</p>
+      </div>
+      <div class="header-actions">
+        <button id="btn-theme-toggle" class="btn btn-secondary" aria-label="Chuyển đổi giao diện sáng tối">
+          <span class="icon">🌓</span> Giao diện
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Thanh điều khiển và bộ lọc toàn cục -->
+  <section class="filter-section" aria-label="Bộ lọc toàn cục">
+    <div class="filter-container">
+      <!-- Bộ lọc Năm -->
+      <div class="filter-group">
+        <label for="filter-year-range">Khoảng thời gian: <span id="year-range-display">2006 - 2025</span></label>
+        <div class="range-slider-wrapper">
+          <input type="range" id="filter-year-min" min="2006" max="2025" value="2006" aria-label="Năm bắt đầu">
+          <input type="range" id="filter-year-max" min="2006" max="2025" value="2025" aria-label="Năm kết thúc">
+        </div>
+      </div>
+
+      <!-- Bộ lọc Loại thảm họa -->
+      <div class="filter-group">
+        <label for="filter-disaster-type">Loại thảm họa:</label>
+        <select id="filter-disaster-type" aria-label="Chọn loại thảm họa">
+          <option value="ALL">Tất cả loại thảm họa</option>
+          <option value="Wildfire" selected>Cháy rừng (Trọng tâm)</option>
+          <option value="Flood">Lũ lụt</option>
+          <option value="Storm">Bão nhiệt đới</option>
+          <option value="Drought">Hạn hán</option>
+          <option value="Earthquake">Động đất</option>
+        </select>
+      </div>
+
+      <!-- Bộ lọc Châu lục -->
+      <div class="filter-group">
+        <label for="filter-continent">Châu lục:</label>
+        <select id="filter-continent" aria-label="Chọn châu lục">
+          <option value="ALL" selected>Toàn thế giới</option>
+          <option value="Americas">Châu Mỹ</option>
+          <option value="Asia">Châu Á</option>
+          <option value="Europe">Châu Âu</option>
+          <option value="Africa">Châu Phi</option>
+          <option value="Oceania">Châu Đại Dương</option>
+        </select>
+      </div>
+
+      <!-- Công tắc lọc dữ liệu gốc ML -->
+      <div class="filter-group filter-toggle-group">
+        <label class="switch-label" for="toggle-raw-only">
+          <input type="checkbox" id="toggle-raw-only" aria-label="Chỉ hiển thị số liệu gốc">
+          <span class="slider round"></span>
+          <span class="toggle-text">Chỉ hiển thị số liệu gốc (Ẩn ước lượng ML)</span>
+        </label>
+      </div>
+
+      <!-- Nút Reset -->
+      <div class="filter-group filter-actions">
+        <button id="btn-reset-filters" class="btn btn-outline" aria-label="Đặt lại bộ lọc">
+          Đặt lại bộ lọc
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hàng Thẻ Chỉ Số Trọng Yếu (KPI Cards) -->
+  <section class="kpi-section" aria-label="Chỉ số trọng yếu">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon">🔥</div>
+        <div class="kpi-body">
+          <span class="kpi-label">Tổng Số Sự Kiện</span>
+          <h2 class="kpi-value" id="kpi-total-events">--</h2>
+          <span class="kpi-sub">sự kiện thảm họa ghi nhận</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-body">
+          <span class="kpi-label">Tổng Thiệt Hại Kinh Tế</span>
+          <h2 class="kpi-value" id="kpi-total-damage">--</h2>
+          <span class="kpi-sub">Tỷ USD ước tính</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🌲</div>
+        <div class="kpi-body">
+          <span class="kpi-label">Tổng Diện Tích Rừng Cháy</span>
+          <h2 class="kpi-value" id="kpi-total-burned-area">--</h2>
+          <span class="kpi-sub">Hecta (ha)</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">⚠️</div>
+        <div class="kpi-body">
+          <span class="kpi-label">Tổng Thương Vong</span>
+          <h2 class="kpi-value" id="kpi-total-deaths">--</h2>
+          <span class="kpi-sub">người thiệt mạng</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lưới 12 Biểu Đồ Trực Quan Hóa -->
+  <main class="dashboard-main" aria-label="Khu vực biểu đồ trực quan">
+    <div class="charts-grid">
+      <!-- Biểu đồ 1: TV1 (Combo Bar + Line) -->
+      <div class="chart-card col-span-2">
+        <div class="chart-header">
+          <h3>#1. Tần Suất & Thiệt Hại Theo Năm (2006–2025)</h3>
+          <span class="badge badge-combo">Combo Trục Kép • TV1</span>
+        </div>
+        <div id="chart-01" class="chart-container" role="img" aria-label="Biểu đồ số vụ và tổng thiệt hại theo năm"></div>
+      </div>
+
+      <!-- Biểu đồ 2: TV1 (Stacked Area) -->
+      <div class="chart-card col-span-2">
+        <div class="chart-header">
+          <h3>#2. Diễn Biến Cơ Cấu Thảm Họa Theo Thời Gian</h3>
+          <span class="badge badge-cat">Stacked Area • TV1</span>
+        </div>
+        <div id="chart-02" class="chart-container" role="img" aria-label="Biểu đồ diện tích xếp chồng cơ cấu thảm họa"></div>
+      </div>
+
+      <!-- Biểu đồ 3: TV1 (Choropleth Map) -->
+      <div class="chart-card col-span-2">
+        <div class="chart-header">
+          <h3>#3. Bản Đồ Thiệt Hại & Số Vụ Toàn Cầu</h3>
+          <span class="badge badge-seq">Choropleth Map • TV1</span>
+        </div>
+        <div id="chart-03" class="chart-container" role="img" aria-label="Bản đồ thế giới phân vùng thiệt hại"></div>
+      </div>
+
+      <!-- Biểu đồ 4: TV1 (Heatmap) -->
+      <div class="chart-card col-span-2">
+        <div class="chart-header">
+          <h3>#4. Ma Trận Chu Kỳ Mùa Cháy Rừng (Tháng × Năm)</h3>
+          <span class="badge badge-seq">Heatmap • TV1</span>
+        </div>
+        <div id="chart-04" class="chart-container" role="img" aria-label="Ma trận nhiệt chu kỳ mùa cháy rừng"></div>
+      </div>
+
+      <!-- Biểu đồ 5: TV2 (Diverging Bar) -->
+      <div class="chart-card col-span-2">
+        <div class="chart-header">
+          <h3>#5. Biến Động Số Vụ Cháy So Với Mức Chuẩn 20 Năm</h3>
+          <span class="badge badge-div">Diverging Bar • TV2</span>
+        </div>
+        <div id="chart-05" class="chart-container" role="img" aria-label="Biểu đồ cột phân kỳ chênh lệch số vụ"></div>
+      </div>
+
+      <!-- Biểu đồ 6: TV2 (Treemap) -->
+      <div class="chart-card col-span-2">
+        <div class="chart-header">
+          <h3>#6. Phân Cấp Thiệt Hại Kinh Tế: Châu Lục → Quốc Gia</h3>
+          <span class="badge badge-hier">Treemap Drill-down • TV2</span>
+        </div>
+        <div id="chart-06" class="chart-container" role="img" aria-label="Biểu đồ treemap phân cấp thiệt hại"></div>
+      </div>
+
+      <!-- Biểu đồ 7: TV2 (Bubble Scatter) -->
+      <div class="chart-card col-span-2">
+        <div class="chart-header">
+          <h3>#7. Tương Quan Diện Tích Cháy vs Thiệt Hại (Trục Log-Log)</h3>
+          <span class="badge badge-cat">Bubble Scatter • TV2</span>
+        </div>
+        <div id="chart-07" class="chart-container" role="img" aria-label="Biểu đồ bong bóng tương quan diện tích và thiệt hại"></div>
+      </div>
+
+      <!-- Biểu đồ 8: TV2 (Combo Histogram + KDE) -->
+      <div class="chart-card col-span-2">
+        <div class="chart-header">
+          <h3>#8. Phân Phối Quy Mô Diện Tích Cháy Rừng</h3>
+          <span class="badge badge-combo">Combo Phân Phối • TV2</span>
+        </div>
+        <div id="chart-08" class="chart-container" role="img" aria-label="Biểu đồ phân phối diện tích cháy rừng"></div>
+      </div>
+
+      <!-- Biểu đồ 9: TV3 (Combo Pareto) -->
+      <div class="chart-card col-span-2">
+        <div class="chart-header">
+          <h3>#9. Top 10 Quốc Gia Tử Vong & Tỷ Lệ Lũy Kế</h3>
+          <span class="badge badge-combo">Combo Pareto • TV3</span>
+        </div>
+        <div id="chart-09" class="chart-container" role="img" aria-label="Biểu đồ pareto top 10 quốc gia tử vong"></div>
+      </div>
+
+      <!-- Biểu đồ 10: TV3 (Sunburst) -->
+      <div class="chart-card col-span-2">
+        <div class="chart-header">
+          <h3>#10. Phân Tích Cơ Cấu Nguyên Nhân Cháy Rừng</h3>
+          <span class="badge badge-cat">Sunburst • TV3</span>
+        </div>
+        <div id="chart-10" class="chart-container" role="img" aria-label="Biểu đồ sunburst nguyên nhân cháy"></div>
+      </div>
+
+      <!-- Biểu đồ 11: TV3 (Sankey Diagram) -->
+      <div class="chart-card col-span-2">
+        <div class="chart-header">
+          <h3>#11. Dòng Chuyển Giao: Nguyên Nhân → Thảm Họa → Thiệt Hại</h3>
+          <span class="badge badge-cat">Sankey Diagram • TV3</span>
+        </div>
+        <div id="chart-11" class="chart-container" role="img" aria-label="Biểu đồ sankey dòng chuyển giao tác động"></div>
+      </div>
+
+      <!-- Biểu đồ 12: TV3 (Proportional Symbol Map) -->
+      <div class="chart-card col-span-2">
+        <div class="chart-header">
+          <h3>#12. Bản Đồ Điểm Các Vụ Cháy Rừng Lớn Toàn Cầu</h3>
+          <span class="badge badge-seq">Symbol Map • TV3</span>
+        </div>
+        <div id="chart-12" class="chart-container" role="img" aria-label="Bản đồ điểm phân bố các vụ cháy rừng lớn"></div>
+      </div>
+    </div>
+
+    <!-- Khu vực Phát hiện & Kết luận -->
+    <section class="insights-section" aria-label="Phát hiện và kết luận">
+      <h2>Phát Hiện Chính & Kết Luận (Key Insights)</h2>
+      <div class="insights-container" id="insights-container">
+        <p class="placeholder-text">Các phát hiện chính từ số liệu thực tế 2006–2025 sẽ được tổng hợp tự động sau khi nạp dữ liệu Giai đoạn 2.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Đồ án Tương tác Dữ liệu Trực quan (IDV) • Kho dữ liệu mã nguồn mở trên GitHub: <a href="https://github.com/tpdk0105/IDV_TTDL" target="_blank" rel="noopener">IDV_TTDL</a></p>
+  </footer>
+
+  <!-- Scripts ứng dụng -->
+  <script src="js/palette.js"></script>
+  <script src="js/app.js"></script>
+  <!-- Các mô-đun biểu đồ độc lập -->
+  <script src="js/charts/chart-01.js"></script>
+  <script src="js/charts/chart-02.js"></script>
+  <script src="js/charts/chart-03.js"></script>
+  <script src="js/charts/chart-04.js"></script>
+  <script src="js/charts/chart-05.js"></script>
+  <script src="js/charts/chart-06.js"></script>
+  <script src="js/charts/chart-07.js"></script>
+  <script src="js/charts/chart-08.js"></script>
+  <script src="js/charts/chart-09.js"></script>
+  <script src="js/charts/chart-10.js"></script>
+  <script src="js/charts/chart-11.js"></script>
+  <script src="js/charts/chart-12.js"></script>
+</body>
+</html>
