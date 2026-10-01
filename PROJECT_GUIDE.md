@@ -102,8 +102,8 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu toàn c�
 ## 6. Phân Công Chi Tiết & Nhiệm Vụ 3 Thành Viên
 
 ### Thành viên 1 – DỮ LIỆU (Thu thập $\to$ Làm sạch bằng Quy tắc & Học máy)
-- [ ] Tìm và đánh giá $\ge 3$ nguồn dữ liệu (EM-DAT, NASA FIRMS, USFS/Kaggle, Our World in Data); lập bảng so sánh trong `docs/DATA_SOURCES.md`.
-- [ ] Tải dữ liệu vào `data/raw/` bằng script tự động `src/01_download.py` (kèm hướng dẫn tải thủ công nếu nguồn yêu cầu đăng nhập).
+- [x] Tìm và đánh giá $\ge 3$ nguồn dữ liệu (EM-DAT, NASA FIRMS, USFS/Kaggle, Our World in Data); lập bảng so sánh trong `docs/DATA_SOURCES.md`.
+- [x] Tải dữ liệu vào `data/raw/` bằng script tự động `src/01_download.py` (kèm hướng dẫn tải thủ công nếu nguồn yêu cầu đăng nhập).
 - [ ] Phân tích khám phá dữ liệu (EDA) qua `src/02_eda.py` và notebook `notebooks/01_initial_eda.ipynb`; xuất báo cáo chất lượng ban đầu `docs/DATA_QUALITY_REPORT.md`.
 - [ ] **Làm sạch bước 1 theo quy tắc (`src/03_clean.py`)**: Chuẩn hóa mã ISO3, ngày giờ, đơn vị (ha, USD), loại trùng lặp, xử lý giá trị âm và xuất `data/interim/master_rules_cleaned.csv`.
 - [ ] **Làm sạch bước 2 bằng Học máy (`src/03b_ml_clean.py`) với TỐI THIỂU 2 MÔ HÌNH**:
@@ -134,22 +134,51 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu toàn c�
 
 ---
 
-## 7. Phân Chia 12 Biểu Đồ Bắt Buộc (Mỗi Biểu Đồ Đúng 1 Người Phụ Trách)
+## 7. Cấu Trúc Dashboard & Phân Chia 12 Biểu Đồ
 
-| # | Biểu Đồ | Dạng Đồ Thị | Kiểu Dữ Liệu | Bảng Màu Quy Chuẩn | Người Phụ Trách |
-|---|---------|-------------|--------------|-------------------|-----------------|
-| 1 | Tần suất & Thiệt hại theo năm | **Combo** Bar (Số vụ) + Line (Thiệt hại USD) trục kép | Thời gian + 2 số | Categorical (2 màu tương phản) | **Thành viên 1** |
-| 2 | Diễn biến cơ cấu thảm họa theo thời gian | Stacked Area (Diện tích xếp chồng) | Thời gian $\times$ Phân loại | Categorical (Okabe-Ito thảm họa) | **Thành viên 1** |
-| 3 | Bản đồ thiệt hại / số vụ toàn cầu | Choropleth Map (Bản đồ phân vùng) | Không gian + Số | Sequential (OrRd) | **Thành viên 1** |
-| 4 | Ma trận chu kỳ mùa cháy rừng | Heatmap (Tháng $\times$ Năm) | Chu kỳ $\times$ Thời gian $\times$ Số | Sequential (YlOrRd) | **Thành viên 1** |
-| 5 | Biến động tần suất so với trung bình 20 năm | Diverging Bar (Cột phân kỳ) | Độ lệch $\times$ Thời gian | Diverging (RdBu, tâm = 0) | **Thành viên 2** |
-| 6 | Cơ cấu thiệt hại kinh tế phân cấp | Treemap (Châu lục $\to$ Quốc gia, drill-down) | Phân cấp $\times$ Định lượng | Sequential / Categorical cấp 1 | **Thành viên 2** |
-| 7 | Tương quan Diện tích – Thiệt hại – Quy mô | Bubble Scatter (Trục Log-Log) | 3 số + Phân loại | Categorical (Châu lục) | **Thành viên 2** |
-| 8 | Phân phối quy mô diện tích cháy rừng | **Combo** Histogram + KDE/Lũy kế | Phân phối biến số | Sequential đơn sắc | **Thành viên 2** |
-| 9 | Xếp hạng thiệt hại sinh mạng quốc gia | **Combo Pareto** Bar (Tử vong) + Line (% Lũy kế) | Xếp hạng $\times$ Tích lũy | Sequential + 1 màu nhấn | **Thành viên 3** |
-| 10 | Phân tích cơ cấu nguyên nhân cháy rừng | Sunburst / Donut nhiều tầng | Cấu phần phân cấp | Categorical (Nguyên nhân) | **Thành viên 3** |
-| 11 | Dòng chuyển giao tác động thảm họa | Sankey Diagram (Nguyên nhân $\to$ Loại $\to$ Thiệt hại) | Luồng quan hệ | Categorical | **Thành viên 3** |
-| 12 | Bản đồ phân bố không gian các vụ cháy lớn | Proportional Symbol Map (Bản đồ điểm) | Không gian (Kinh/Vĩ) + Số | Sequential (Kích thước & Màu) | **Thành viên 3** |
+### CẤU TRÚC 4 DASHBOARD (mỗi dashboard 3 biểu đồ, 1 câu hỏi chính)
+Bốn dashboard nối nhau như một câu chuyện: **bức tranh chung → ở đâu → cháy rừng cụ thể → vì sao và hệ quả**.
+
+| Dashboard | Câu hỏi chính | Biểu đồ trong dashboard |
+|-----------|---------------|-------------------------|
+| **D1 – Bức tranh 20 năm** (tổng quát) | Thảm họa thiên nhiên có xảy ra nhiều hơn và thiệt hại lớn hơn qua các năm không? | #1 Combo số vụ + thiệt hại; #2 Stacked area theo loại thảm họa; #5 Diverging bar chênh lệch so với trung bình |
+| **D2 – Ở đâu chịu thiệt hại?** (không gian) | Quốc gia và khu vực nào chịu ảnh hưởng nặng nhất? | #3 Choropleth; #6 Treemap châu lục → quốc gia; #9 Combo Pareto top 10 quốc gia |
+| **D3 – Cháy rừng: khi nào và lớn cỡ nào?** (chi tiết cháy rừng) | Cháy rừng tập trung vào mùa nào, quy mô ra sao, vụ lớn nằm ở đâu? | #4 Heatmap tháng × năm; #8 Combo histogram + mật độ; #12 Bản đồ điểm vụ cháy lớn |
+| **D4 – Vì sao và hệ quả** (nguyên nhân & mức độ) | Nguyên nhân chính là gì và quy mô liên hệ thế nào với thiệt hại? | #10 Sunburst/donut nguyên nhân; #11 Sankey nguyên nhân → loại → mức thiệt hại; #7 Bubble scatter |
+
+Bố cục mỗi dashboard: dải tiêu đề (tên + câu hỏi chính) → 2–3 KPI card → 3 biểu đồ (1 biểu đồ lớn + 2 biểu đồ nhỏ, hoặc 3 cột) → hộp "Insight" 1–2 câu → chuyển sang dashboard kế tiếp.
+
+### KỂ CHUYỆN BẰNG DỮ LIỆU (giữ đơn giản)
+- Mỗi dashboard có: (1) tiêu đề dạng câu hỏi, (2) hộp "Insight" 1–2 câu nêu phát hiện chính, (3) câu dẫn sang dashboard kế tiếp. Dashboard cuối có thêm đoạn "Kết luận & hạn chế dữ liệu" ngắn.
+- Mọi con số trong Insight phải được TÍNH TỪ DỮ LIỆU THẬT (tính bằng JS từ `events.json` hoặc kiểm chứng bằng SQL), không viết tay số liệu theo cảm tính, và phải đổi theo bộ lọc nếu có thể.
+- Tối đa 1 chú thích/annotation nổi bật trên mỗi dashboard (ví dụ đánh dấu năm cao nhất). Không làm hoạt ảnh, không làm chế độ trình chiếu.
+
+### PHÂN CHIA 12 BIỂU ĐỒ (chia đều 4/4/4; MỖI BIỂU ĐỒ CHỈ DO 1 NGƯỜI THỰC HIỆN; mỗi người có 1 biểu đồ kết hợp)
+| # | Biểu đồ | Dashboard | Kiểu dữ liệu | Bảng màu | Người phụ trách |
+|---|---------|-----------|--------------|----------|-----------------|
+| 1 | **Combo** cột số vụ + đường thiệt hại USD theo năm (trục kép) | D1 | thời gian + 2 số | categorical (2 màu) | TV1 |
+| 2 | Stacked area tần suất theo loại thảm họa theo năm | D1 | thời gian × phân loại | categorical | TV1 |
+| 3 | Choropleth thế giới: thiệt hại/số vụ theo quốc gia | D2 | không gian + số | sequential | TV1 |
+| 4 | Heatmap tháng × năm số vụ cháy rừng | D3 | chu kỳ × năm × số | sequential | TV1 |
+| 5 | Diverging bar chênh lệch số vụ so với trung bình 20 năm | D1 | độ lệch × thời gian | diverging (tâm = 0) | TV2 |
+| 6 | Treemap châu lục → quốc gia theo thiệt hại | D2 | phân cấp × số | categorical cấp 1 | TV2 |
+| 7 | Bubble scatter diện tích cháy vs thiệt hại USD vs người ảnh hưởng | D4 | 3 số liên tục (log-log) | categorical theo châu lục | TV2 |
+| 8 | **Combo** histogram diện tích cháy + đường phân vị lũy kế | D3 | phân phối 1 số | sequential | TV2 |
+| 9 | **Combo Pareto** cột số người chết top 10 quốc gia + đường % lũy kế | D2 | xếp hạng × lũy kế | sequential + nhấn | TV3 |
+| 10 | Sunburst/donut 2 tầng nguyên nhân tự nhiên / nhân tạo | D4 | phân cấp | categorical | TV3 |
+| 11 | Sankey nguyên nhân → loại thảm họa → mức thiệt hại | D4 | luồng đa chiều | categorical | TV3 |
+| 12 | Bản đồ điểm các vụ cháy lớn (kích thước = diện tích, màu = thiệt hại) | D3 | tọa độ + 2 số | sequential | TV3 |
+
+### TƯƠNG TÁC (giữ đơn giản, không làm quá)
+- Mọi biểu đồ: tooltip tiếng Việt rõ ràng, có đơn vị; bấm legend để ẩn/hiện chuỗi.
+- Bộ lọc chung trên thanh điều khiển: khoảng năm (slider hoặc 2 ô chọn), loại thảm họa (dropdown). Khi đổi bộ lọc, cả 3 biểu đồ trong dashboard hiện tại tự vẽ lại.
+- KHÔNG CẦN cross-filtering phức tạp giữa các biểu đồ, KHÔNG CẦN brush-and-link nếu chưa thạo, KHÔNG CẦN chế độ tối (dark mode), KHÔNG CẦN xuất PDF. Tập trung làm 12 biểu đồ đúng, đẹp, chạy mượt.
+
+### QUY TRÌNH 4 BƯỚC CHO MỖI THÀNH VIÊN KHI LÀM BIỂU ĐỒ
+1. **Viết query SQL** trích đúng dữ liệu cần cho biểu đồ của mình, lưu vào `sql/queries_for_charts.sql`.
+2. **Tạo file JS** `dashboard/js/charts/chart-XX.js` export một hàm `renderChartXX(containerId, data, filters)` dùng ECharts.
+3. **Thêm tương tác tối thiểu**: tooltip có định dạng tiền tệ/đơn vị + click legend.
+4. **Ghi vào `CHART_SPEC.md`**: câu hỏi phân tích, kiểu dữ liệu, vì sao chọn biểu đồ này, vì sao chọn bảng màu này, 1 câu insight rút ra từ dữ liệu thật.
 
 ---
 

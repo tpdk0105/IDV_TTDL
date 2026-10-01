@@ -24,8 +24,8 @@
 | Hạng mục công việc | Trạng thái | Deadline | Ghi chú cá nhân |
 |--------------------|------------|----------|-----------------|
 | Thiết lập môi trường & nhánh `member-1-data` | Sẵn sàng | Tuần 1 | Giai đoạn 1 |
-| Đánh giá $\ge 3$ nguồn & viết `DATA_SOURCES.md` | Chưa bắt đầu | *[Điền]* | EM-DAT, NASA, USFS... |
-| Viết script thu thập dữ liệu `01_download.py` | Chưa bắt đầu | *[Điền]* | Lưu vào `data/raw/` |
+| Đánh giá $\ge 3$ nguồn & viết `DATA_SOURCES.md` | Hoàn thành | Tuần 2 | OWID, NASA, NOAA, USFS, EM-DAT |
+| Viết script thu thập dữ liệu `01_download.py` | Hoàn thành | Tuần 2 | Lưu 7 file vào `data/raw/` + manifest |
 | EDA & viết `DATA_QUALITY_REPORT.md` | Chưa bắt đầu | *[Điền]* | Kèm notebook EDA |
 | Làm sạch theo quy tắc `03_clean.py` | Chưa bắt đầu | *[Điền]* | Xuất interim |
 | Làm sạch bằng Học máy `03b_ml_clean.py` | Chưa bắt đầu | *[Điền]* | $\ge 2$ mô hình ML |
@@ -41,10 +41,10 @@
 ## 3. Danh Sách Checklist Chi Tiết
 
 ### A. Thu Thập Dữ Liệu
-- [ ] Tìm hiểu và khảo sát $\ge 3$ nguồn dữ liệu: NASA FIRMS, EM-DAT, USFS/Kaggle Wildfires, Our World in Data.
-- [ ] Lập bảng so sánh chi tiết trong `docs/DATA_SOURCES.md` (phạm vi, quy mô, giấy phép, độ tin cậy).
-- [ ] Viết `src/01_download.py` tự động tải dữ liệu vào `data/raw/`.
-- [ ] Hướng dẫn tải thủ công chi tiết trong `docs/DATA_SOURCES.md` đối với nguồn yêu cầu đăng ký (EM-DAT).
+- [x] Tìm hiểu và khảo sát $\ge 3$ nguồn dữ liệu: NASA FIRMS, EM-DAT, USFS/Kaggle Wildfires, Our World in Data, NOAA NCEI.
+- [x] Lập bảng so sánh chi tiết trong `docs/DATA_SOURCES.md` (phạm vi, quy mô, giấy phép, độ tin cậy).
+- [x] Viết `src/01_download.py` tự động tải dữ liệu vào `data/raw/`.
+- [x] Hướng dẫn tải thủ công chi tiết trong `docs/DATA_SOURCES.md` và `data/raw/emdat/README.md` đối với nguồn yêu cầu đăng ký (EM-DAT).
 
 ### B. Khám Phá Dữ Liệu (EDA)
 - [ ] Viết `src/02_eda.py` và tạo Jupyter Notebook `notebooks/01_initial_eda.ipynb`.
