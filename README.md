@@ -30,6 +30,8 @@ Dự án tập trung nghiên cứu, làm sạch, mô hình hóa và trực quan 
 
 ## 2. Bảng Phân Công Nhiệm Vụ 3 Thành Viên
 
+> 📖 **Xem chi tiết bảng phân công và bộ quy tắc đặt tên file nghiêm ngặt tại**: [team/README.md](team/README.md)
+
 | Thành viên | Phụ trách chính | Nhánh Git | Phạm vi công việc | 4 Biểu đồ đảm nhiệm |
 |------------|-----------------|-----------|-------------------|----------------------|
 | **Thành viên 1** | Kỹ sư Dữ liệu (Data Engineer) | `member-1-data` | Thu thập dữ liệu $\ge 3$ nguồn, EDA, Làm sạch theo quy tắc & Học máy ($\ge 2$ mô hình), Báo cáo chất lượng | **#1, #2, #3, #4** (Tableau Sheets) |
