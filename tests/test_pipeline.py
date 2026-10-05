@@ -53,6 +53,7 @@ def test_team_task_files_exist():
     """Kiểm tra các file phân công nhiệm vụ của 3 thành viên."""
     task_files = [
         "PROJECT_GUIDE.md",
+        "team/README.md",
         "team/member-1-data/TASKS.md",
         "team/member-2-model/TASKS.md",
         "team/member-3-dashboard/TASKS.md",
