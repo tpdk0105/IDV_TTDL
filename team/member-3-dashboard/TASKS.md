@@ -1,125 +1,128 @@
-# NHIỆM VỤ THÀNH VIÊN 3: KỸ SƯ DASHBOARD & TRIỂN KHAI (DATA VISUALIZATION & DEVOPS)
+# NHIỆM VỤ THÀNH VIÊN 3: KỸ SƯ DASHBOARD, TABLEAU STORY & TRIỂN KHAI (DATA VISUALIZATION & DEVOPS)
 
 > **Họ và tên**: [TÊN THÀNH VIÊN 3]  
 > **MSSV**: [Điền MSSV]  
 > **Nhánh Git phụ trách**: `member-3-dashboard`  
-> **Trọng tâm**: Xây dựng Dashboard ECharts tương tác, Kiến trúc Cross-filtering, Bảng màu chung, CI/CD GitHub Pages & Báo cáo tổng thể; Thực hiện 4 biểu đồ #9–#12.
+> **Trọng tâm**: Thiết kế 4 Dashboard & Tableau Story (4 Story Points) trên Tableau Public; Phụ trách 4 biểu đồ Tableau #9–#12; Đóng gói file `.twbx`, nhúng vào GitHub Pages & Báo cáo tổng thể.
 
 ---
 
 ## 1. Mục Tiêu Chính
-1. Thiết kế và phát triển giao diện Dashboard web tĩnh hoàn chỉnh bằng HTML5/CSS3 và JavaScript thuần (Vanilla JS), tích hợp thư viện **Apache ECharts** phiên bản ghim ổn định lưu trữ nội bộ tại `dashboard/js/vendor/` (không phụ thuộc CDN bên ngoài).
-2. Tích hợp bản đồ GeoJSON ranh giới các quốc gia thế giới trực tiếp vào repo.
-3. Xây dựng hệ thống bộ lọc toàn cục (Global Filters) mạnh mẽ: thanh trượt dải năm (2006–2025), dropdown chọn loại thảm họa, châu lục, quốc gia, nhóm nguyên nhân, nút reset và hàng thẻ KPI đồng bộ dữ liệu tức thời.
-4. Triển khai công tắc chuyển đổi: **"Chỉ hiển thị số liệu gốc (Ẩn giá trị ước lượng/điền thiếu)"** dựa trên các cột cờ ML.
-5. Xây dựng kiến trúc mô-đun hóa biểu đồ: Cung cấp giao diện kết nối (API) chung để 12 biểu đồ của cả 3 thành viên được nạp độc lập từ `dashboard/js/charts/chart-XX.js`.
-6. Triển khai bảng màu chuẩn hóa `dashboard/js/palette.js` theo `docs/COLOR_GUIDE.md` (chuẩn WCAG 2.1 AA, Okabe-Ito, OrRd, RdBu).
-7. Thiết lập quy trình tự động hóa CI/CD `.github/workflows/deploy.yml` tự động xuất bản Dashboard lên **GitHub Pages**.
-8. Hoàn thiện tài liệu tổng thể: `README.md`, `docs/REPORT_OUTLINE.md`, `docs/DEMO_SCRIPT.md` và tổng hợp phần "Insight & Kết luận" (5–7 phát hiện từ số liệu thật).
-9. Hoàn thành 4 biểu đồ được giao (#9, #10, #11, #12) theo đúng đặc tả và bảng màu chuẩn.
+1. Cài đặt và thiết lập **Tableau Desktop / Tableau Public App**, kết nối nguồn dữ liệu sạch từ `data/clean/master_clean.csv`.
+2. Phụ trách thực hiện 4 Worksheets chuyên sâu của mình: **#9 (Pareto Top 10), #10 (Donut Nguyên nhân), #11 (Sankey/Flow Luồng), #12 (Symbol Map Điểm cháy lớn)**.
+3. Thiết kế **4 Dashboards** tương ứng với 4 câu hỏi lớn của đề tài:
+   - **D1: Bức tranh 20 năm** (ghép #1, #2, #5 + KPI Cards + Filter năm).
+   - **D2: Ở đâu chịu thiệt hại?** (ghép #3, #6, #9 + Filter châu lục).
+   - **D3: Cháy rừng: Khi nào & lớn cỡ nào?** (ghép #4, #8, #12 + Filter tháng).
+   - **D4: Vì sao & hệ quả** (ghép #10, #11, #7 + Filter nguyên nhân).
+4. Xây dựng **Tableau Story với ít nhất 3 Story Points** (chuẩn 4 Story Points dẫn dắt câu chuyện phân tích, có chú thích Annotation làm nổi bật phát hiện từ dữ liệu thật).
+5. Đóng gói và lưu trữ tệp Workbook `tableau/wildfire_disaster_analysis.twbx` vào repo.
+6. Xuất bản Workbook lên **Tableau Public** và nhúng mã nhúng tương tác vào `dashboard/index.html`.
+7. Duy trì pipeline tự động hóa CI/CD `.github/workflows/deploy.yml` tự động xuất bản Dashboard lên **GitHub Pages**.
+8. Hoàn thiện tài liệu tổng thể: `README.md`, `docs/REPORT_OUTLINE.md`, `docs/DEMO_SCRIPT.md`.
 
 ---
 
 ## 2. Bảng Theo Dõi Trạng Thái Công Việc
 
 | Hạng mục công việc | Trạng thái | Deadline | Ghi chú cá nhân |
-|--------------------|------------|----------|-----------------|
+|---|---|---|---|
 | Thiết lập môi trường & nhánh `member-3-dashboard` | Sẵn sàng | Tuần 1 | Giai đoạn 1 |
-| Tạo khung giao diện HTML/CSS (Light & Dark) | Chưa bắt đầu | *[Điền]* | Responsive UI |
-| Cài đặt vendor Apache ECharts & GeoJSON thế giới | Chưa bắt đầu | *[Điền]* | Copy vào `js/vendor/` |
-| Phát triển mô-đun bảng màu `dashboard/js/palette.js` | Chưa bắt đầu | *[Điền]* | Chuẩn Okabe-Ito & OrRd |
-| Xây dựng bộ lọc toàn cục & thẻ KPI | Chưa bắt đầu | *[Điền]* | Cross-filter & Công tắc ML |
-| Thiết kế kiến trúc nạp biểu đồ mô-đun | Chưa bắt đầu | *[Điền]* | Hỗ trợ 12 chart-XX.js |
-| Cấu hình GitHub Actions CI/CD `deploy.yml` | Chưa bắt đầu | *[Điền]* | Deploy GitHub Pages |
-| Viết SQL cho biểu đồ #9–#12 trong `queries_for_charts.sql` | Chưa bắt đầu | *[Điền]* | Pareto, Sunburst, Sankey |
-| Biểu đồ #9: Combo Pareto Chart (Top 10 tử vong) | Chưa bắt đầu | *[Điền]* | Cột + Đường % lũy kế |
-| Biểu đồ #10: Sunburst / Donut nguyên nhân cháy | Chưa bắt đầu | *[Điền]* | Cấu phần nhiều tầng |
-| Biểu đồ #11: Sankey Diagram (Nguyên nhân $\to$ Thiệt hại) | Chưa bắt đầu | *[Điền]* | Luồng quan hệ đa chiều |
-| Biểu đồ #12: Bản đồ điểm đại thảm họa cháy rừng | Chưa bắt đầu | *[Điền]* | Proportional Symbol Map |
-| Hoàn thiện `README.md`, `REPORT_OUTLINE.md`, `DEMO_SCRIPT.md` | Chưa bắt đầu | *[Điền]* | Tổng kết 5–7 phát hiện |
+| Cấu hình GitHub Actions CI/CD `deploy.yml` | Hoàn thành | Tuần 1 | Deploy GitHub Pages |
+| Worksheet #9: Combo Pareto Chart (Top 10 tử vong) | Chưa bắt đầu | *[Điền]* | Cột + Đường % lũy kế |
+| Worksheet #10: Donut / Sunburst nguyên nhân cháy | Chưa bắt đầu | *[Điền]* | Tự nhiên vs Nhân tạo |
+| Worksheet #11: Luồng quan hệ đa chiều | Chưa bắt đầu | *[Điền]* | Nguyên nhân $\to$ Loại $\to$ Thiệt hại |
+| Worksheet #12: Bản đồ điểm đại thảm họa cháy rừng | Chưa bắt đầu | *[Điền]* | Proportional Symbol Map |
+| Thiết kế 4 Dashboards (D1, D2, D3, D4) trên Tableau | Chưa bắt đầu | *[Điền]* | KPI cards + Bộ lọc |
+| Dựng Tableau Story với 4 Story Points | Chưa bắt đầu | *[Điền]* | Dẫn dắt cốt truyện + Annotation |
+| Lưu file đóng gói `wildfire_disaster_analysis.twbx` | Chưa bắt đầu | *[Điền]* | Lưu vào `tableau/` |
+| Xuất bản Tableau Public & nhúng vào `dashboard/` | Chưa bắt đầu | *[Điền]* | Embed mã iframe / API v3 |
+| Hoàn thiện `README.md`, `REPORT_OUTLINE.md`, `DEMO_SCRIPT.md` | Chưa bắt đầu | *[Điền]* | Link demo + Hướng dẫn |
 
 ---
 
 ## 3. Danh Sách Checklist Chi Tiết
 
-### A. Hạ Tầng Giao Diện & Thư Viện
-- [ ] Dựng cấu trúc `dashboard/index.html` với bố cục khoa học, có thanh điều khiển trên cùng (Header & Filter bar), hàng thẻ KPI card, và lưới hiển thị 12 khung biểu đồ (Grid Layout).
-- [ ] Soạn thảo `dashboard/css/style.css` hỗ trợ đầy đủ thiết bị (Responsive: Mobile, Tablet, Desktop) và 2 chế độ màu Light / Dark Theme.
-- [ ] Chạy lệnh `npm run vendor` để copy thư viện `echarts.min.js` từ `node_modules` vào thư mục `dashboard/js/vendor/`.
-- [ ] Bổ sung file GeoJSON bản đồ ranh giới thế giới vào `dashboard/data/world.json`.
-- [ ] Viết mô-đun `dashboard/js/palette.js` xuất toàn bộ mã màu chuẩn (Categorical Okabe-Ito, Sequential OrRd, Diverging RdBu) dùng thống nhất cho cả nhóm.
+### A. Thiết Kế 4 Dashboards Trong Tableau
+- [ ] **Dashboard D1 – Bức tranh 20 năm**:
+  - [ ] Kéo thả `Sheet_01_Combo_Trend`, `Sheet_02_Stacked_Area`, `Sheet_05_Diverging_Bar`.
+  - [ ] Thêm 3 thẻ KPI: Tổng số sự kiện, Tổng thiệt hại USD, Tổng diện tích rừng cháy.
+  - [ ] Thêm bộ lọc dải năm (Slider) áp dụng đồng thời cho cả 3 Sheet.
+  - [ ] Thêm hộp văn bản Insight tóm tắt xu hướng 20 năm.
+- [ ] **Dashboard D2 – Ở đâu chịu thiệt hại?**:
+  - [ ] Kéo thả `Sheet_03_Choropleth_Map`, `Sheet_06_Treemap_Damage`, `Sheet_09_Combo_Pareto`.
+  - [ ] Thêm bộ lọc Châu lục; gán Filter Action click bản đồ highlight các sheet còn lại.
+  - [ ] Thêm hộp văn bản Insight tóm tắt nguyên lý 80/20.
+- [ ] **Dashboard D3 – Cháy rừng: Khi nào & lớn cỡ nào?**:
+  - [ ] Kéo thả `Sheet_04_Heatmap_Season`, `Sheet_08_Combo_Histogram`, `Sheet_12_Proportional_Map`.
+  - [ ] Thêm bộ lọc tháng và diện tích siêu đám cháy.
+  - [ ] Thêm hộp văn bản Insight tóm tắt mùa cao điểm khô hạn.
+- [ ] **Dashboard D4 – Vì sao & hệ quả**:
+  - [ ] Kéo thả `Sheet_10_Donut_Cause`, `Sheet_11_Sankey_Flow`, `Sheet_07_Bubble_Scatter`.
+  - [ ] Thêm bộ lọc nhóm nguyên nhân; thêm hộp Kết luận & Khuyến nghị chính sách.
 
-### B. Kiến Trúc Bộ Lọc Toàn Cục & Tương Tác Đồng Bộ
-- [ ] Viết `dashboard/js/app.js` quản lý trạng thái ứng dụng (State Management):
-  - [ ] Bộ lọc dải thời gian: Slider từ 2006 đến 2025.
-  - [ ] Bộ lọc dropdown: Loại thảm họa (Wildfire, Flood, Storm...), Châu lục, Nhóm nguyên nhân.
-  - [ ] Nút Reset: Đưa toàn bộ bộ lọc và biểu đồ về trạng thái ban đầu.
-  - [ ] Công tắc: "Chỉ hiển thị số liệu gốc (Ẩn giá trị ước lượng/điền thiếu)".
-  - [ ] 4 thẻ KPI cards: Tổng số vụ, Tổng thiệt hại USD, Tổng diện tích cháy ha, Tổng số ca tử vong (có hiệu ứng số nhảy đếm tăng dần khi lọc).
-  - [ ] Cơ chế kích hoạt vẽ lại (re-render) đồng bộ cho 12 biểu đồ khi có sự kiện lọc hoặc chọn vùng (Cross-filtering/Brush).
+### B. Xây Dựng Tableau Story (Ít nhất 3 Story Points)
+- [ ] Tạo Story mới trong Tableau với bố cục thanh điều hướng Story Navigator dạng Text Boxes hoặc Numbers.
+- [ ] **Story Point 1**: Nhúng Dashboard D1 $\to$ Tiêu đề: *"1. Bức tranh 20 năm: Tần suất & Thiệt hại"* $\to$ Gắn Annotation tại năm 2020.
+- [ ] **Story Point 2**: Nhúng Dashboard D2 $\to$ Tiêu đề: *"2. Điểm nóng toàn cầu: Nơi chịu tổn thất nặng nề"* $\to$ Gắn Annotation đường 80% Pareto.
+- [ ] **Story Point 3**: Nhúng Dashboard D3 $\to$ Tiêu đề: *"3. Trọng tâm Cháy rừng: Mùa cao điểm & Siêu đám cháy"* $\to$ Gắn Annotation mùa tháng 6–9 và đám cháy $\ge 10.000$ ha.
+- [ ] **Story Point 4**: Nhúng Dashboard D4 $\to$ Tiêu đề: *"4. Căn nguyên & Tác động: Con người vs Tự nhiên"* $\to$ Gắn Annotation kết luận và hạn chế dữ liệu.
 
-### C. Triển Khai CI/CD & Xuất Bản
-- [ ] Soạn thảo quy trình GitHub Actions `.github/workflows/deploy.yml`:
-  - [ ] Kích hoạt tự động khi có sự kiện `push` lên nhánh `main`.
-  - [ ] Kiểm tra và xuất bản trực tiếp thư mục `dashboard/` lên GitHub Pages.
-- [ ] Hướng dẫn bật tính năng GitHub Pages trong cài đặt repository nếu tài khoản chưa được kích hoạt tự động.
-
-### D. Báo Cáo & Tài Liệu Hoàn Thiện
-- [ ] Viết `README.md` chuyên nghiệp với ảnh chụp màn hình Dashboard, đường link trải nghiệm trực tiếp, kiến trúc pipeline và hướng dẫn chạy lại từ đầu bằng một lệnh.
-- [ ] Hoàn thiện dàn ý báo cáo và slide thuyết trình trong `docs/REPORT_OUTLINE.md`.
-- [ ] Soạn thảo kịch bản demo thuyết trình chi tiết trong `docs/DEMO_SCRIPT.md`.
-- [ ] Tổng hợp 5–7 phát hiện cốt lõi (Key Insights) từ dữ liệu thực tế 20 năm hiển thị nổi bật trên Dashboard.
+### C. Xuất Bản & Nhúng Lên Web
+- [ ] Chọn **File $\to$ Export Packaged Workbook...** $\to$ Lưu file `tableau/wildfire_disaster_analysis.twbx`.
+- [ ] Chọn **Server $\to$ Tableau Public $\to$ Save to Tableau Public As...** $\to$ Đăng tải lên trang cá nhân Tableau Public.
+- [ ] Nhúng mã nhúng tương tác vào `dashboard/index.html`.
+- [ ] Kiểm tra hiển thị trang web trên GitHub Pages.
 
 ---
 
-## 4. Các Biểu Đồ Phụ Trách (#9, #10, #11, #12)
+## 4. Các Biểu Đồ Phụ Trách (#9, #10, #11, #12 trên Tableau)
 
-### Biểu Đồ #9: Combo Pareto Chart (Top 10 quốc gia tử vong + % Lũy kế)
-- [ ] (a) Viết câu truy vấn SQL xếp hạng Top 10 quốc gia theo số người tử vong và tính tỷ lệ % lũy kế trong `sql/queries_for_charts.sql`.
-- [ ] (b) Xuất file JSON tương ứng vào `dashboard/data/chart_09_data.json`.
-- [ ] (c) Dựng biểu đồ kết hợp Pareto trong `dashboard/js/charts/chart-09.js` với cột đỏ tím cảnh báo và đường lũy kế vàng cam.
-- [ ] (d) Gắn tương tác click cột quốc gia để lọc dữ liệu toàn dashboard.
-- [ ] (e) Hoàn thiện mục Biểu đồ 9 trong `docs/CHART_SPEC.md` và ghi nhận insight từ dữ liệu thật.
+### Worksheet #9: `Sheet_09_Combo_Pareto` (Combo Pareto Chart: Top 10 tử vong)
+- [ ] (a) Lọc Top 10 `[country_name]` theo `SUM([deaths])`, sắp xếp giảm dần.
+- [ ] (b) Trục 1: `SUM([deaths])` (Marks: Bar); Trục 2: `[Cumulative Death %]` (Marks: Line, Dual Axis).
+- [ ] (c) Thêm Reference Line tại mốc 80% (0.8); định dạng màu đỏ mận và cam nhấn.
+- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 2.
 
-### Biểu Đồ #10: Sunburst / Donut Phân Tích Nguyên Nhân Cháy Rừng
-- [ ] (a) Viết câu truy vấn SQL phân cấp 2 tầng: Nhóm nguyên nhân (`cause_group`) $\to$ Chi tiết nguyên nhân (`cause_name`).
-- [ ] (b) Xuất file JSON cấu trúc phân cấp vào `dashboard/data/chart_10_data.json`.
-- [ ] (c) Dựng biểu đồ Sunburst ECharts trong `dashboard/js/charts/chart-10.js` với bảng màu phân loại nguyên nhân.
-- [ ] (d) Gắn tương tác click phóng to thu nhỏ (drill-down) từng phân nhánh.
-- [ ] (e) Hoàn thiện mục Biểu đồ 10 trong `docs/CHART_SPEC.md` và ghi nhận insight từ dữ liệu thật.
+### Worksheet #10: `Sheet_10_Donut_Cause` (Donut / Sunburst nguyên nhân cháy rừng)
+- [ ] (a) Dựng Donut 2 tầng: Vòng trong `[Cause Group High Level]`, vòng ngoài `[cause_name]`.
+- [ ] (b) Định dạng màu sắc: Tự nhiên (Xanh lá), Con người (Đỏ cam), Khác (Xám).
+- [ ] (c) Định dạng Tooltip hiển thị tỷ lệ % của từng tác nhân cụ thể.
+- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 4.
 
-### Biểu Đồ #11: Sankey Diagram (Dòng chuyển giao Nguyên nhân $\to$ Loại thảm họa $\to$ Mức độ thiệt hại)
-- [ ] (a) Viết câu truy vấn SQL tính toán lưu lượng trọng số giữa các nút quan hệ trong `sql/queries_for_charts.sql`.
-- [ ] (b) Xuất file JSON gồm danh sách nodes và links vào `dashboard/data/chart_11_data.json`.
-- [ ] (c) Dựng biểu đồ Sankey ECharts trong `dashboard/js/charts/chart-11.js` với hiệu ứng màu gradient theo luồng.
-- [ ] (d) Gắn tương tác hover highlight toàn bộ đường truyền và kéo thả sắp xếp các node.
-- [ ] (e) Hoàn thiện mục Biểu đồ 11 trong `docs/CHART_SPEC.md` và ghi nhận insight từ dữ liệu thật.
+### Worksheet #11: `Sheet_11_Sankey_Flow` (Luồng chuyển giao tác động thảm họa)
+- [ ] (a) Tạo luồng đa tầng: `[Cause Group]` $\to$ `[disaster_type]` $\to$ `[Damage Severity Level]`.
+- [ ] (b) Kéo Measures `SUM([damage_usd])` hoặc `CNT([event_id])` vào Size/Color.
+- [ ] (c) Định dạng Tooltip chi tiết đường đi của luồng.
+- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 4.
 
-### Biểu Đồ #12: Bản Đồ Điểm Các Đại Thảm Họa Cháy Rừng (Proportional Symbol Map)
-- [ ] (a) Viết câu truy vấn SQL lấy tọa độ địa lý, diện tích cháy và mức thiệt hại trong `sql/queries_for_charts.sql`.
-- [ ] (b) Xuất file JSON tọa độ vào `dashboard/data/chart_12_data.json`.
-- [ ] (c) Dựng bản đồ điểm ECharts trên nền GeoJSON thế giới trong `dashboard/js/charts/chart-12.js` (Kích thước = Diện tích, Màu = Thiệt hại).
-- [ ] (d) Gắn thanh trượt thời gian động (Timeline Player) và popup chi tiết khi click điểm cháy.
-- [ ] (e) Hoàn thiện mục Biểu đồ 12 trong `docs/CHART_SPEC.md` và ghi nhận insight từ dữ liệu thật.
+### Worksheet #12: `Sheet_12_Proportional_Map` (Bản đồ điểm các đại vụ cháy lớn)
+- [ ] (a) Lọc `[disaster_type] = 'Wildfire'`; kéo `[longitude]` vào Columns, `[latitude]` vào Rows.
+- [ ] (b) Chọn Marks: Circle; kéo `[burned_area_ha]` vào Size, kéo `[damage_usd]` vào Color.
+- [ ] (c) Đặt Opacity 70% để nhìn xuyên điểm chồng lấp; Tooltip hiển thị tên vụ cháy, ngày giờ, diện tích và thiệt hại.
+- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 3.
 
 ---
 
 ## 5. Đầu Vào & Đầu Ra (Deliverables)
 - **Đầu vào**:
-  - Dữ liệu JSON xuất bản từ `src/06_export_json.py` của TV1 và TV2.
-  - Tài liệu quy chuẩn màu sắc `docs/COLOR_GUIDE.md`.
-  - GeoJSON thế giới.
+  - `data/clean/master_clean.csv` từ Thành viên 1 và bảng phân rã từ TV2.
+  - Tài liệu quy chuẩn màu sắc `docs/COLOR_GUIDE.md` và công thức tính toán `tableau/CALCULATED_FIELDS.md`.
+  - 4 Worksheets của TV1 (#1..#4) và 4 Worksheets của TV2 (#5..#8).
 - **Đầu ra**:
-  - `dashboard/index.html`, `dashboard/css/style.css`, `dashboard/js/app.js`, `dashboard/js/palette.js`.
-  - `dashboard/js/charts/chart-09.js`, `chart-10.js`, `chart-11.js`, `chart-12.js`.
-  - `.github/workflows/deploy.yml`.
+  - 4 Worksheets của TV3 (#9..#12).
+  - 4 Dashboards (D1, D2, D3, D4) trên Tableau.
+  - 1 Tableau Story với 4 Story Points hoàn chỉnh.
+  - File đóng gói `tableau/wildfire_disaster_analysis.twbx`.
+  - Liên kết xuất bản trực tuyến Tableau Public.
+  - `dashboard/index.html` (nhúng Tableau Story) và triển khai GitHub Pages.
   - `README.md`, `docs/REPORT_OUTLINE.md`, `docs/DEMO_SCRIPT.md`.
 
 ---
 
 ## 6. Definition of Done (DoD) Cá Nhân
-1. Khung Dashboard chạy mượt mà, không có lỗi JavaScript console nào khi tải trang và khi tương tác bộ lọc.
-2. Bộ lọc toàn cục và Cross-filtering hoạt động chính xác trên cả 12 biểu đồ.
-3. Công tắc ẩn/hiện giá trị ML lọc đúng các bản ghi có cờ ước lượng.
-4. Thời gian tải trang ban đầu và nạp toàn bộ biểu đồ dưới 3 giây.
-5. GitHub Actions deploy thành công lên GitHub Pages và trang web hiển thị đúng.
+1. 4 Worksheets Tableau (#9–#12) hoạt động mượt mà, đúng dữ liệu và bảng màu.
+2. 4 Dashboards (D1 $\to$ D4) được bố cục chuẩn mực, bộ lọc và KPI cards đồng bộ.
+3. Tableau Story có ít nhất 3 Story Points (chuẩn 4 Points) có chú thích dẫn dắt câu chuyện mạch lạc.
+4. Tệp Workbook đóng gói `wildfire_disaster_analysis.twbx` mở lên bình thường mà không đòi hỏi kết nối ngoài.
+5. Bản nhúng trên `dashboard/index.html` hiển thị trơn tru trên GitHub Pages.

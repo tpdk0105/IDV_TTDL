@@ -78,49 +78,45 @@
 
 ---
 
-## 4. Các Biểu Đồ Phụ Trách (#1, #2, #3, #4)
+## 4. Các Biểu Đồ Phụ Trách (#1, #2, #3, #4 trên Tableau)
 
-### Biểu Đồ #1: Combo Cột số vụ + Đường thiệt hại USD theo năm (Trục kép)
-- [ ] (a) Viết câu truy vấn SQL tổng hợp số vụ và thiệt hại theo năm trong `sql/queries_for_charts.sql`.
-- [ ] (b) Xuất dữ liệu JSON tương ứng vào `dashboard/data/chart_01_data.json`.
-- [ ] (c) Dựng biểu đồ ECharts trục kép trong `dashboard/js/charts/chart-01.js` với 2 màu tương phản theo `COLOR_GUIDE.md`.
-- [ ] (d) Gắn tương tác Brush chọn dải năm và đồng bộ sự kiện lọc chéo (Cross-filter).
-- [ ] (e) Hoàn thiện mục Biểu đồ 1 trong `docs/CHART_SPEC.md` và ghi nhận 1–2 insight từ dữ liệu thật.
+### Worksheet #1: `Sheet_01_Combo_Trend` (Combo Cột số vụ + Đường thiệt hại USD theo năm)
+- [ ] (a) Kéo `YEAR([start_date])` vào Columns; kéo `CNT([event_id])` (Bar) và `SUM([Damage Bil USD])` (Line) vào Rows.
+- [ ] (b) Thiết lập trục kép Dual Axis trong Tableau, gán màu chuẩn: Cột xanh `#4A90E2`, Đường cam `#D55E00`.
+- [ ] (c) Định dạng Tooltip tiếng Việt rõ ràng (Số vụ, Tỷ USD).
+- [ ] (d) Ghi nhận 1–2 insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 1.
 
-### Biểu Đồ #2: Stacked Area Tần suất theo loại thảm họa theo năm
-- [ ] (a) Viết câu truy vấn SQL tổng hợp số vụ theo từng loại thảm họa và theo năm.
-- [ ] (b) Xuất dữ liệu JSON tương ứng vào `dashboard/data/chart_02_data.json`.
-- [ ] (c) Dựng biểu đồ Stacked Area ECharts trong `dashboard/js/charts/chart-02.js` với bảng màu Okabe-Ito chuẩn.
-- [ ] (d) Gắn tương tác bật/tắt Legend và click chọn loại thảm họa để lọc toàn hệ thống.
-- [ ] (e) Hoàn thiện mục Biểu đồ 2 trong `docs/CHART_SPEC.md` và ghi nhận insight từ dữ liệu thật.
+### Worksheet #2: `Sheet_02_Stacked_Area` (Stacked Area Tần suất theo loại thảm họa theo năm)
+- [ ] (a) Kéo `YEAR([start_date])` vào Columns; kéo `CNT([event_id])` vào Rows; chọn Marks: Area.
+- [ ] (b) Kéo `[disaster_type]` vào Color, áp dụng bảng màu chuẩn; ghim Wildfire ở lớp dưới cùng.
+- [ ] (c) Định dạng Tooltip hiển thị tỷ lệ % cơ cấu theo năm.
+- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 1.
 
-### Biểu Đồ #3: Choropleth Map Toàn cầu (Thiệt hại / Số vụ theo quốc gia)
-- [ ] (a) Viết câu truy vấn SQL tổng hợp số vụ, thiệt hại theo mã quốc gia ISO3.
-- [ ] (b) Xuất dữ liệu JSON tương ứng vào `dashboard/data/chart_03_data.json`.
-- [ ] (c) Dựng bản đồ Choropleth ECharts trong `dashboard/js/charts/chart-03.js` với dải màu tuần tự Sequential (OrRd).
-- [ ] (d) Tích hợp nút chuyển đổi giữa "Số vụ" và "Thiệt hại USD"; gắn sự kiện click quốc gia để lọc dashboard.
-- [ ] (e) Hoàn thiện mục Biểu đồ 3 trong `docs/CHART_SPEC.md` và ghi nhận insight từ dữ liệu thật.
+### Worksheet #3: `Sheet_03_Choropleth_Map` (Choropleth Map Toàn cầu: Thiệt hại / Số vụ theo quốc gia)
+- [ ] (a) Kéo `[Longitude]` và `[Latitude]` vào Columns/Rows; kéo `[iso3]` vào Detail; chọn Marks: Map.
+- [ ] (b) Kéo `SUM([Damage Bil USD])` vào Color với dải tuần tự Orange-Red.
+- [ ] (c) Định dạng Tooltip hiển thị tên quốc gia, tổng số vụ thảm họa và tổng thiệt hại tài chính.
+- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 2.
 
-### Biểu Đồ #4: Heatmap Tháng $\times$ Năm (Chu kỳ mùa cháy rừng)
-- [ ] (a) Viết câu truy vấn SQL đếm số vụ cháy rừng theo từng cặp (Tháng, Năm).
-- [ ] (b) Xuất dữ liệu JSON tương ứng vào `dashboard/data/chart_04_data.json`.
-- [ ] (c) Dựng ma trận Heatmap ECharts trong `dashboard/js/charts/chart-04.js` với dải màu nhiệt Sequential (YlOrRd).
-- [ ] (d) Gắn VisualMap liên tục và tương tác click ô tháng/năm.
-- [ ] (e) Hoàn thiện mục Biểu đồ 4 trong `docs/CHART_SPEC.md` và ghi nhận insight từ dữ liệu thật.
+### Worksheet #4: `Sheet_04_Heatmap_Season` (Heatmap Tháng $\times$ Năm: Chu kỳ mùa cháy rừng)
+- [ ] (a) Lọc `[disaster_type] = 'Wildfire'`; kéo `MONTH([start_date])` vào Columns, `YEAR([start_date])` vào Rows.
+- [ ] (b) Chọn Marks: Square; kéo `CNT([event_id])` vào Color với dải màu nhiệt YlOrRd.
+- [ ] (c) Định dạng Tooltip hiển thị tháng, năm và số vụ cháy bùng phát.
+- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 3.
 
 ---
 
 ## 5. Đầu Vào & Đầu Ra (Deliverables)
 - **Đầu vào**:
   - Dữ liệu thô từ các cổng dữ liệu mở quốc tế (EM-DAT, NASA FIRMS, USFS, OWID).
-  - Tài liệu quy chuẩn màu sắc `docs/COLOR_GUIDE.md`.
+  - Tài liệu quy chuẩn màu sắc `docs/COLOR_GUIDE.md` và công thức tính toán `tableau/CALCULATED_FIELDS.md`.
 - **Đầu ra**:
   - `data/raw/` (dữ liệu thô và nhật ký tải).
   - `src/01_download.py`, `src/02_eda.py`, `src/03_clean.py`, `src/03b_ml_clean.py`.
   - `notebooks/01_initial_eda.ipynb`.
   - `data/interim/master_rules_cleaned.csv` và `data/clean/master_clean.csv` ($\ge 5.000$ dòng).
   - `docs/DATA_SOURCES.md`, `docs/DATA_QUALITY_REPORT.md`, `docs/CLEANING_LOG.md`, `docs/ML_CLEANING_REPORT.md`, `docs/DATA_DICTIONARY.md`.
-  - `dashboard/js/charts/chart-01.js`, `chart-02.js`, `chart-03.js`, `chart-04.js`.
+  - 4 Worksheets Tableau (`Sheet_01` $\to$ `Sheet_04`) hoàn chỉnh.
 
 ---
 
@@ -128,5 +124,5 @@
 1. Mọi script thực thi từ đầu đến cuối không phát sinh lỗi (`python src/01_...` $\to$ `python src/03b_...`).
 2. Tập dữ liệu `data/clean/master_clean.csv` sau khi áp dụng đầy đủ quy tắc và mô hình ML đạt tối thiểu 5.000 dòng.
 3. Báo cáo ML phản ánh đầy đủ thực nghiệm kiểm chứng với Baseline.
-4. 4 biểu đồ (#1–#4) hiển thị chuẩn xác trên Dashboard, tương tác mượt mà và đúng màu sắc quy định.
+4. 4 Worksheets Tableau (#1–#4) hiển thị chuẩn xác, đúng màu sắc quy định và sẵn sàng ghép vào Dashboard D1, D2, D3.
 5. Không commit file lớn $> 90$ MB và commit thông điệp chuẩn Conventional Commits.

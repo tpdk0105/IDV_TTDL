@@ -87,49 +87,45 @@
 
 ---
 
-## 4. Các Biểu Đồ Phụ Trách (#5, #6, #7, #8)
+## 4. Các Biểu Đồ Phụ Trách (#5, #6, #7, #8 trên Tableau)
 
-### Biểu Đồ #5: Diverging Bar Chart (Biến động số vụ so với trung bình 20 năm)
-- [ ] (a) Viết truy vấn SQL tính độ lệch so với trung bình 20 năm trong `sql/queries_for_charts.sql`.
-- [ ] (b) Xuất file JSON `dashboard/data/chart_05_data.json`.
-- [ ] (c) Dựng biểu đồ cột phân kỳ ECharts trong `dashboard/js/charts/chart-05.js` với bảng màu RdBu (tâm = 0).
-- [ ] (d) Gắn tương tác hover tooltip hiển thị số liệu tuyệt đối và % chênh lệch.
-- [ ] (e) Hoàn thiện mục Biểu đồ 5 trong `docs/CHART_SPEC.md` và ghi nhận insight từ dữ liệu thật.
+### Worksheet #5: `Sheet_05_Diverging_Bar` (Biến động số vụ so với trung bình 20 năm)
+- [ ] (a) Tạo Calculated Fields `[Diff from 20Yr Avg]` và `[Divergence Flag]` theo [tableau/CALCULATED_FIELDS.md](file:///c:/Users/ASUS/Documents/Tương tác dữ liệu/đồ án ck/IDV_TTDL/tableau/CALCULATED_FIELDS.md).
+- [ ] (b) Kéo `[Diff from 20Yr Avg]` vào Columns, `YEAR([start_date])` vào Rows; chọn Marks: Bar.
+- [ ] (c) Kéo `[Divergence Flag]` vào Color (Đỏ: Vượt trung bình, Xanh: Dưới trung bình); thêm Reference Line tại `Constant = 0`.
+- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 1.
 
-### Biểu Đồ #6: Treemap Thiệt Hại Phân Cấp (Châu lục $\to$ Quốc gia)
-- [ ] (a) Viết truy vấn SQL gom nhóm thiệt hại 2 cấp (Châu lục $\to$ Quốc gia).
-- [ ] (b) Xuất file JSON dạng cây phân cấp `dashboard/data/chart_06_data.json`.
-- [ ] (c) Dựng biểu đồ Treemap ECharts trong `dashboard/js/charts/chart-06.js` với phân màu theo châu lục.
-- [ ] (d) Gắn tương tác click drill-down xem sâu vào từng quốc gia và breadcrumb điều hướng.
-- [ ] (e) Hoàn thiện mục Biểu đồ 6 trong `docs/CHART_SPEC.md` và ghi nhận insight từ dữ liệu thật.
+### Worksheet #6: `Sheet_06_Treemap_Damage` (Cơ cấu thiệt hại phân cấp: Châu lục $\to$ Quốc gia)
+- [ ] (a) Kéo `[continent]` vào Color, `[country_name]` vào Detail; kéo `SUM([damage_usd])` vào Size.
+- [ ] (b) Chọn Marks: Square (Treemap); hiển thị Label tên nước và số tiền thiệt hại.
+- [ ] (c) Định dạng Tooltip hiển thị tỷ trọng % đóng góp của từng quốc gia trong châu lục.
+- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 2.
 
-### Biểu Đồ #7: Bubble Scatter (Diện tích cháy vs Thiệt hại USD trên trục Log-Log)
-- [ ] (a) Viết truy vấn SQL trích xuất bộ ba chỉ số: Diện tích, Thiệt hại, Số người ảnh hưởng và Châu lục.
-- [ ] (b) Xuất file JSON `dashboard/data/chart_07_data.json`.
-- [ ] (c) Dựng biểu đồ bong bóng ECharts trong `dashboard/js/charts/chart-07.js` với hệ trục tọa độ Logarit và màu theo Châu lục.
-- [ ] (d) Gắn tương tác brush chọn vùng để đồng bộ lọc chéo toàn bộ dashboard.
-- [ ] (e) Hoàn thiện mục Biểu đồ 7 trong `docs/CHART_SPEC.md` và ghi nhận insight từ dữ liệu thật.
+### Worksheet #7: `Sheet_07_Bubble_Scatter` (Tương quan Diện tích cháy vs Thiệt hại trên trục Log-Log)
+- [ ] (a) Lọc `[disaster_type] = 'Wildfire'`; kéo `[Log10 Burned Area]` vào Columns, `[Log10 Damage USD]` vào Rows.
+- [ ] (b) Chọn Marks: Circle; kéo `SUM([affected])` vào Size, kéo `[continent]` vào Color.
+- [ ] (c) Thêm Trend Line (đường xu hướng) dạng hàm mũ/logarit để minh họa mối tương quan.
+- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 4.
 
-### Biểu Đồ #8: Combo Histogram Diện tích cháy + Đường Mật độ KDE / Lũy kế
-- [ ] (a) Viết truy vấn SQL chia khoảng bin logarit cho diện tích cháy và đếm tần suất.
-- [ ] (b) Xuất file JSON `dashboard/data/chart_08_data.json`.
-- [ ] (c) Dựng biểu đồ kết hợp ECharts trong `dashboard/js/charts/chart-08.js` với cột cam đất và đường phân vị xanh sẫm.
-- [ ] (d) Gắn tương tác hover xem khoảng bin và số lượng vụ; nút chuyển đổi tích lũy.
-- [ ] (e) Hoàn thiện mục Biểu đồ 8 trong `docs/CHART_SPEC.md` và ghi nhận insight từ dữ liệu thật.
+### Worksheet #8: `Sheet_08_Combo_Histogram` (Phân phối quy mô diện tích cháy + Đường phân vị lũy kế)
+- [ ] (a) Tạo trường phân vị `[Burned Area Bin]`; kéo `[Burned Area Bin]` vào Columns.
+- [ ] (b) Trục 1: `CNT([event_id])` (Marks: Bar); Trục 2: Đường % lũy kế `RUNNING_SUM(CNT([event_id])) / TOTAL(CNT([event_id]))` (Marks: Line, Dual Axis).
+- [ ] (c) Định dạng màu sắc cột cam đất, đường xanh đậm; hiển thị Tooltip số lượng vụ cháy từng khoảng.
+- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 3.
 
 ---
 
 ## 5. Đầu Vào & Đầu Ra (Deliverables)
 - **Đầu vào**:
   - `data/clean/master_clean.csv` từ Thành viên 1.
-  - Tài liệu quy chuẩn màu sắc `docs/COLOR_GUIDE.md`.
+  - Tài liệu quy chuẩn màu sắc `docs/COLOR_GUIDE.md` và công thức tính toán `tableau/CALCULATED_FIELDS.md`.
 - **Đầu ra**:
   - `docs/ERD.md` (Mermaid ERD).
   - `src/04_split_tables.py`, `src/05_build_db.py`, `src/07_validate.py`.
-  - `sql/schema.sql`, `sql/load.sql`, `sql/queries_for_charts.sql` (phần biểu đồ #5–#8).
+  - `sql/schema.sql`, `sql/load.sql`, `sql/queries_for_charts.sql`.
   - `data/tables/*.csv` và file CSDL `data/tables/database.sqlite`.
   - `tests/test_pipeline.py`.
-  - `dashboard/js/charts/chart-05.js`, `chart-06.js`, `chart-07.js`, `chart-08.js`.
+  - 4 Worksheets Tableau (`Sheet_05` $\to$ `Sheet_08`) hoàn chỉnh.
 
 ---
 
@@ -138,4 +134,4 @@
 2. File CSDL `data/tables/database.sqlite` được nạp thành công với `PRAGMA foreign_keys = ON;`.
 3. Script `src/07_validate.py` và `pytest tests/` vượt qua 100% các bài kiểm tra toàn vẹn và ràng buộc.
 4. Bảng fact đạt $\ge 5.000$ dòng.
-5. 4 biểu đồ (#5–#8) hoạt động ổn định trên Dashboard, hiển thị chuẩn xác và đúng quy chuẩn thị giác.
+5. 4 Worksheets Tableau (#5–#8) hiển thị chuẩn xác, đúng màu sắc quy định và sẵn sàng ghép vào Dashboard D1, D2, D4.
