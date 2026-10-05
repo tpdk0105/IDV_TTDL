@@ -15,7 +15,7 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu toàn c�
 - Thu thập, làm sạch và tích hợp dữ liệu thảm họa thiên nhiên toàn cầu giai đoạn 2006–2025 từ các nguồn dữ liệu khoa học uy tín (EM-DAT, NASA FIRMS, USFS/NOAA, Our World in Data).
 - Áp dụng các kỹ thuật Kỹ thuật Dữ liệu (Data Engineering) hiện đại kết hợp Học máy (Machine Learning) để chuẩn hóa, phát hiện ngoại lai bất thường (Isolation Forest/LOF) và xử lý giá trị khuyết thiếu (KNN/Iterative Imputer).
 - Thiết kế mô hình dữ liệu chuẩn hình sao (Star Schema) tối ưu hóa trên SQLite với hệ thống ràng buộc toàn vẹn nghiêm ngặt (PK, FK, CHECK, UNIQUE, NOT NULL).
-- Xây dựng hệ thống bảng điều khiển trực quan hóa tương tác (Interactive Dashboard) bằng Apache ECharts với 12 biểu đồ trực quan chuyên sâu, phục vụ đa chiều các câu hỏi phân tích, hỗ trợ Cross-filtering và tuân thủ các chuẩn mực thiết kế trực quan (WCAG AA, bảng màu thân thiện người mù màu).
+- Xây dựng hệ thống bảng điều khiển và câu chuyện dữ liệu trực quan tương tác (**Interactive Dashboard & Tableau Story**) bằng **Tableau Desktop / Tableau Public** với 12 biểu đồ trực quan chuyên sâu, phân thành 4 Dashboard (D1 $\to$ D4) và 1 Tableau Story (với 4 Story Points dẫn dắt câu chuyện phân tích), đồng thời nhúng trực tiếp vào giao diện web GitHub Pages.
 
 ---
 
@@ -23,9 +23,9 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu toàn c�
 
 | Thành viên | Họ và tên | MSSV / Email liên hệ | Vai trò chính | Nhánh Git riêng |
 |------------|-----------|----------------------|---------------|-----------------|
-| **Thành viên 1** | [TÊN THÀNH VIÊN 1] | *[Điền MSSV/Email]* | Kỹ sư Dữ liệu (Data Engineer): Thu thập, EDA, Làm sạch dữ liệu (Quy tắc + Học máy) | `member-1-data` |
-| **Thành viên 2** | [TÊN THÀNH VIÊN 2] | *[Điền MSSV/Email]* | Kỹ sư Mô hình Dữ liệu (Data Modeling Engineer): Star Schema, Ràng buộc CSDL, SQL & Xuất dữ liệu | `member-2-model` |
-| **Thành viên 3** | [TÊN THÀNH VIÊN 3] | *[Điền MSSV/Email]* | Kỹ sư Trực quan hóa & Triển khai (Data Visualization & DevOps): Dashboard ECharts, CI/CD, Báo cáo | `member-3-dashboard` |
+| **Thành viên 1** | [TÊN THÀNH VIÊN 1] | *[Điền MSSV/Email]* | Kỹ sư Dữ liệu (Data Engineer): Thu thập, EDA, Làm sạch dữ liệu (Quy tắc + Học máy); Phụ trách 4 biểu đồ Tableau #1–#4 | `member-1-data` |
+| **Thành viên 2** | [TÊN THÀNH VIÊN 2] | *[Điền MSSV/Email]* | Kỹ sư Mô hình Dữ liệu (Data Modeling Engineer): Star Schema, Ràng buộc CSDL, SQL; Phụ trách 4 biểu đồ Tableau #5–#8 | `member-2-model` |
+| **Thành viên 3** | [TÊN THÀNH VIÊN 3] | *[Điền MSSV/Email]* | Kỹ sư Trực quan hóa & Triển khai (Data Visualization & DevOps): Thiết kế 4 Dashboard & Tableau Story (4 Story Points), CI/CD, Phụ trách 4 biểu đồ Tableau #9–#12 | `member-3-dashboard` |
 
 ---
 
@@ -36,8 +36,8 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu toàn c�
 | Mã | Giai đoạn & Hạng mục công việc | Người phụ trách | Trạng thái | Deadline | Ghi chú |
 |----|--------------------------------|-----------------|------------|----------|---------|
 | **G1** | Khởi tạo repo, cấu trúc thư mục, môi trường, tài liệu phân công | Cả nhóm | **Hoàn thành** | Tuần 1 | Giai đoạn 1 |
-| **G2.1** | Tìm, đánh giá $\ge 3$ nguồn dữ liệu, viết `DATA_SOURCES.md` | Thành viên 1 | Chưa bắt đầu | *[Điền]* | EM-DAT, NASA, USFS... |
-| **G2.2** | Viết script tải dữ liệu thô `01_download.py` | Thành viên 1 | Chưa bắt đầu | *[Điền]* | Lưu vào `data/raw/` |
+| **G2.1** | Tìm, đánh giá $\ge 3$ nguồn dữ liệu, viết `DATA_SOURCES.md` | Thành viên 1 | **Hoàn thành** | Tuần 2 | OWID, NASA, NOAA, USFS |
+| **G2.2** | Viết script tải dữ liệu thô `01_download.py` | Thành viên 1 | **Hoàn thành** | Tuần 2 | Lưu 7 file vào `data/raw/` |
 | **G2.3** | Phân tích khám phá dữ liệu `02_eda.py` + `DATA_QUALITY_REPORT.md` | Thành viên 1 | Chưa bắt đầu | *[Điền]* | Kèm notebook EDA |
 | **G2.4** | Làm sạch theo quy tắc `03_clean.py` $\to$ `master_rules_cleaned.csv` | Thành viên 1 | Chưa bắt đầu | *[Điền]* | Chuẩn ISO3, ha, USD |
 | **G2.5** | Làm sạch bằng Học máy `03b_ml_clean.py` (Isolation Forest, MICE/KNN) | Thành viên 1 | Chưa bắt đầu | *[Điền]* | $\ge 2$ mô hình ML |
@@ -48,18 +48,16 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu toàn c�
 | **G3.3** | Soạn thảo DDL `sql/schema.sql` (PK, FK, CHECK, UNIQUE, INDEX) | Thành viên 2 | Chưa bắt đầu | *[Điền]* | Ràng buộc toàn vẹn |
 | **G3.4** | Viết script nạp DB `05_build_db.py` (`database.sqlite`) | Thành viên 2 | Chưa bắt đầu | *[Điền]* | Bật foreign_keys = ON |
 | **G3.5** | Viết script kiểm thử toàn vẹn `07_validate.py` & bộ test `tests/` | Thành viên 2 | Chưa bắt đầu | *[Điền]* | Kiểm tra không có FK mồ côi |
-| **G3.6** | Viết truy vấn SQL cho biểu đồ #5–#8 trong `sql/queries_for_charts.sql` | Thành viên 2 | Chưa bắt đầu | *[Điền]* | Kèm xuất JSON `06_export_json.py` |
-| **G4.1** | Xây dựng khung Dashboard HTML/CSS responsive, hỗ trợ Light/Dark | Thành viên 3 | Chưa bắt đầu | *[Điền]* | Apache ECharts local vendor |
-| **G4.2** | Tích hợp GeoJSON thế giới và bản đồ cục bộ | Thành viên 3 | Chưa bắt đầu | *[Điền]* | Đặt sẵn trong repo |
-| **G4.3** | Xây dựng bộ lọc toàn cục, hàng thẻ KPI, công tắc lọc dữ liệu gốc | Thành viên 3 | Chưa bắt đầu | *[Điền]* | Cross-filtering |
-| **G4.4** | Triển khai mô-đun bảng màu dùng chung `dashboard/js/palette.js` | Thành viên 3 | Chưa bắt đầu | *[Điền]* | Chuẩn Okabe-Ito, OrRd, RdBu |
-| **G4.5** | Thực hiện 4 biểu đồ của TV1 (#1, #2, #3, #4) | Thành viên 1 | Chưa bắt đầu | *[Điền]* | Viết SQL, JS, spec |
-| **G4.6** | Thực hiện 4 biểu đồ của TV2 (#5, #6, #7, #8) | Thành viên 2 | Chưa bắt đầu | *[Điền]* | Viết SQL, JS, spec |
-| **G4.7** | Thực hiện 4 biểu đồ của TV3 (#9, #10, #11, #12) | Thành viên 3 | Chưa bắt đầu | *[Điền]* | Viết SQL, JS, spec |
-| **G5.1** | Cấu hình GitHub Actions CI/CD `.github/workflows/deploy.yml` | Thành viên 3 | Chưa bắt đầu | *[Điền]* | Tự động deploy GitHub Pages |
-| **G5.2** | Tổng hợp 5–7 phát hiện chính (Key Insights) trên Dashboard | Thành viên 3 | Chưa bắt đầu | *[Điền]* | Dữ liệu thật 20 năm |
-| **G5.3** | Hoàn thiện `README.md`, `REPORT_OUTLINE.md`, `DEMO_SCRIPT.md` | Thành viên 3 | Chưa bắt đầu | *[Điền]* | Kèm ảnh minh họa & link |
-| **G5.4** | Kiểm thử tổng thể (Không lỗi console, JSON tải < 3s, pytest pass) | Cả nhóm | Chưa bắt đầu | *[Điền]* | Nghiệm thu đồ án |
+| **G3.6** | Viết truy vấn SQL cho biểu đồ trong `sql/queries_for_charts.sql` | Thành viên 2 | Chưa bắt đầu | *[Điền]* | Chuẩn bị dữ liệu cho Tableau |
+| **G4.1** | Dựng 12 Worksheets trong Tableau Desktop / Tableau Public | Cả nhóm (4/4/4) | Chưa bắt đầu | *[Điền]* | TV1: #1–#4, TV2: #5–#8, TV3: #9–#12 |
+| **G4.2** | Thiết kế 4 Dashboard (D1 $\to$ D4) trên Tableau | Thành viên 3 | Chưa bắt đầu | *[Điền]* | Ghép biểu đồ + bộ lọc + KPI |
+| **G4.3** | Xây dựng Tableau Story với ít nhất 3 Story Points (chuẩn 4 Points) | Thành viên 3 | Chưa bắt đầu | *[Điền]* | Cốt truyện dẫn dắt + Annotation |
+| **G4.4** | Lưu file `wildfire_disaster_analysis.twbx` vào `tableau/` & xuất bản Tableau Public | Thành viên 3 | Chưa bắt đầu | *[Điền]* | Lưu file đóng gói .twbx |
+| **G4.5** | Nhúng Tableau Story vào `dashboard/index.html` | Thành viên 3 | Chưa bắt đầu | *[Điền]* | Hiển thị trên GitHub Pages |
+| **G5.1** | Cấu hình GitHub Actions CI/CD `.github/workflows/deploy.yml` | Thành viên 3 | **Hoàn thành** | Tuần 1 | Deploy GitHub Pages |
+| **G5.2** | Tổng hợp các phát hiện chính (Key Insights) trong từng Story Point | Cả nhóm | Chưa bắt đầu | *[Điền]* | Dữ liệu thật 20 năm |
+| **G5.3** | Hoàn thiện `README.md`, `REPORT_OUTLINE.md`, `DEMO_SCRIPT.md` | Thành viên 3 | Chưa bắt đầu | *[Điền]* | Link Tableau Public + .twbx |
+| **G5.4** | Kiểm thử tổng thể (Không lỗi Tableau, .twbx mở tốt, pytest pass) | Cả nhóm | Chưa bắt đầu | *[Điền]* | Nghiệm thu đồ án |
 
 ---
 
@@ -124,17 +122,18 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu toàn c�
 - [ ] Viết script `src/06_export_json.py` (xuất JSON vào `dashboard/data/`) và các truy vấn SQL cho biểu đồ của mình trong `sql/queries_for_charts.sql`.
 - [ ] Chịu trách nhiệm thực hiện trọn vẹn 4 biểu đồ: **#5, #6, #7, #8**.
 
-### Thành viên 3 – DASHBOARD & TRIỂN KHAI (Giao diện $\to$ Tương tác $\to$ DevOps)
-- [ ] Xây dựng khung Dashboard web tĩnh: HTML5 / CSS3 / Vanilla JS + **Apache ECharts** (bản cục bộ ghim phiên bản trong `dashboard/js/vendor/`, không phụ thuộc CDN); tích hợp GeoJSON bản đồ thế giới trong repo; hỗ trợ responsive và chuyển đổi Light / Dark theme.
-- [ ] Phát triển bộ lọc toàn cục tương tác: thanh trượt dải năm, chọn loại thảm họa, châu lục/quốc gia, nhóm nguyên nhân; cơ chế Cross-filtering; tooltip tiếng Việt chi tiết; drill-down; brush; nút reset; hàng thẻ KPI card đồng bộ dữ liệu. Bổ sung công tắc *"Chỉ hiển thị số liệu gốc (Ẩn giá trị ước lượng/điền thiếu)"*. Cung cấp kiến trúc mở để các biểu đồ cắm vào độc lập qua `dashboard/js/charts/chart-XX.js`.
-- [ ] Triển khai `docs/COLOR_GUIDE.md` và mô-đun dùng chung `dashboard/js/palette.js`.
-- [ ] Xây dựng pipeline CI/CD `.github/workflows/deploy.yml` tự động đóng gói và xuất bản thư mục `dashboard/` lên GitHub Pages khi có commit trên `main`.
+### Thành viên 3 – DASHBOARD & TRIỂN KHAI (Tableau Public $\to$ Storytelling $\to$ DevOps)
+- [ ] Thiết lập môi trường Tableau Desktop / Tableau Public, kết nối nguồn dữ liệu sạch từ `data/clean/master_clean.csv`.
+- [ ] Phụ trách thực hiện 4 biểu đồ chuyên sâu của mình: **#9 (Pareto Top 10), #10 (Donut Nguyên nhân), #11 (Sankey/Flow Luồng), #12 (Symbol Map Đại vụ cháy)** dưới dạng các Tableau Worksheets.
+- [ ] Thiết kế **4 Dashboards** hoàn chỉnh (D1: Bức tranh 20 năm, D2: Ở đâu chịu thiệt hại, D3: Cháy rừng: Khi nào & lớn cỡ nào, D4: Vì sao & hệ quả) với bố cục khoa học, thẻ KPI Cards và bộ lọc chung.
+- [ ] Xây dựng **Tableau Story với ít nhất 3 Story Points** (chuẩn 4 Story Points dẫn dắt câu chuyện phân tích, có chú thích Annotation làm nổi bật phát hiện từ dữ liệu thật).
+- [ ] Đóng gói và lưu tệp Workbook `tableau/wildfire_disaster_analysis.twbx`, xuất bản lên Tableau Public và lấy đường link nhúng vào `dashboard/index.html`.
+- [ ] Triển khai pipeline CI/CD `.github/workflows/deploy.yml` tự động xuất bản trang web chứa bản nhúng Tableau lên GitHub Pages.
 - [ ] Soạn thảo và hoàn thiện `README.md`, `docs/REPORT_OUTLINE.md`, `docs/DEMO_SCRIPT.md`.
-- [ ] Chịu trách nhiệm thực hiện trọn vẹn 4 biểu đồ: **#9, #10, #11, #12**.
 
 ---
 
-## 7. Cấu Trúc Dashboard & Phân Chia 12 Biểu Đồ
+## 7. Cấu Trúc 4 Dashboard, Tableau Story & Phân Chia 12 Biểu Đồ
 
 ### CẤU TRÚC 4 DASHBOARD (mỗi dashboard 3 biểu đồ, 1 câu hỏi chính)
 Bốn dashboard nối nhau như một câu chuyện: **bức tranh chung → ở đâu → cháy rừng cụ thể → vì sao và hệ quả**.
@@ -148,37 +147,35 @@ Bốn dashboard nối nhau như một câu chuyện: **bức tranh chung → ở
 
 Bố cục mỗi dashboard: dải tiêu đề (tên + câu hỏi chính) → 2–3 KPI card → 3 biểu đồ (1 biểu đồ lớn + 2 biểu đồ nhỏ, hoặc 3 cột) → hộp "Insight" 1–2 câu → chuyển sang dashboard kế tiếp.
 
-### KỂ CHUYỆN BẰNG DỮ LIỆU (giữ đơn giản)
-- Mỗi dashboard có: (1) tiêu đề dạng câu hỏi, (2) hộp "Insight" 1–2 câu nêu phát hiện chính, (3) câu dẫn sang dashboard kế tiếp. Dashboard cuối có thêm đoạn "Kết luận & hạn chế dữ liệu" ngắn.
-- Mọi con số trong Insight phải được TÍNH TỪ DỮ LIỆU THẬT (tính bằng JS từ `events.json` hoặc kiểm chứng bằng SQL), không viết tay số liệu theo cảm tính, và phải đổi theo bộ lọc nếu có thể.
-- Tối đa 1 chú thích/annotation nổi bật trên mỗi dashboard (ví dụ đánh dấu năm cao nhất). Không làm hoạt ảnh, không làm chế độ trình chiếu.
+### KỂ CHUYỆN BẰNG TABLEAU STORY (Ít nhất 3 Story Points)
+- **Tableau Story** kết nối 4 Dashboard thành một chuỗi trình bày phân tích với **4 Story Points**:
+  1. **Point 1**: *Bức tranh 20 năm: Tần suất & Thiệt hại* (Nhúng D1, chú thích đỉnh điểm năm 2020).
+  2. **Point 2**: *Điểm nóng toàn cầu: Châu lục & Quốc gia tổn thất nặng* (Nhúng D2, chú thích nguyên lý 80/20).
+  3. **Point 3**: *Trọng tâm Cháy rừng: Mùa cao điểm & Siêu đám cháy* (Nhúng D3, chú thích mùa khô tháng 6–9 và các đám cháy $\ge 10.000$ ha).
+  4. **Point 4**: *Căn nguyên & Tác động: Tự nhiên vs Con người* (Nhúng D4, đúc kết khuyến nghị hành động).
+- Mọi con số trong Insight và Annotation phải được **TÍNH TỪ DỮ LIỆU THẬT**, không viết số liệu cảm tính.
 
 ### PHÂN CHIA 12 BIỂU ĐỒ (chia đều 4/4/4; MỖI BIỂU ĐỒ CHỈ DO 1 NGƯỜI THỰC HIỆN; mỗi người có 1 biểu đồ kết hợp)
-| # | Biểu đồ | Dashboard | Kiểu dữ liệu | Bảng màu | Người phụ trách |
-|---|---------|-----------|--------------|----------|-----------------|
-| 1 | **Combo** cột số vụ + đường thiệt hại USD theo năm (trục kép) | D1 | thời gian + 2 số | categorical (2 màu) | TV1 |
-| 2 | Stacked area tần suất theo loại thảm họa theo năm | D1 | thời gian × phân loại | categorical | TV1 |
-| 3 | Choropleth thế giới: thiệt hại/số vụ theo quốc gia | D2 | không gian + số | sequential | TV1 |
-| 4 | Heatmap tháng × năm số vụ cháy rừng | D3 | chu kỳ × năm × số | sequential | TV1 |
-| 5 | Diverging bar chênh lệch số vụ so với trung bình 20 năm | D1 | độ lệch × thời gian | diverging (tâm = 0) | TV2 |
-| 6 | Treemap châu lục → quốc gia theo thiệt hại | D2 | phân cấp × số | categorical cấp 1 | TV2 |
-| 7 | Bubble scatter diện tích cháy vs thiệt hại USD vs người ảnh hưởng | D4 | 3 số liên tục (log-log) | categorical theo châu lục | TV2 |
-| 8 | **Combo** histogram diện tích cháy + đường phân vị lũy kế | D3 | phân phối 1 số | sequential | TV2 |
-| 9 | **Combo Pareto** cột số người chết top 10 quốc gia + đường % lũy kế | D2 | xếp hạng × lũy kế | sequential + nhấn | TV3 |
-| 10 | Sunburst/donut 2 tầng nguyên nhân tự nhiên / nhân tạo | D4 | phân cấp | categorical | TV3 |
-| 11 | Sankey nguyên nhân → loại thảm họa → mức thiệt hại | D4 | luồng đa chiều | categorical | TV3 |
-| 12 | Bản đồ điểm các vụ cháy lớn (kích thước = diện tích, màu = thiệt hại) | D3 | tọa độ + 2 số | sequential | TV3 |
+| # | Tên Sheet Tableau | Dashboard | Kiểu dữ liệu | Bảng màu | Người phụ trách |
+|---|-------------------|-----------|--------------|----------|-----------------|
+| 1 | `Sheet_01_Combo_Trend` (Combo cột số vụ + đường thiệt hại USD theo năm) | D1 | thời gian + 2 số | categorical (2 màu) | **TV1** |
+| 2 | `Sheet_02_Stacked_Area` (Stacked area tần suất theo loại thảm họa) | D1 | thời gian × phân loại | categorical | **TV1** |
+| 3 | `Sheet_03_Choropleth_Map` (Choropleth thế giới: thiệt hại/số vụ theo nước) | D2 | không gian + số | sequential | **TV1** |
+| 4 | `Sheet_04_Heatmap_Season` (Heatmap tháng × năm số vụ cháy rừng) | D3 | chu kỳ × năm × số | sequential | **TV1** |
+| 5 | `Sheet_05_Diverging_Bar` (Diverging bar chênh lệch số vụ so với trung bình 20 năm) | D1 | độ lệch × thời gian | diverging (tâm = 0) | **TV2** |
+| 6 | `Sheet_06_Treemap_Damage` (Treemap châu lục → quốc gia theo thiệt hại) | D2 | phân cấp × số | categorical cấp 1 | **TV2** |
+| 7 | `Sheet_07_Bubble_Scatter` (Bubble scatter diện tích cháy vs thiệt hại USD vs người ảnh hưởng) | D4 | 3 số liên tục (log-log) | categorical theo châu lục | **TV2** |
+| 8 | `Sheet_08_Combo_Histogram` (Combo histogram diện tích cháy + đường phân vị lũy kế) | D3 | phân phối 1 số | sequential | **TV2** |
+| 9 | `Sheet_09_Combo_Pareto` (Combo Pareto cột số người chết top 10 quốc gia + đường % lũy kế) | D2 | xếp hạng × lũy kế | sequential + nhấn | **TV3** |
+| 10 | `Sheet_10_Donut_Cause` (Donut 2 tầng nguyên nhân tự nhiên / nhân tạo) | D4 | phân cấp | categorical | **TV3** |
+| 11 | `Sheet_11_Sankey_Flow` (Luồng chuyển giao nguyên nhân → loại thảm họa → mức thiệt hại) | D4 | luồng đa chiều | categorical | **TV3** |
+| 12 | `Sheet_12_Proportional_Map` (Bản đồ điểm các vụ cháy lớn: cỡ = diện tích, màu = thiệt hại) | D3 | tọa độ + 2 số | sequential | **TV3** |
 
-### TƯƠNG TÁC (giữ đơn giản, không làm quá)
-- Mọi biểu đồ: tooltip tiếng Việt rõ ràng, có đơn vị; bấm legend để ẩn/hiện chuỗi.
-- Bộ lọc chung trên thanh điều khiển: khoảng năm (slider hoặc 2 ô chọn), loại thảm họa (dropdown). Khi đổi bộ lọc, cả 3 biểu đồ trong dashboard hiện tại tự vẽ lại.
-- KHÔNG CẦN cross-filtering phức tạp giữa các biểu đồ, KHÔNG CẦN brush-and-link nếu chưa thạo, KHÔNG CẦN chế độ tối (dark mode), KHÔNG CẦN xuất PDF. Tập trung làm 12 biểu đồ đúng, đẹp, chạy mượt.
-
-### QUY TRÌNH 4 BƯỚC CHO MỖI THÀNH VIÊN KHI LÀM BIỂU ĐỒ
-1. **Viết query SQL** trích đúng dữ liệu cần cho biểu đồ của mình, lưu vào `sql/queries_for_charts.sql`.
-2. **Tạo file JS** `dashboard/js/charts/chart-XX.js` export một hàm `renderChartXX(containerId, data, filters)` dùng ECharts.
-3. **Thêm tương tác tối thiểu**: tooltip có định dạng tiền tệ/đơn vị + click legend.
-4. **Ghi vào `CHART_SPEC.md`**: câu hỏi phân tích, kiểu dữ liệu, vì sao chọn biểu đồ này, vì sao chọn bảng màu này, 1 câu insight rút ra từ dữ liệu thật.
+### QUY TRÌNH 4 BƯỚC CHO MỖI THÀNH VIÊN KHI LÀM BIỂU ĐỒ TRÊN TABLEAU
+1. **Mở Tableau và tạo Worksheet**: Kéo thả Dimensions và Measures theo đúng đặc tả tại [docs/CHART_SPEC.md](file:///c:/Users/ASUS/Documents/Tương tác dữ liệu/đồ án ck/IDV_TTDL/docs/CHART_SPEC.md).
+2. **Tạo Calculated Fields cần thiết**: Sử dụng công thức chuẩn trong [tableau/CALCULATED_FIELDS.md](file:///c:/Users/ASUS/Documents/Tương tác dữ liệu/đồ án ck/IDV_TTDL/tableau/CALCULATED_FIELDS.md).
+3. **Định dạng hiển thị chuẩn**: Tooltip tiếng Việt rõ ràng, có đơn vị tiền tệ (Tỷ USD, ha, người), màu sắc đúng quy chuẩn.
+4. **Ghi vào `CHART_SPEC.md`**: Ghi lại 1 phát hiện quan trọng (Insight) rút ra từ dữ liệu thật để đưa vào Story Point.
 
 ---
 
@@ -186,31 +183,28 @@ Bố cục mỗi dashboard: dải tiêu đề (tên + câu hỏi chính) → 2�
 
 ### DoD Giai đoạn 1 (Khởi tạo dự án & Môi trường):
 - Cấu trúc thư mục được khởi tạo đầy đủ kèm `.gitkeep`.
-- Các file khung `.py`, `.sql`, `.md`, `.html` có tiêu đề, docstring, mục đích và người phụ trách rõ ràng.
+- Các file khung `.py`, `.sql`, `.md` có tiêu đề, docstring, mục đích và người phụ trách rõ ràng.
 - `PROJECT_GUIDE.md` và 3 file `team/*/TASKS.md` được biên soạn chi tiết, không vi phạm nguyên tắc phân công.
-- Các file môi trường (`requirements.txt`, `environment.yml`, `package.json`, `.editorconfig`) được ghim phiên bản ổn định và kiểm tra cài đặt thành công.
 - Đẩy thành công lên Git nhánh `main` và 3 nhánh thành viên `member-1-data`, `member-2-model`, `member-3-dashboard`.
 
 ### DoD Giai đoạn 2 (Dữ liệu):
 - Dữ liệu thô lưu tại `data/raw/` có nguồn gốc rõ ràng, ghi trong `DATA_SOURCES.md`.
 - `master_clean.csv` đạt $\ge 5.000$ dòng và có lệnh `assert` kiểm tra.
-- Quy trình ML áp dụng $\ge 2$ mô hình (Isolation Forest, KNN/Iterative Imputer); có báo cáo thực nghiệm so sánh với Baseline trong `ML_CLEANING_REPORT.md`.
+- Quy trình ML áp dụng $\ge 2$ mô hình (Isolation Forest, KNN/Iterative Imputer); có báo cáo thực nghiệm trong `ML_CLEANING_REPORT.md`.
 - Toàn bộ cột cờ và dữ liệu được ghi nhận đầy đủ trong `DATA_DICTIONARY.md` và `CLEANING_LOG.md`.
 
 ### DoD Giai đoạn 3 (Mô hình Dữ liệu):
 - CSDL `database.sqlite` được tạo bằng `05_build_db.py` với `PRAGMA foreign_keys = ON;`.
 - Bảng fact đạt $\ge 5.000$ dòng, không có khóa ngoại mồ côi, toàn bộ ràng buộc CHECK đạt chuẩn.
 - Script `07_validate.py` và bộ test `pytest` thực thi kiểm thử tự động đạt 100% pass.
-- Các truy vấn SQL trong `queries_for_charts.sql` được tối ưu và `06_export_json.py` xuất đầy đủ dữ liệu cho 12 biểu đồ.
 
-### DoD Giai đoạn 4 (Dashboard & Trực quan hóa):
-- 12 biểu đồ hoạt động ổn định, không phát sinh lỗi console trên trình duyệt.
-- Đầy đủ 3 biểu đồ kết hợp (Combo charts); toàn bộ các biểu đồ đều hỗ trợ tương tác và Cross-filtering.
-- Bảng màu tuân thủ nghiêm ngặt `COLOR_GUIDE.md` và chuẩn WCAG AA.
-- Cung cấp công tắc chuyển đổi giữa dữ liệu gốc và dữ liệu sau ML.
-- Tốc độ nạp dữ liệu và vẽ trang hiển thị dưới 3 giây.
+### DoD Giai đoạn 4 (Tableau Dashboard & Storytelling):
+- Hoàn thành đầy đủ 12 Worksheets trong Tableau (chia đều 4/4/4 cho 3 thành viên).
+- Hoàn thành 4 Dashboards (D1 $\to$ D4) với KPI Cards, bộ lọc năm/loại thảm họa và hộp Insight.
+- Hoàn thành 1 Tableau Story với ít nhất 3 Story Points (chuẩn 4 Story Points) có chú thích nổi bật.
+- File workbook đóng gói `tableau/wildfire_disaster_analysis.twbx` được lưu trữ trong repo và mở lên hoạt động trơn tru.
 
-### DoD Giai đoạn 5 (Triển khai & Hoàn thiện):
-- Dashboard được tự động triển khai thành công qua GitHub Pages bằng GitHub Actions.
-- `README.md` có đầy đủ ảnh chụp, link demo và hướng dẫn chạy pipeline một lệnh (`scripts/run_all.ps1` / `scripts/run_all.sh`).
+### DoD Giai đoạn 5 (Xuất bản & Nghiệm thu):
+- Xuất bản thành công lên Tableau Public và nhúng liên kết vào `dashboard/index.html` (chạy trên GitHub Pages).
+- `README.md` có đầy đủ ảnh chụp, link demo Tableau Public và hướng dẫn mở file `.twbx`.
 - Hoàn thành đầy đủ báo cáo tổng kết và kịch bản thuyết trình demo.

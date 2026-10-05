@@ -25,6 +25,7 @@ def test_directory_structure():
         "team/member-1-data",
         "team/member-2-model",
         "team/member-3-dashboard",
+        "tableau",
     ]
     for d in required_dirs:
         assert Path(d).is_dir(), f"Thư mục bắt buộc {d} không tồn tại!"

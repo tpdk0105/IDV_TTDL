@@ -1,229 +1,211 @@
-# Đặc Tả 12 Biểu Đồ Trực Quan Hóa (CHART SPECIFICATIONS)
+# Đặc Tả 12 Biểu Đồ & Tableau Story (CHART SPECIFICATIONS)
 
 > **Nhóm thực hiện**: Phân chia đều 4/4/4 (TV1: #1–#4, TV2: #5–#8, TV3: #9–#12)  
-> **Thư viện chính**: Apache ECharts  
-> **Kiến trúc trình bày**: 4 Dashboard theo mạch câu chuyện (Storytelling)
+> **Công cụ chính**: **Tableau Desktop / Tableau Public** (Xuất bản trực tuyến + lưu trữ file `.twbx`)  
+> **Kiến trúc trình bày**: 4 Dashboards (D1 $\to$ D4) + **Tableau Story với 4 Story Points** dẫn dắt cốt truyện
 
 ---
 
-### CẤU TRÚC 4 DASHBOARD (mỗi dashboard 3 biểu đồ, 1 câu hỏi chính)
-Bốn dashboard nối nhau như một câu chuyện: **bức tranh chung → ở đâu → cháy rừng cụ thể → vì sao và hệ quả**.
+## 1. CẤU TRÚC 4 DASHBOARD (Mỗi Dashboard 3 Biểu Đồ, 1 Câu Hỏi Chính)
 
-| Dashboard | Câu hỏi chính | Biểu đồ trong dashboard |
-|-----------|---------------|-------------------------|
-| **D1 – Bức tranh 20 năm** (tổng quát) | Thảm họa thiên nhiên có xảy ra nhiều hơn và thiệt hại lớn hơn qua các năm không? | #1 Combo số vụ + thiệt hại; #2 Stacked area theo loại thảm họa; #5 Diverging bar chênh lệch so với trung bình |
-| **D2 – Ở đâu chịu thiệt hại?** (không gian) | Quốc gia và khu vực nào chịu ảnh hưởng nặng nhất? | #3 Choropleth; #6 Treemap châu lục → quốc gia; #9 Combo Pareto top 10 quốc gia |
-| **D3 – Cháy rừng: khi nào và lớn cỡ nào?** (chi tiết cháy rừng) | Cháy rừng tập trung vào mùa nào, quy mô ra sao, vụ lớn nằm ở đâu? | #4 Heatmap tháng × năm; #8 Combo histogram + mật độ; #12 Bản đồ điểm vụ cháy lớn |
-| **D4 – Vì sao và hệ quả** (nguyên nhân & mức độ) | Nguyên nhân chính là gì và quy mô liên hệ thế nào với thiệt hại? | #10 Sunburst/donut nguyên nhân; #11 Sankey nguyên nhân → loại → mức thiệt hại; #7 Bubble scatter |
+Bốn dashboard nối nhau như một câu chuyện hoàn chỉnh: **Bức tranh chung $\to$ Ở đâu $\to$ Cháy rừng cụ thể $\to$ Vì sao và hệ quả**.
 
-**Bố cục mỗi dashboard**: Dải tiêu đề (tên + câu hỏi chính) $\to$ 2–3 KPI card $\to$ 3 biểu đồ (1 biểu đồ lớn + 2 biểu đồ nhỏ, hoặc 3 cột) $\to$ Hộp "Insight" 1–2 câu $\to$ Chuyển sang dashboard kế tiếp.
-
----
-
-### KỂ CHUYỆN BẰNG DỮ LIỆU (giữ đơn giản)
-- Mỗi dashboard có:
-  1. Tiêu đề dạng câu hỏi định hướng phân tích.
-  2. Hộp "Insight" 1–2 câu nêu phát hiện chính yếu.
-  3. Câu dẫn kết nối mạch tư duy sang dashboard kế tiếp. Dashboard cuối có thêm đoạn "Kết luận & Hạn chế dữ liệu" ngắn gọn.
-- **Mọi con số trong Insight phải được TÍNH TỪ DỮ LIỆU THẬT** (tính bằng JavaScript từ `events.json` hoặc kiểm chứng đối chiếu bằng SQL), tuyệt đối không viết tay số liệu theo cảm tính, và phải tự động cập nhật theo bộ lọc nếu có thể.
-- Tối đa 1 chú thích / annotation nổi bật trên mỗi dashboard (ví dụ đánh dấu năm đỉnh điểm thiệt hại). Không làm hoạt ảnh rườm rà, không làm chế độ trình chiếu.
+| Dashboard | Câu hỏi chính | Biểu đồ trong dashboard | Mục tiêu phân tích |
+|---|---|---|---|
+| **D1 – Bức tranh 20 năm** (Tổng quát) | Thảm họa thiên nhiên có xảy ra nhiều hơn và thiệt hại lớn hơn qua các năm không? | #1 Combo số vụ + thiệt hại<br>#2 Stacked area theo loại thảm họa<br>#5 Diverging bar chênh lệch vs trung bình | Nhìn nhận xu hướng vĩ mô toàn cầu trong 2 thập kỷ qua. |
+| **D2 – Ở đâu chịu thiệt hại?** (Không gian) | Quốc gia và khu vực nào chịu ảnh hưởng nặng nhất? | #3 Choropleth map thế giới<br>#6 Treemap châu lục $\to$ quốc gia<br>#9 Combo Pareto top 10 tử vong | Phân tích bất bình đẳng địa lý và tập trung rủi ro (Nguyên lý 80/20). |
+| **D3 – Cháy rừng: Khi nào & lớn cỡ nào?** (Chi tiết cháy rừng) | Cháy rừng tập trung vào mùa nào, quy mô ra sao, vụ lớn nằm ở đâu? | #4 Heatmap tháng $\times$ năm<br>#8 Combo histogram + mật độ<br>#12 Bản đồ điểm vụ cháy lớn | Đi sâu vào hình thái mùa vụ và các siêu đám cháy (Mega-fires). |
+| **D4 – Vì sao & Hệ quả** (Nguyên nhân & Tác động) | Nguyên nhân chính là gì và quy mô liên hệ thế nào với thiệt hại? | #10 Sunburst/Donut nguyên nhân<br>#11 Sankey luồng chuyển giao<br>#7 Bubble scatter diện tích vs thiệt hại | Phân tích căn nguyên (Con người vs Tự nhiên) và bài toán tương quan thiệt hại. |
 
 ---
 
-### PHÂN CHIA 12 BIỂU ĐỒ (chia đều 4/4/4; MỖI BIỂU ĐỒ CHỈ DO 1 NGƯỜI THỰC HIỆN; mỗi người có 1 biểu đồ kết hợp)
+## 2. ĐẶC TẢ TABLEAU STORY (Storytelling với 4 Story Points)
 
-| # | Biểu đồ | Dashboard | Kiểu dữ liệu | Bảng màu | Người phụ trách |
-|---|---------|-----------|--------------|----------|-----------------|
-| 1 | **Combo** cột số vụ + đường thiệt hại USD theo năm (trục kép) | D1 | thời gian + 2 số | categorical (2 màu) | **TV1** |
-| 2 | Stacked area tần suất theo loại thảm họa theo năm | D1 | thời gian × phân loại | categorical | **TV1** |
-| 3 | Choropleth thế giới: thiệt hại/số vụ theo quốc gia | D2 | không gian + số | sequential | **TV1** |
-| 4 | Heatmap tháng × năm số vụ cháy rừng | D3 | chu kỳ × năm × số | sequential | **TV1** |
-| 5 | Diverging bar chênh lệch số vụ so với trung bình 20 năm | D1 | độ lệch × thời gian | diverging (tâm = 0) | **TV2** |
-| 6 | Treemap châu lục → quốc gia theo thiệt hại | D2 | phân cấp × số | categorical cấp 1 | **TV2** |
-| 7 | Bubble scatter diện tích cháy vs thiệt hại USD vs người ảnh hưởng | D4 | 3 số liên tục (log-log) | categorical theo châu lục | **TV2** |
-| 8 | **Combo** histogram diện tích cháy + đường phân vị lũy kế | D3 | phân phối 1 số | sequential | **TV2** |
-| 9 | **Combo Pareto** cột số người chết top 10 quốc gia + đường % lũy kế | D2 | xếp hạng × lũy kế | sequential + nhấn | **TV3** |
-| 10 | Sunburst/donut 2 tầng nguyên nhân tự nhiên / nhân tạo | D4 | phân cấp | categorical | **TV3** |
-| 11 | Sankey nguyên nhân → loại thảm họa → mức thiệt hại | D4 | luồng đa chiều | categorical | **TV3** |
-| 12 | Bản đồ điểm các vụ cháy lớn (kích thước = diện tích, màu = thiệt hại) | D3 | tọa độ + 2 số | sequential | **TV3** |
+Tableau Story là tầng trình bày cao nhất, kết nối các Dashboard thành một bài thuyết trình trực quan sống động:
+
+```
+[Story Point 1: Xu Hướng 20 Năm] 
+       ↓
+[Story Point 2: Phân Bố Không Gian] 
+       ↓
+[Story Point 3: Trọng Tâm Cháy Rừng] 
+       ↓
+[Story Point 4: Căn Nguyên & Tác Động]
+```
+
+### 📍 Story Point 1: "Thảm họa 20 năm: Tần suất và Thiệt hại có đang gia tăng?"
+- **Nội dung nhúng**: Dashboard **D1 – Bức tranh 20 năm**.
+- **Tiêu đề thanh dẫn**: `1. Bức tranh 20 năm`
+- **Thông điệp chính (Key Takeaway)**: Số lượng các thảm họa và tổn thất kinh tế gia tăng rõ rệt từ sau năm 2017, với đỉnh điểm kỷ lục năm 2020.
+- **Chú thích nổi bật (Annotation)**: Gắn nhãn mũi tên tại cột năm 2020 trên biểu đồ #1 và #5: *"Năm 2020 đạt đỉnh thiệt hại vượt 45% mức trung bình 20 năm do tác động cộng hưởng của cháy rừng và bão nhiệt đới."*
+
+### 📍 Story Point 2: "Điểm nóng toàn cầu: Châu lục & Quốc gia nào tổn thất nặng nề nhất?"
+- **Nội dung nhúng**: Dashboard **D2 – Ở đâu chịu thiệt hại?**.
+- **Tiêu đề thanh dẫn**: `2. Điểm nóng toàn cầu`
+- **Thông điệp chính (Key Takeaway)**: Thiệt hại tài chính và sinh mạng phân bổ bất đối xứng nghiêm trọng theo nguyên lý 80/20.
+- **Chú thích nổi bật**: Gắn đường tham chiếu 80% (Reference Line) trên Pareto chart #9 và nhãn nổi bật các quốc gia Châu Á - Châu Mỹ trên Choropleth #3.
+
+### 📍 Story Point 3: "Trọng tâm Cháy rừng: Chu kỳ mùa vụ và sự trỗi dậy của siêu đám cháy"
+- **Nội dung nhúng**: Dashboard **D3 – Cháy rừng: Khi nào & Lớn cỡ nào?**.
+- **Tiêu đề thanh dẫn**: `3. Mùa vụ & Siêu đám cháy`
+- **Thông điệp chính (Key Takeaway)**: Cháy rừng bùng phát mạnh mẽ vào các tháng mùa hè - đầu thu (tháng 6–9). Mặc dù các vụ cháy $\ge 10.000$ ha chiếm tỷ lệ nhỏ (< 5%), chúng gây ra hơn 70% tổng diện tích rừng bị tàn phá.
+- **Chú thích nổi bật**: Đóng khung vùng nhiệt cao độ trên Heatmap #4 và đánh dấu cụm điểm cháy lớn trên Symbol Map #12.
+
+### 📍 Story Point 4: "Căn nguyên & Hệ quả: Con người hay Tự nhiên?"
+- **Nội dung nhúng**: Dashboard **D4 – Vì sao & Hệ quả**.
+- **Tiêu đề thanh dẫn**: `4. Nguyên nhân & Tác động`
+- **Thông điệp chính (Key Takeaway)**: Tác động của con người (bất cẩn, đốt nương rẫy, phá hoại) chiếm tỷ trọng số vụ áp đảo, trong khi sét đánh tự nhiên thường gây ra các vụ cháy ở vùng sâu khó tiếp cận; diện tích cháy và thiệt hại kinh tế tuân theo phân phối hàm mũ (Power law).
+- **Chú thích nổi bật & Đoạn kết luận**: Tóm tắt 3 khuyến nghị hành động cho chính sách phòng chống thiên tai và giới hạn của nguồn dữ liệu mở.
 
 ---
 
-### TƯƠNG TÁC (giữ đơn giản, không làm quá)
-- **Mọi biểu đồ**: Tooltip tiếng Việt rõ ràng, có đơn vị đo chuẩn; bấm legend để ẩn/hiện chuỗi dữ liệu tương ứng.
-- **Bộ lọc chung trên thanh điều khiển**:
-  - Khoảng năm (slider hoặc 2 ô chọn năm bắt đầu - kết thúc).
-  - Loại thảm họa (dropdown).
-  - Khi người dùng đổi bộ lọc, cả 3 biểu đồ trong dashboard hiện tại tự động cập nhật và vẽ lại mượt mà.
-- **Phạm vi kiểm soát**: KHÔNG CẦN cross-filtering phức tạp giữa các biểu đồ, KHÔNG CẦN brush-and-link nếu chưa thạo, KHÔNG CẦN chế độ tối (dark mode), KHÔNG CẦN xuất PDF. Tập trung làm 12 biểu đồ đúng chuẩn dữ liệu, đẹp mắt, chạy mượt mà.
+## 3. PHÂN CHIA 12 BIỂU ĐỒ (TABLEAU WORKSHEETS)
+
+| # | Tên Sheet | Dashboard | Kiểu Dữ Liệu | Bảng Màu Tableau | Người Phụ Trách |
+|---|---|---|---|---|---|
+| **1** | `Sheet_01_Combo_Trend` | D1 | Thời gian + 2 Số liên tục (Dual Axis) | `Tableau 10` (Xanh dương & Cam đỏ) | **TV1** |
+| **2** | `Sheet_02_Stacked_Area` | D1 | Thời gian $\times$ Phân loại | `Color Blind` (Okabe-Ito chuẩn) | **TV1** |
+| **3** | `Sheet_03_Choropleth_Map` | D2 | Không gian địa lý $\times$ Số | `Orange-Red` (Sequential) | **TV1** |
+| **4** | `Sheet_04_Heatmap_Season` | D3 | Chu kỳ (Tháng) $\times$ Năm $\times$ Số | `YlOrRd` (Sequential nhiệt) | **TV1** |
+| **5** | `Sheet_05_Diverging_Bar` | D1 | Độ lệch số học $\times$ Thời gian | `Red-Blue Diverging` (Tâm = 0) | **TV2** |
+| **6** | `Sheet_06_Treemap_Damage` | D2 | Dữ liệu phân cấp (Châu lục $\to$ Nước) $\times$ Số | Phân màu theo Châu lục | **TV2** |
+| **7** | `Sheet_07_Bubble_Scatter` | D4 | 3 Số liên tục (Trục Log-Log) $\times$ Phân loại | Categorical theo Châu lục | **TV2** |
+| **8** | `Sheet_08_Combo_Histogram` | D3 | Phân phối biến số $\times$ Lũy kế | Đơn sắc Cam đất + Đường xanh | **TV2** |
+| **9** | `Sheet_09_Combo_Pareto` | D2 | Xếp hạng Ordinal $\times$ Tích lũy 80/20 | Đỏ mận + Đường Cam nhấn | **TV3** |
+| **10** | `Sheet_10_Donut_Cause` | D4 | Phân cấp nguyên nhân 2 tầng | Xanh (Tự nhiên) / Cam đỏ (Con người) | **TV3** |
+| **11** | `Sheet_11_Sankey_Flow` | D4 | Luồng quan hệ đa tầng | Gradient theo loại thảm họa | **TV3** |
+| **12** | `Sheet_12_Proportional_Map` | D3 | Tọa độ (Kinh/Vĩ) + 2 Biến số (Size, Color) | Kích thước vòng tròn + Màu đỏ cam | **TV3** |
 
 ---
 
-### QUY TRÌNH 4 BƯỚC CHO MỖI THÀNH VIÊN KHI LÀM BIỂU ĐỒ
-1. **Viết query SQL** trích đúng dữ liệu cần cho biểu đồ của mình, lưu vào `sql/queries_for_charts.sql`.
-2. **Tạo file JS** `dashboard/js/charts/chart-XX.js` export một hàm `renderChartXX(containerId, data, filters)` dùng ECharts.
-3. **Thêm tương tác tối thiểu**: Tooltip có định dạng tiền tệ / số lượng / đơn vị rõ ràng + click bật/tắt legend.
-4. **Ghi vào `CHART_SPEC.md`**: Câu hỏi phân tích, kiểu dữ liệu, vì sao chọn dạng biểu đồ này, vì sao chọn bảng màu này, và 1 câu insight rút ra từ số liệu thật.
+## 4. CHI TIẾT KỸ THUẬT KÉO THẢ TỪNG SHEET TRONG TABLEAU
 
----
-
-## Chi Tiết Kỹ Thuật Từng Biểu Đồ
-
-### Biểu Đồ 1: Tần suất & Tổng Thiệt hại theo năm (2006–2025)
-- **Thuộc Dashboard**: D1 – Bức tranh 20 năm
+### Sheet 01: Tần Suất & Tổng Thiệt Hại Theo Năm (Dual-Axis Combo)
 - **Người phụ trách**: Thành viên 1
-- **File mã nguồn**: `dashboard/js/charts/chart-01.js`
-- **Câu hỏi phân tích**: Thảm họa thiên nhiên có xảy ra nhiều hơn và thiệt hại lớn hơn qua các năm không? Xu hướng số lượng các sự kiện thảm họa và quy mô thiệt hại kinh tế biến thiên như thế nào?
-- **Nguồn dữ liệu & Truy vấn gợi ý**: `fact_disaster_event` JOIN `dim_date`.
-  ```sql
-  SELECT d.year, COUNT(f.event_id) AS event_count, SUM(f.damage_usd) / 1e9 AS total_damage_bil_usd
-  FROM fact_disaster_event f JOIN dim_date d ON f.date_id = d.date_id
-  GROUP BY d.year ORDER BY d.year;
-  ```
-- **Kiểu dữ liệu**: Thời gian rời rạc (Năm) + 2 đại lượng định lượng có đơn vị đo khác nhau (Số vụ vs Tỷ USD).
-- **Lý do chọn biểu đồ**: Dạng biểu đồ kết hợp (**Combo** Bar + Line) trục kép là giải pháp trực quan kinh điển và tối ưu nhất để đặt hai thước đo khác đơn vị lên cùng một không gian thời gian.
-- **Lý do chọn màu**: Hai màu tương phản cao (Cột xanh `#4A90E2` và Đường cam đỏ `#D55E00`) giúp thị giác phân biệt tức thì hai trục đo.
-- **Tương tác**: Hover tooltip hiển thị song song hai chỉ số; bấm legend ẩn/hiện cột hoặc đường; phản hồi bộ lọc năm.
+- **Columns**: `YEAR([start_date])` (Discrete / Dimension).
+- **Rows**: 
+  - Trục 1: `CNT([event_id])` $\to$ Marks: **Bar** (Cột màu xanh `#4A90E2`).
+  - Trục 2: `SUM([Damage Bil USD])` $\to$ Marks: **Line** (Đường màu cam `#D55E00`).
+- **Thao tác Dual Axis**: Chuột phải vào trục thứ 2 $\to$ chọn **Dual Axis** $\to$ bỏ đồng bộ trục (hoặc giữ 2 thang đo độc lập vì đơn vị khác nhau: Số vụ vs Tỷ USD).
+- **Tooltip**: Hiển thị rõ số vụ và số tiền thiệt hại quy đổi.
 
 ---
 
-### Biểu Đồ 2: Diễn Biến Cơ Cấu Thảm Họa Theo Thời Gian
-- **Thuộc Dashboard**: D1 – Bức tranh 20 năm
+### Sheet 02: Diễn Biến Cơ Cấu Thảm Họa Theo Thời Gian (Stacked Area)
 - **Người phụ trách**: Thành viên 1
-- **File mã nguồn**: `dashboard/js/charts/chart-02.js`
-- **Câu hỏi phân tích**: Tỷ trọng và số lượng của thảm họa Cháy rừng (Wildfire) so với Lũ lụt, Bão, Hạn hán thay đổi như thế nào trong 20 năm qua?
-- **Nguồn dữ liệu & Truy vấn gợi ý**: `fact_disaster_event`, `dim_date`, `dim_disaster_type`.
-- **Kiểu dữ liệu**: Chuỗi thời gian liên tục $\times$ Biến phân loại (Categorical).
-- **Lý do chọn biểu đồ**: Stacked Area Chart trực quan hóa đồng thời sự biến thiên của tổng thể lẫn xu hướng thay đổi thành phần đóng góp của từng loại thảm họa.
-- **Lý do chọn màu**: Áp dụng bảng màu Okabe-Ito chuẩn cho `disaster_type`, Wildfire luôn giữ màu `#D55E00`.
-- **Tương tác**: Bật/tắt từng loại thảm họa trên Legend; tooltip hiển thị số vụ và tỷ lệ phần trăm theo năm.
+- **Columns**: `YEAR([start_date])` (Continuous / Date).
+- **Rows**: `CNT([event_id])`.
+- **Marks Card**: Chọn kiểu **Area**.
+- **Color**: Kéo trường `[disaster_type]` vào **Color**.
+- **Sắp xếp**: Đặt `Wildfire` ở dưới cùng để theo dõi rõ nét nhất.
 
 ---
 
-### Biểu Đồ 3: Bản Đồ Thiệt Hại / Tần Suất Toàn Cầu (Choropleth Map)
-- **Thuộc Dashboard**: D2 – Ở đâu chịu thiệt hại?
+### Sheet 03: Bản Đồ Thiệt Hại & Số Vụ Toàn Cầu (Choropleth Map)
 - **Người phụ trách**: Thành viên 1
-- **File mã nguồn**: `dashboard/js/charts/chart-03.js`
-- **Câu hỏi phân tích**: Quốc gia và khu vực nào trên thế giới chịu ảnh hưởng nặng nề nhất về tần suất và tổng thiệt hại tài chính?
-- **Nguồn dữ liệu & Truy vấn gợi ý**: `fact_disaster_event` JOIN `dim_location`.
-- **Kiểu dữ liệu**: Không gian địa lý (GeoJSON polygons theo ISO3) $\times$ Đại lượng số.
-- **Lý do chọn biểu đồ**: Choropleth là phương tiện chuẩn mực để truyền tải bức tranh phân bố vĩ mô toàn cầu.
-- **Lý do chọn màu**: Dải màu tuần tự Sequential (OrRd: `#FFF5EB` $\to$ `#8C2D04`), phân vị theo Quantile để tránh bão hòa ở các nước có số liệu quá cao.
-- **Tương tác**: Tooltip chi tiết tên quốc gia, số vụ và tổng thiệt hại; VisualMap slider điều khiển ngưỡng giá trị.
+- **Columns**: `[Longitude]` (Generated).
+- **Rows**: `[Latitude]` (Generated).
+- **Marks Card**: Chọn kiểu **Map**.
+- **Detail**: Kéo `[iso3]` hoặc `[country_name]` vào **Detail**.
+- **Color**: Kéo `SUM([Damage Bil USD])` vào **Color** $\to$ Chọn dải màu `Orange-Red`.
+- **Tooltip**: Tên quốc gia, số vụ thảm họa, tổng thiệt hại tài chính.
 
 ---
 
-### Biểu Đồ 4: Ma Trận Mùa Vụ Cháy Rừng (Tháng $\times$ Năm)
-- **Thuộc Dashboard**: D3 – Cháy rừng: khi nào và lớn cỡ nào?
+### Sheet 04: Ma Trận Chu Kỳ Mùa Vụ Cháy Rừng (Heatmap Tháng $\times$ Năm)
 - **Người phụ trách**: Thành viên 1
-- **File mã nguồn**: `dashboard/js/charts/chart-04.js`
-- **Câu hỏi phân tích**: Cháy rừng tập trung vào các tháng nào trong năm? Mùa cháy có xu hướng kéo dài hơn hoặc dịch chuyển sang các tháng bất thường trong những năm gần đây không?
-- **Nguồn dữ liệu & Truy vấn gợi ý**: `fact_disaster_event`, `dim_date`, `dim_disaster_type` WHERE `type_name = 'Wildfire'`.
-- **Kiểu dữ liệu**: Chu kỳ thời gian $\times$ Năm $\times$ Số vụ cháy.
-- **Lý do chọn biểu đồ**: Heatmap 2D trực quan hóa mật độ tập trung cực kỳ hiệu quả cho dữ liệu chu kỳ thời gian.
-- **Lý do chọn màu**: Dải Sequential YlOrRd phản ánh đúng ngữ nghĩa "nhiệt độ/cháy".
-- **Tương tác**: Tooltip chi tiết tháng, năm và số vụ cháy; phản hồi bộ lọc loại thảm họa.
+- **Bộ lọc (Filters)**: `[disaster_type] = 'Wildfire'`.
+- **Columns**: `MONTH([start_date])` (Discrete 1..12).
+- **Rows**: `YEAR([start_date])` (Discrete 2006..2025).
+- **Marks Card**: Chọn kiểu **Square**.
+- **Color**: Kéo `CNT([event_id])` vào **Color** $\to$ Chọn dải màu `YlOrRd`.
 
 ---
 
-### Biểu Đồ 5: Biến Động Số Vụ Cháy So Với Mức Chuẩn Trung Bình 20 Năm
-- **Thuộc Dashboard**: D1 – Bức tranh 20 năm
+### Sheet 05: Biến Động Số Vụ So Với Trung Bình 20 Năm (Diverging Bar)
 - **Người phụ trách**: Thành viên 2
-- **File mã nguồn**: `dashboard/js/charts/chart-05.js`
-- **Câu hỏi phân tích**: Những năm nào số vụ thiên tai/cháy rừng vượt ngưỡng trung bình lịch sử (năm khốc liệt), và những năm nào dưới mức chuẩn?
-- **Nguồn dữ liệu & Truy vấn gợi ý**: `fact_disaster_event`, `dim_date`, tính toán độ lệch: $\Delta_y = N_y - \bar{N}_{20\text{yr}}$.
-- **Kiểu dữ liệu**: Độ lệch số học mang dấu (Âm/Dương) so với giá trị tham chiếu 0.
-- **Lý do chọn biểu đồ**: Diverging Bar Chart là chuẩn mực tối ưu cho việc quan sát giá trị thặng dư / thiếu hụt so với chuẩn (Baseline).
-- **Lý do chọn màu**: Bảng màu phân kỳ Diverging (Đỏ: vượt mức trung bình, Xanh: thấp hơn trung bình, Trắng/Xám: điểm cân bằng 0).
-- **Tương tác**: Hover hiển thị số vụ thực tế, mức trung bình 20 năm và độ lệch tuyệt đối / %.
+- **Columns**: `[Diff from 20Yr Avg]` (Calculated Field CF7).
+- **Rows**: `YEAR([start_date])` (Discrete).
+- **Marks Card**: Chọn kiểu **Bar**.
+- **Color**: Kéo `[Divergence Flag]` (Calculated Field CF8) vào **Color** (Vượt trung bình: Đỏ, Dưới trung bình: Xanh lam).
+- **Reference Line**: Thêm đường tham chiếu cố định tại `Constant = 0`.
 
 ---
 
-### Biểu Đồ 6: Cơ Cấu Thiệt Hại Kinh Tế Phân Cấp Theo Châu Lục $\to$ Quốc Gia
-- **Thuộc Dashboard**: D2 – Ở đâu chịu thiệt hại?
+### Sheet 06: Cơ Cấu Thiệt Hại Phân Cấp: Châu Lục $\to$ Quốc Gia (Treemap)
 - **Người phụ trách**: Thành viên 2
-- **File mã nguồn**: `dashboard/js/charts/chart-06.js`
-- **Câu hỏi phân tích**: Thiệt hại tài chính phân bổ thế nào giữa các châu lục, và trong từng châu lục quốc gia nào chiếm tỷ trọng thiệt hại chi phối?
-- **Nguồn dữ liệu & Truy vấn gợi ý**: `fact_disaster_event` JOIN `dim_location`. Cấu trúc cây 2 cấp: Continent $\to$ Country.
-- **Kiểu dữ liệu**: Dữ liệu phân cấp (Hierarchical Tree) $\times$ Biến định lượng (Tổng thiệt hại USD).
-- **Lý do chọn biểu đồ**: Treemap tối ưu hóa diện tích hiển thị tỷ trọng phân cấp mà không bị rối như Pie chart nhiều phần tử.
-- **Lý do chọn màu**: Phân màu theo Châu lục (Categorical), độ đậm nhạt trong từng khối thể hiện quy mô giá trị.
-- **Tương tác**: Tooltip hiển thị tỷ lệ % đóng góp và số tiền thiệt hại quy đổi.
+- **Marks Card**: Chọn kiểu **Square** (Treemap trong Show Me).
+- **Color**: Kéo `[continent]` vào **Color**.
+- **Detail**: Kéo `[country_name]` vào **Detail**.
+- **Size**: Kéo `SUM([damage_usd])` vào **Size**.
+- **Label**: Hiển thị tên nước và % tỷ trọng.
 
 ---
 
-### Biểu Đồ 7: Tương Quan Diện Tích Cháy vs Thiệt Hại Kinh Tế vs Người Ảnh Hưởng
-- **Thuộc Dashboard**: D4 – Vì sao và hệ quả
+### Sheet 07: Tương Quan Diện Tích Cháy vs Thiệt Hại (Bubble Scatter Log-Log)
 - **Người phụ trách**: Thành viên 2
-- **File mã nguồn**: `dashboard/js/charts/chart-07.js`
-- **Câu hỏi phân tích**: Quy mô đám cháy liên hệ thế nào với thiệt hại? Có phải diện tích cháy rừng càng lớn thì thiệt hại kinh tế và số người ảnh hưởng càng cao không?
-- **Nguồn dữ liệu & Truy vấn gợi ý**: `fact_wildfire_detail` JOIN `fact_disaster_event` JOIN `dim_location`.
-- **Kiểu dữ liệu**: 3 biến số liên tục (Trục X: Diện tích ha; Trục Y: Thiệt hại USD; Kích thước bóng: Số người ảnh hưởng) $\times$ 1 biến danh mục (Màu bóng: Châu lục).
-- **Lý do chọn biểu đồ**: Bubble Scatter trên hệ tọa độ Log-Log ($\log_{10} X, \log_{10} Y$) giải quyết triệt để hiện tượng lệch phải và co cụm điểm của dữ liệu thảm họa.
-- **Lý do chọn màu**: Categorical theo Châu lục để so sánh hình thái ảnh hưởng theo địa lý.
-- **Tương tác**: Tooltip chi tiết tên vụ cháy, tọa độ, diện tích và thiệt hại.
+- **Filters**: `[disaster_type] = 'Wildfire'` AND `[burned_area_ha] > 0` AND `[damage_usd] > 0`.
+- **Columns**: `[Log10 Burned Area]` (hoặc chọn trục X $\to$ Edit Axis $\to$ chọn **Logarithmic**).
+- **Rows**: `[Log10 Damage USD]` (hoặc chọn trục Y $\to$ chọn **Logarithmic**).
+- **Marks Card**: Chọn kiểu **Circle**.
+- **Size**: Kéo `SUM([affected])` hoặc `SUM([deaths])` vào **Size**.
+- **Color**: Kéo `[continent]` vào **Color**.
 
 ---
 
-### Biểu Đồ 8: Phân Phối Quy Mô Diện Tích Cháy (Combo Histogram + Lũy Kế)
-- **Thuộc Dashboard**: D3 – Cháy rừng: khi nào và lớn cỡ nào?
+### Sheet 08: Phân Phối Quy Mô Diện Tích Cháy (Combo Histogram + Pareto Line)
 - **Người phụ trách**: Thành viên 2
-- **File mã nguồn**: `dashboard/js/charts/chart-08.js`
-- **Câu hỏi phân tích**: Các vụ cháy rừng tập trung ở quy mô diện tích nào? Tần suất xuất hiện của các siêu đám cháy (Mega-fires) hiếm gặp ra sao?
-- **Nguồn dữ liệu & Truy vấn gợi ý**: `fact_wildfire_detail` (`burned_area_ha` chia theo các bin logarit).
-- **Kiểu dữ liệu**: Phân phối tần suất 1 biến số liên tục.
-- **Lý do chọn biểu đồ**: **Combo** Histogram (Cột tần số) kết hợp Đường phân vị lũy kế giúp người xem nắm bắt cả số lượng tuyệt đối lẫn tỷ lệ phần trăm tích lũy.
-- **Lý do chọn màu**: Sequential đơn sắc cam đất cho cột và đường nét liền xanh sẫm cho đường phân vị.
-- **Tương tác**: Tooltip hiển thị khoảng khoảng bin (ha) và số lượng vụ cháy tương ứng.
+- **Columns**: `[Burned Area Bin]` (Calculated Field CF11).
+- **Rows**: 
+  - Trục 1: `CNT([event_id])` (Marks: **Bar**).
+  - Trục 2: `RUNNING_SUM(CNT([event_id])) / TOTAL(CNT([event_id]))` (Marks: **Line**, Dual Axis).
+- **Color**: Cột màu cam đất, đường màu xanh đậm.
 
 ---
 
-### Biểu Đồ 9: Xếp Hạng Thiệt Hại Sinh Mạng Quốc Gia (Combo Pareto Chart)
-- **Thuộc Dashboard**: D2 – Ở đâu chịu thiệt hại?
+### Sheet 09: Top 10 Quốc Gia Tử Vong & Tỷ Lệ Lũy Kế (Combo Pareto Chart)
 - **Người phụ trách**: Thành viên 3
-- **File mã nguồn**: `dashboard/js/charts/chart-09.js`
-- **Câu hỏi phân tích**: Top 10 quốc gia nào chiếm phần lớn tổng số ca tử vong do thảm họa thiên nhiên? Nguyên lý 80/20 có thể hiện rõ không?
-- **Nguồn dữ liệu & Truy vấn gợi ý**: `fact_disaster_event` JOIN `dim_location`, sắp xếp giảm dần theo tổng `deaths`, tính đường % lũy kế.
-- **Kiểu dữ liệu**: Dữ liệu xếp hạng thứ bậc (Ordinal/Ranking) $\times$ Số lượng tuyệt đối + Tỷ lệ % tích lũy.
-- **Lý do chọn biểu đồ**: **Combo Pareto** (Cột số người chết kết hợp Đường tỷ lệ phần trăm lũy kế) làm nổi bật nhóm thiểu số gây ra hậu quả chiếm đa số.
-- **Lý do chọn màu**: Cột tông màu đỏ tím cảnh báo, đường lũy kế màu vàng cam nổi bật kèm đường mốc tham chiếu 80%.
-- **Tương tác**: Hover xem chi tiết số ca tử vong và tỷ lệ tích lũy của từng quốc gia.
+- **Filters**: Lọc Top 10 `[country_name]` theo `SUM([deaths])`.
+- **Columns**: `[country_name]` (Sắp xếp giảm dần theo `SUM([deaths])`).
+- **Rows**:
+  - Trục 1: `SUM([deaths])` (Marks: **Bar**).
+  - Trục 2: `[Cumulative Death %]` (Calculated Field CF12, Marks: **Line**, Dual Axis).
+- **Reference Line**: Kéo đường mốc 80% (0.8) trên trục thứ hai để minh họa nguyên lý 80/20.
 
 ---
 
-### Biểu Đồ 10: Phân Tích Cơ Cấu Nguyên Nhân Cháy Rừng (Sunburst / Multi-level Donut)
-- **Thuộc Dashboard**: D4 – Vì sao và hệ quả
+### Sheet 10: Phân Tích Cơ Cấu Nguyên Nhân Cháy Rừng (Sunburst / Multi-level Donut)
 - **Người phụ trách**: Thành viên 3
-- **File mã nguồn**: `dashboard/js/charts/chart-10.js`
-- **Câu hỏi phân tích**: Nguyên nhân chính gây cháy rừng là gì? Đâu là nguồn gốc chính (Yếu tố tự nhiên như sấm sét vs Tác động của con người)? Tỷ lệ từng tác nhân cụ thể là bao nhiêu?
-- **Nguồn dữ liệu & Truy vấn gợi ý**: `fact_disaster_event` JOIN `dim_cause` (Cấp 1: Tự nhiên / Nhân tạo, Cấp 2: Nguyên nhân chi tiết).
-- **Kiểu dữ liệu**: Biến danh mục phân cấp 2 tầng (Hierarchical Categorical).
-- **Lý do chọn biểu đồ**: Sunburst / Donut 2 tầng thể hiện xuất sắc mối quan hệ cha–con từ nhóm nguyên nhân tổng quát đến từng tác nhân cụ thể theo góc tỏa tròn.
-- **Lý do chọn màu**: Bảng màu phân loại chuẩn (Xanh cho Tự nhiên, Cam đỏ cho Con người, Xám cho Chưa xác định).
-- **Tương tác**: Click vào một phân vùng để zoom-in; giữa tâm hiển thị thông số tổng hợp khi hover.
+- **Filters**: `[disaster_type] = 'Wildfire'`.
+- **Cách dựng**: Sử dụng kỹ thuật Donut chart 2 tầng (Pie marks lồng nhau qua Dual Axis của trục `MIN(1)`):
+  - Tầng trong: Nhóm nguyên nhân khái quát `[Cause Group High Level]` (Tự nhiên vs Tác động con người).
+  - Tầng ngoài: Từng tác nhân chi tiết `[cause_name]`.
+- **Color**: Tự nhiên $\to$ Xanh lá cây; Nhân tạo $\to$ Đỏ cam; Khác $\to$ Xám.
 
 ---
 
-### Biểu Đồ 11: Dòng Chuyển Giao Tác Động Thảm Họa (Sankey Diagram)
-- **Thuộc Dashboard**: D4 – Vì sao và hệ quả
+### Sheet 11: Luồng Chuyển Giao Tác Động Thảm Họa (Sankey / Flow Matrix)
 - **Người phụ trách**: Thành viên 3
-- **File mã nguồn**: `dashboard/js/charts/chart-11.js`
-- **Câu hỏi phân tích**: Mối liên hệ luồng di chuyển từ Nhóm nguyên nhân $\to$ Loại thảm họa $\to$ Mức độ thiệt hại diễn ra như thế nào?
-- **Nguồn dữ liệu & Truy vấn gợi ý**: `dim_cause` $\to$ `dim_disaster_type` $\to$ Phân nhóm mức độ thiệt hại (`damage_level`: Thấp, Trung bình, Nghiêm trọng, Thảm họa).
-- **Kiểu dữ liệu**: Dữ liệu mạng lưới đa tầng (Multi-stage Flow Graph) có trọng số luồng.
-- **Lý do chọn biểu đồ**: Sankey Diagram là công cụ trực quan hóa duy nhất thể hiện được sự phân luồng và hội tụ giữa nhiều biến phân loại qua từng giai đoạn tác động.
-- **Lý do chọn màu**: Màu các node tương ứng với loại thảm họa; màu đường dẫn (links) kế thừa độ dốc màu (gradient).
-- **Tương tác**: Hover vào luồng để làm sáng rực rỡ (highlight) toàn bộ đường đi từ đầu đến cuối.
+- **Nguồn $\to$ Trung gian $\to$ Đích**: `[Cause Group]` $\to$ `[disaster_type]` $\to$ `[Damage Severity Level]`.
+- **Thực hiện trong Tableau**: Có thể sử dụng bảng luồng phân nhánh (Multi-level Bar / Highlight Table) hoặc template Sankey với đường cong Sigmoid.
 
 ---
 
-### Biểu Đồ 12: Bản Đồ Điểm Các Đại Vụ Cháy Lớn (Proportional Symbol Map)
-- **Thuộc Dashboard**: D3 – Cháy rừng: khi nào và lớn cỡ nào?
+### Sheet 12: Bản Đồ Điểm Các Đại Vụ Cháy Lớn (Proportional Symbol Map)
 - **Người phụ trách**: Thành viên 3
-- **File mã nguồn**: `dashboard/js/charts/chart-12.js`
-- **Câu hỏi phân tích**: Các vụ cháy lớn nằm ở đâu trên bản đồ? Quy mô diện tích và thiệt hại phân bổ ra sao theo không gian tọa độ?
-- **Nguồn dữ liệu & Truy vấn gợi ý**: `fact_disaster_event` JOIN `fact_wildfire_detail` lấy `latitude`, `longitude`, `burned_area_ha`, `damage_usd`.
-- **Kiểu dữ liệu**: Tọa độ địa lý (Point / Coordinates) $\times$ 2 biến định lượng (Kích thước vòng tròn = Diện tích cháy; Màu vòng tròn = Mức độ thiệt hại).
-- **Lý do chọn biểu đồ**: Bản đồ điểm định lượng (Proportional Symbol Map) biểu diễn chính xác tọa độ thực tế của tâm đám cháy mà không bị giới hạn bởi ranh giới hành chính.
-- **Lý do chọn màu**: Dải màu tuần tự Sequential cảnh báo nhiệt độ cao (Đỏ cam), độ trong suốt để nhìn thấu các điểm chồng lấn.
-- **Tương tác**: Click vào điểm cháy để hiển thị popup thông tin chi tiết tên vụ cháy, tọa độ, diện tích và thiệt hại.
+- **Filters**: `[disaster_type] = 'Wildfire'`.
+- **Columns**: `[longitude]` (Continuous Measure / AVG).
+- **Rows**: `[latitude]` (Continuous Measure / AVG).
+- **Marks Card**: Chọn kiểu **Circle**.
+- **Size**: Kéo `[burned_area_ha]` vào **Size**.
+- **Color**: Kéo `[damage_usd]` vào **Color** (Dải màu cam đỏ, Opacity = 70% để nhìn thấu các điểm chồng lấp).
+- **Detail**: `[event_name]` hoặc `[event_id]`.
+- **Tooltip**: Tên vụ cháy, ngày bùng phát, diện tích (ha), thiệt hại (USD).
+
+---
+
+## 5. BÀN GIAO SẢN PHẨM TRỰC QUAN HÓA
+
+1. **File Workbook đóng gói**: Lưu tại `tableau/wildfire_disaster_analysis.twbx`.
+2. **Xuất bản trực tuyến**: Đăng tải lên tài khoản Tableau Public cá nhân của nhóm.
+3. **Nhúng vào Web**: Cập nhật đường link vào `README.md` và mã nhúng trong `dashboard/index.html`.
