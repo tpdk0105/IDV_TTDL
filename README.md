@@ -32,27 +32,25 @@ Dự án tập trung nghiên cứu, làm sạch, mô hình hóa và trực quan 
 
 > 📖 **Xem chi tiết bảng phân công và bộ quy tắc đặt tên file nghiêm ngặt tại**: [team/README.md](team/README.md)
 
-| Thành viên | Phụ trách chính | Nhánh Git | Phạm vi công việc | 4 Biểu đồ đảm nhiệm |
-|------------|-----------------|-----------|-------------------|----------------------|
-| **Thành viên 1** | Kỹ sư Dữ liệu (Data Engineer) | `member-1-data` | Thu thập dữ liệu $\ge 3$ nguồn, EDA, Làm sạch theo quy tắc & Học máy ($\ge 2$ mô hình), Báo cáo chất lượng | **#1, #2, #3, #4** (Tableau Sheets) |
-| **Thành viên 2** | Kỹ sư Mô hình Dữ liệu (Data Modeling) | `member-2-model` | Star Schema 3NF, DDL CSDL SQLite, Ràng buộc PK/FK/CHECK, Kiểm thử toàn vẹn tự động, Viết truy vấn SQL | **#5, #6, #7, #8** (Tableau Sheets) |
-| **Thành viên 3** | Kỹ sư Dashboard & Triển khai (DevOps) | `member-3-dashboard` | Thiết kế 4 Dashboards, Xây dựng Tableau Story (4 Story Points), Xuất bản Tableau Public, Nhúng Web, CI/CD | **#9, #10, #11, #12** (Tableau Sheets) |
+| Thành viên | Phụ trách chính | Nhánh Git | Phạm vi công việc | Biểu đồ đảm nhiệm |
+|---|---|---|---|---|
+| **Thành viên 1** | Kỹ sư Dữ liệu & Học máy (ML Engineer) | `member-1-data` | Thu thập $\ge 3$ nguồn, EDA với **3–5 biểu đồ tĩnh** (Matplotlib/Seaborn), Làm sạch dữ liệu, **Mô hình dự báo (Linear/Logistic Regression)**, Báo cáo thực nghiệm | **#1, #2** (2 Tableau Sheets) |
+| **Thành viên 2** | Kỹ sư Mô hình Dữ liệu (Data Modeling) | `member-2-model` | Star Schema 3NF, CSDL SQLite (PK, FK, CHECK), Kiểm thử toàn vẹn tự động (pytest), Tách bảng tự động, Viết truy vấn SQL | **#3, #4, #5, #6** (4 Tableau Sheets) |
+| **Thành viên 3** | Kỹ sư Dashboard & Triển khai (DevOps) | `member-3-dashboard` | Thiết kế 3 Dashboards, Xây dựng Tableau Story (3 Story Points), Xuất bản Tableau Public, Nhúng Web, **Video Demo & Video Backup tóm tắt**, Báo cáo IEEE ($\ge 40$ trang) | **#7, #8, #9, #10** (4 Tableau Sheets) |
 
 ---
 
-## 3. Cấu Trúc Trực Quan Hóa (4 Dashboards & Tableau Story)
+## 3. Cấu Trúc Trực Quan Hóa (3 Dashboards & Tableau Story 3 Points)
 
-### 3.1. Cấu trúc 4 Dashboards
-1. **D1 – Bức tranh 20 năm**: #1 Combo cột số vụ + đường thiệt hại; #2 Stacked area cơ cấu thảm họa; #5 Diverging bar chênh lệch vs trung bình.
-2. **D2 – Ở đâu chịu thiệt hại?**: #3 Choropleth map thế giới; #6 Treemap châu lục $\to$ quốc gia; #9 Combo Pareto top 10 tử vong 80/20.
-3. **D3 – Cháy rừng: Khi nào & lớn cỡ nào?**: #4 Heatmap tháng $\times$ năm; #8 Combo histogram diện tích cháy; #12 Bản đồ điểm vụ cháy lớn.
-4. **D4 – Vì sao & hệ quả**: #10 Donut nguyên nhân; #11 Sankey luồng chuyển giao; #7 Bubble scatter tương quan Log-Log.
+### 3.1. Cấu trúc 3 Dashboards
+1. **D1 – Bức tranh 20 năm**: #1 Combo cột số vụ + đường thiệt hại (TV1); #2 Stacked area cơ cấu thảm họa (TV1); #3 Diverging bar chênh lệch vs trung bình (TV2).
+2. **D2 – Điểm nóng & Phân cấp thiệt hại**: #4 Treemap châu lục $\to$ quốc gia (TV2); #7 Combo Pareto top 10 tử vong 80/20 (TV3); #9 Choropleth map thế giới (TV3).
+3. **D3 – Cháy rừng: Mùa vụ, Quy mô & Tác nhân**: #5 Bubble scatter tương quan Log-Log (TV2); #6 Combo histogram diện tích cháy (TV2); #8 Donut nguyên nhân (TV3); #10 Bản đồ điểm đại vụ cháy (TV3).
 
-### 3.2. Cấu trúc Tableau Story (4 Story Points)
+### 3.2. Cấu trúc Tableau Story (3 Story Points Trọng Tâm)
 - **Point 1**: *Bức tranh 20 năm: Tần suất & Thiệt hại* (Làm nổi bật đỉnh kỷ lục 2020 và xu hướng thảm họa gia tăng sau chu kỳ 2017).
-- **Point 2**: *Điểm nóng toàn cầu: Châu lục & Quốc gia tổn thất nặng* (Làm nổi bật nguyên lý 80/20 và mức độ tập trung thiệt hại).
-- **Point 3**: *Trọng tâm Cháy rừng: Mùa cao điểm & Siêu đám cháy* (Làm rõ chu kỳ khô hạn tháng 6–9 và các đám cháy $\ge 10.000$ ha).
-- **Point 4**: *Căn nguyên & Tác động: Tự nhiên vs Con người* (Phân tích tỷ trọng nhân tạo vs tự nhiên và đúc kết khuyến nghị).
+- **Point 2**: *Điểm nóng toàn cầu: Phân cấp tổn thất 80/20* (Làm nổi bật nguyên lý 80/20 và mức độ tập trung thiệt hại theo quốc gia).
+- **Point 3**: *Trọng tâm Cháy rừng: Quy mô, Căn nguyên & Dự báo* (Làm rõ các siêu đám cháy $\ge 10.000$ ha, căn nguyên con người và đường dự báo tương lai).
 
 ---
 

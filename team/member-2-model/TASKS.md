@@ -87,27 +87,27 @@
 
 ---
 
-## 4. Các Biểu Đồ Phụ Trách (#5, #6, #7, #8 trên Tableau)
+### 4. Các Biểu Đồ Phụ Trách (4 Worksheets: #3, #4, #5, #6 trên Tableau)
 
-### Worksheet #5: `Sheet_05_Diverging_Bar` (Biến động số vụ so với trung bình 20 năm)
+### Worksheet #3: `Sheet_03_Diverging_Bar` (Biến động số vụ so với trung bình 20 năm)
 - [ ] (a) Tạo Calculated Fields `[Diff from 20Yr Avg]` và `[Divergence Flag]` theo [tableau/CALCULATED_FIELDS.md](file:///c:/Users/ASUS/Documents/Tương tác dữ liệu/đồ án ck/IDV_TTDL/tableau/CALCULATED_FIELDS.md).
 - [ ] (b) Kéo `[Diff from 20Yr Avg]` vào Columns, `YEAR([start_date])` vào Rows; chọn Marks: Bar.
 - [ ] (c) Kéo `[Divergence Flag]` vào Color (Đỏ: Vượt trung bình, Xanh: Dưới trung bình); thêm Reference Line tại `Constant = 0`.
 - [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 1.
 
-### Worksheet #6: `Sheet_06_Treemap_Damage` (Cơ cấu thiệt hại phân cấp: Châu lục $\to$ Quốc gia)
+### Worksheet #4: `Sheet_04_Treemap_Damage` (Cơ cấu thiệt hại phân cấp: Châu lục $\to$ Quốc gia)
 - [ ] (a) Kéo `[continent]` vào Color, `[country_name]` vào Detail; kéo `SUM([damage_usd])` vào Size.
 - [ ] (b) Chọn Marks: Square (Treemap); hiển thị Label tên nước và số tiền thiệt hại.
 - [ ] (c) Định dạng Tooltip hiển thị tỷ trọng % đóng góp của từng quốc gia trong châu lục.
 - [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 2.
 
-### Worksheet #7: `Sheet_07_Bubble_Scatter` (Tương quan Diện tích cháy vs Thiệt hại trên trục Log-Log)
+### Worksheet #5: `Sheet_05_Bubble_Scatter` (Tương quan Diện tích cháy vs Thiệt hại trên trục Log-Log)
 - [ ] (a) Lọc `[disaster_type] = 'Wildfire'`; kéo `[Log10 Burned Area]` vào Columns, `[Log10 Damage USD]` vào Rows.
 - [ ] (b) Chọn Marks: Circle; kéo `SUM([affected])` vào Size, kéo `[continent]` vào Color.
 - [ ] (c) Thêm Trend Line (đường xu hướng) dạng hàm mũ/logarit để minh họa mối tương quan.
-- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 4.
+- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 3.
 
-### Worksheet #8: `Sheet_08_Combo_Histogram` (Phân phối quy mô diện tích cháy + Đường phân vị lũy kế)
+### Worksheet #6: `Sheet_06_Combo_Histogram` (Phân phối quy mô diện tích cháy + Đường phân vị lũy kế)
 - [ ] (a) Tạo trường phân vị `[Burned Area Bin]`; kéo `[Burned Area Bin]` vào Columns.
 - [ ] (b) Trục 1: `CNT([event_id])` (Marks: Bar); Trục 2: Đường % lũy kế `RUNNING_SUM(CNT([event_id])) / TOTAL(CNT([event_id]))` (Marks: Line, Dual Axis).
 - [ ] (c) Định dạng màu sắc cột cam đất, đường xanh đậm; hiển thị Tooltip số lượng vụ cháy từng khoảng.
@@ -125,7 +125,7 @@
   - `sql/schema.sql`, `sql/load.sql`, `sql/queries_for_charts.sql`.
   - `data/tables/*.csv` và file CSDL `data/tables/database.sqlite`.
   - `tests/test_pipeline.py`.
-  - 4 Worksheets Tableau (`Sheet_05` $\to$ `Sheet_08`) hoàn chỉnh.
+  - 4 Worksheets Tableau (`Sheet_03` $\to$ `Sheet_06`) hoàn chỉnh.
 
 ---
 
@@ -134,4 +134,4 @@
 2. File CSDL `data/tables/database.sqlite` được nạp thành công với `PRAGMA foreign_keys = ON;`.
 3. Script `src/07_validate.py` và `pytest tests/` vượt qua 100% các bài kiểm tra toàn vẹn và ràng buộc.
 4. Bảng fact đạt $\ge 5.000$ dòng.
-5. 4 Worksheets Tableau (#5–#8) hiển thị chuẩn xác, đúng màu sắc quy định và sẵn sàng ghép vào Dashboard D1, D2, D4.
+5. 4 Worksheets Tableau (#3–#6) hiển thị chuẩn xác, đúng màu sắc quy định và sẵn sàng ghép vào Dashboard D1, D2, D3.

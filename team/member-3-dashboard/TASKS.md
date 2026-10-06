@@ -9,13 +9,12 @@
 
 ## 1. Mục Tiêu Chính
 1. Cài đặt và thiết lập **Tableau Desktop / Tableau Public App**, kết nối nguồn dữ liệu sạch từ `data/clean/master_clean.csv`.
-2. Phụ trách thực hiện 4 Worksheets chuyên sâu của mình: **#9 (Pareto Top 10), #10 (Donut Nguyên nhân), #11 (Sankey/Flow Luồng), #12 (Symbol Map Điểm cháy lớn)**.
-3. Thiết kế **4 Dashboards** tương ứng với 4 câu hỏi lớn của đề tài:
-   - **D1: Bức tranh 20 năm** (ghép #1, #2, #5 + KPI Cards + Filter năm).
-   - **D2: Ở đâu chịu thiệt hại?** (ghép #3, #6, #9 + Filter châu lục).
-   - **D3: Cháy rừng: Khi nào & lớn cỡ nào?** (ghép #4, #8, #12 + Filter tháng).
-   - **D4: Vì sao & hệ quả** (ghép #10, #11, #7 + Filter nguyên nhân).
-4. Xây dựng **Tableau Story với ít nhất 3 Story Points** (chuẩn 4 Story Points dẫn dắt câu chuyện phân tích, có chú thích Annotation làm nổi bật phát hiện từ dữ liệu thật).
+2. Phụ trách thực hiện 4 Worksheets chuyên sâu của mình: **#7 (Pareto Top 10), #8 (Donut Nguyên nhân), #9 (Choropleth Map Thế giới), #10 (Symbol Map Điểm cháy lớn)**.
+3. Thiết kế **3 Dashboards** chuyên đề giải quyết trọn vẹn câu chuyện phân tích:
+   - **D1: Bức tranh 20 năm** (ghép #1, #2, #3 + KPI Cards + Filter năm).
+   - **D2: Điểm nóng & Phân cấp thiệt hại** (ghép #4, #7, #9 + Filter châu lục).
+   - **D3: Cháy rừng: Mùa vụ, Quy mô & Tác nhân** (ghép #5, #6, #8, #10 + Filter nguyên nhân & tháng).
+4. Xây dựng **Tableau Story với 3 Story Points** dẫn dắt câu chuyện phân tích logic theo đúng barem yêu cầu (ít nhất 3 Story Points), có chú thích Annotation làm nổi bật phát hiện từ dữ liệu thật.
 5. Đóng gói và lưu trữ tệp Workbook `tableau/wildfire_disaster_analysis.twbx` vào repo.
 6. Xuất bản Workbook lên **Tableau Public** và nhúng mã nhúng tương tác vào `dashboard/index.html`.
 7. Duy trì pipeline tự động hóa CI/CD `.github/workflows/deploy.yml` tự động xuất bản Dashboard lên **GitHub Pages**.
@@ -29,44 +28,41 @@
 |---|---|---|---|
 | Thiết lập môi trường & nhánh `member-3-dashboard` | Sẵn sàng | Tuần 1 | Giai đoạn 1 |
 | Cấu hình GitHub Actions CI/CD `deploy.yml` | Hoàn thành | Tuần 1 | Deploy GitHub Pages |
-| Worksheet #9: Combo Pareto Chart (Top 10 tử vong) | Chưa bắt đầu | *[Điền]* | Cột + Đường % lũy kế |
-| Worksheet #10: Donut / Sunburst nguyên nhân cháy | Chưa bắt đầu | *[Điền]* | Tự nhiên vs Nhân tạo |
-| Worksheet #11: Luồng quan hệ đa chiều | Chưa bắt đầu | *[Điền]* | Nguyên nhân $\to$ Loại $\to$ Thiệt hại |
-| Worksheet #12: Bản đồ điểm đại thảm họa cháy rừng | Chưa bắt đầu | *[Điền]* | Proportional Symbol Map |
-| Thiết kế 4 Dashboards (D1, D2, D3, D4) trên Tableau | Chưa bắt đầu | *[Điền]* | KPI cards + Bộ lọc |
-| Dựng Tableau Story với 4 Story Points | Chưa bắt đầu | *[Điền]* | Dẫn dắt cốt truyện + Annotation |
+| Worksheet #7: Combo Pareto Chart (Top 10 tử vong) | Chưa bắt đầu | *[Điền]* | Cột + Đường % lũy kế |
+| Worksheet #8: Donut / Sunburst nguyên nhân cháy | Chưa bắt đầu | *[Điền]* | Tự nhiên vs Nhân tạo |
+| Worksheet #9: Bản đồ phân vùng Choropleth toàn cầu | Chưa bắt đầu | *[Điền]* | Bản đồ Map bắt buộc |
+| Worksheet #10: Bản đồ điểm đại thảm họa cháy rừng | Chưa bắt đầu | *[Điền]* | Proportional Symbol Map |
+| Thiết kế 3 Dashboards (D1, D2, D3) trên Tableau | Chưa bắt đầu | *[Điền]* | KPI cards + Bộ lọc |
+| Dựng Tableau Story với 3 Story Points | Chưa bắt đầu | *[Điền]* | Dẫn dắt cốt truyện + Annotation |
 | Lưu file đóng gói `wildfire_disaster_analysis.twbx` | Chưa bắt đầu | *[Điền]* | Lưu vào `tableau/` |
 | Xuất bản Tableau Public & nhúng vào `dashboard/` | Chưa bắt đầu | *[Điền]* | Embed mã iframe / API v3 |
-| Hoàn thiện `README.md`, `REPORT_OUTLINE.md`, `DEMO_SCRIPT.md` | Chưa bắt đầu | *[Điền]* | Link demo + Hướng dẫn |
+| Quay Video Demo & Video Backup tóm tắt (Bắt buộc) | Chưa bắt đầu | *[Điền]* | Gắn link vào báo cáo & README |
+| Hoàn thiện `README.md`, `REPORT_OUTLINE.md`, `DEMO_SCRIPT.md` | Chưa bắt đầu | *[Điền]* | Báo cáo chuẩn IEEE $\ge 40$ trang |
 
 ---
 
 ## 3. Danh Sách Checklist Chi Tiết
 
-### A. Thiết Kế 4 Dashboards Trong Tableau
+### A. Thiết Kế 3 Dashboards Trong Tableau
 - [ ] **Dashboard D1 – Bức tranh 20 năm**:
-  - [ ] Kéo thả `Sheet_01_Combo_Trend`, `Sheet_02_Stacked_Area`, `Sheet_05_Diverging_Bar`.
+  - [ ] Kéo thả `Sheet_01_Combo_Trend`, `Sheet_02_Stacked_Area`, `Sheet_03_Diverging_Bar`.
   - [ ] Thêm 3 thẻ KPI: Tổng số sự kiện, Tổng thiệt hại USD, Tổng diện tích rừng cháy.
   - [ ] Thêm bộ lọc dải năm (Slider) áp dụng đồng thời cho cả 3 Sheet.
   - [ ] Thêm hộp văn bản Insight tóm tắt xu hướng 20 năm.
-- [ ] **Dashboard D2 – Ở đâu chịu thiệt hại?**:
-  - [ ] Kéo thả `Sheet_03_Choropleth_Map`, `Sheet_06_Treemap_Damage`, `Sheet_09_Combo_Pareto`.
+- [ ] **Dashboard D2 – Điểm nóng & Phân cấp thiệt hại**:
+  - [ ] Kéo thả `Sheet_04_Treemap_Damage`, `Sheet_07_Combo_Pareto`, `Sheet_09_Choropleth_Map`.
   - [ ] Thêm bộ lọc Châu lục; gán Filter Action click bản đồ highlight các sheet còn lại.
   - [ ] Thêm hộp văn bản Insight tóm tắt nguyên lý 80/20.
-- [ ] **Dashboard D3 – Cháy rừng: Khi nào & lớn cỡ nào?**:
-  - [ ] Kéo thả `Sheet_04_Heatmap_Season`, `Sheet_08_Combo_Histogram`, `Sheet_12_Proportional_Map`.
-  - [ ] Thêm bộ lọc tháng và diện tích siêu đám cháy.
-  - [ ] Thêm hộp văn bản Insight tóm tắt mùa cao điểm khô hạn.
-- [ ] **Dashboard D4 – Vì sao & hệ quả**:
-  - [ ] Kéo thả `Sheet_10_Donut_Cause`, `Sheet_11_Sankey_Flow`, `Sheet_07_Bubble_Scatter`.
-  - [ ] Thêm bộ lọc nhóm nguyên nhân; thêm hộp Kết luận & Khuyến nghị chính sách.
+- [ ] **Dashboard D3 – Cháy rừng: Mùa vụ, Quy mô & Tác nhân**:
+  - [ ] Kéo thả `Sheet_05_Bubble_Scatter`, `Sheet_06_Combo_Histogram`, `Sheet_08_Donut_Cause`, `Sheet_10_Proportional_Map`.
+  - [ ] Thêm bộ lọc nhóm nguyên nhân và quy mô diện tích.
+  - [ ] Thêm hộp văn bản Insight tóm tắt căn nguyên và khuyến nghị.
 
-### B. Xây Dựng Tableau Story (Ít nhất 3 Story Points)
+### B. Xây Dựng Tableau Story (3 Story Points Trọng Tâm)
 - [ ] Tạo Story mới trong Tableau với bố cục thanh điều hướng Story Navigator dạng Text Boxes hoặc Numbers.
 - [ ] **Story Point 1**: Nhúng Dashboard D1 $\to$ Tiêu đề: *"1. Bức tranh 20 năm: Tần suất & Thiệt hại"* $\to$ Gắn Annotation tại năm 2020.
-- [ ] **Story Point 2**: Nhúng Dashboard D2 $\to$ Tiêu đề: *"2. Điểm nóng toàn cầu: Nơi chịu tổn thất nặng nề"* $\to$ Gắn Annotation đường 80% Pareto.
-- [ ] **Story Point 3**: Nhúng Dashboard D3 $\to$ Tiêu đề: *"3. Trọng tâm Cháy rừng: Mùa cao điểm & Siêu đám cháy"* $\to$ Gắn Annotation mùa tháng 6–9 và đám cháy $\ge 10.000$ ha.
-- [ ] **Story Point 4**: Nhúng Dashboard D4 $\to$ Tiêu đề: *"4. Căn nguyên & Tác động: Con người vs Tự nhiên"* $\to$ Gắn Annotation kết luận và hạn chế dữ liệu.
+- [ ] **Story Point 2**: Nhúng Dashboard D2 $\to$ Tiêu đề: *"2. Điểm nóng toàn cầu: Phân cấp tổn thất 80/20"* $\to$ Gắn Annotation đường 80% Pareto.
+- [ ] **Story Point 3**: Nhúng Dashboard D3 $\to$ Tiêu đề: *"3. Trọng tâm Cháy rừng: Quy mô, Căn nguyên & Dự báo"* $\to$ Gắn Annotation đám cháy $\ge 10.000$ ha và tác nhân con người.
 
 ### C. Xuất Bản & Nhúng Lên Web
 - [ ] Chọn **File $\to$ Export Packaged Workbook...** $\to$ Lưu file `tableau/wildfire_disaster_analysis.twbx`.
@@ -76,27 +72,27 @@
 
 ---
 
-## 4. Các Biểu Đồ Phụ Trách (#9, #10, #11, #12 trên Tableau)
+## 4. Các Biểu Đồ Phụ Trách (4 Worksheets: #7, #8, #9, #10 trên Tableau)
 
-### Worksheet #9: `Sheet_09_Combo_Pareto` (Combo Pareto Chart: Top 10 tử vong)
+### Worksheet #7: `Sheet_07_Combo_Pareto` (Combo Pareto Chart: Top 10 tử vong)
 - [ ] (a) Lọc Top 10 `[country_name]` theo `SUM([deaths])`, sắp xếp giảm dần.
 - [ ] (b) Trục 1: `SUM([deaths])` (Marks: Bar); Trục 2: `[Cumulative Death %]` (Marks: Line, Dual Axis).
 - [ ] (c) Thêm Reference Line tại mốc 80% (0.8); định dạng màu đỏ mận và cam nhấn.
 - [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 2.
 
-### Worksheet #10: `Sheet_10_Donut_Cause` (Donut / Sunburst nguyên nhân cháy rừng)
+### Worksheet #8: `Sheet_08_Donut_Cause` (Donut / Sunburst nguyên nhân cháy rừng)
 - [ ] (a) Dựng Donut 2 tầng: Vòng trong `[Cause Group High Level]`, vòng ngoài `[cause_name]`.
 - [ ] (b) Định dạng màu sắc: Tự nhiên (Xanh lá), Con người (Đỏ cam), Khác (Xám).
 - [ ] (c) Định dạng Tooltip hiển thị tỷ lệ % của từng tác nhân cụ thể.
-- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 4.
+- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 3.
 
-### Worksheet #11: `Sheet_11_Sankey_Flow` (Luồng chuyển giao tác động thảm họa)
-- [ ] (a) Tạo luồng đa tầng: `[Cause Group]` $\to$ `[disaster_type]` $\to$ `[Damage Severity Level]`.
-- [ ] (b) Kéo Measures `SUM([damage_usd])` hoặc `CNT([event_id])` vào Size/Color.
-- [ ] (c) Định dạng Tooltip chi tiết đường đi của luồng.
-- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 4.
+### Worksheet #9: `Sheet_09_Choropleth_Map` (Choropleth Map Toàn cầu: Thiệt hại / Số vụ theo quốc gia)
+- [ ] (a) Kéo `[Longitude]` và `[Latitude]` vào Columns/Rows; kéo `[iso3]` vào Detail; chọn Marks: Map.
+- [ ] (b) Kéo `SUM([Damage Bil USD])` vào Color với dải tuần tự Orange-Red.
+- [ ] (c) Định dạng Tooltip hiển thị tên quốc gia, tổng số vụ thảm họa và tổng thiệt hại tài chính.
+- [ ] (d) Ghi nhận insight từ dữ liệu thật vào `docs/CHART_SPEC.md` để đưa vào Story Point 2.
 
-### Worksheet #12: `Sheet_12_Proportional_Map` (Bản đồ điểm các đại vụ cháy lớn)
+### Worksheet #10: `Sheet_10_Proportional_Map` (Bản đồ điểm các đại vụ cháy lớn)
 - [ ] (a) Lọc `[disaster_type] = 'Wildfire'`; kéo `[longitude]` vào Columns, `[latitude]` vào Rows.
 - [ ] (b) Chọn Marks: Circle; kéo `[burned_area_ha]` vào Size, kéo `[damage_usd]` vào Color.
 - [ ] (c) Đặt Opacity 70% để nhìn xuyên điểm chồng lấp; Tooltip hiển thị tên vụ cháy, ngày giờ, diện tích và thiệt hại.
@@ -108,11 +104,11 @@
 - **Đầu vào**:
   - `data/clean/master_clean.csv` từ Thành viên 1 và bảng phân rã từ TV2.
   - Tài liệu quy chuẩn màu sắc `docs/COLOR_GUIDE.md` và công thức tính toán `tableau/CALCULATED_FIELDS.md`.
-  - 4 Worksheets của TV1 (#1..#4) và 4 Worksheets của TV2 (#5..#8).
+  - 2 Worksheets của TV1 (#1, #2) và 4 Worksheets của TV2 (#3..#6).
 - **Đầu ra**:
-  - 4 Worksheets của TV3 (#9..#12).
-  - 4 Dashboards (D1, D2, D3, D4) trên Tableau.
-  - 1 Tableau Story với 4 Story Points hoàn chỉnh.
+  - 4 Worksheets của TV3 (#7..#10).
+  - 3 Dashboards (D1, D2, D3) trên Tableau.
+  - 1 Tableau Story với 3 Story Points hoàn chỉnh.
   - File đóng gói `tableau/wildfire_disaster_analysis.twbx`.
   - Liên kết xuất bản trực tuyến Tableau Public.
   - `dashboard/index.html` (nhúng Tableau Story) và triển khai GitHub Pages.
@@ -121,8 +117,8 @@
 ---
 
 ## 6. Definition of Done (DoD) Cá Nhân
-1. 4 Worksheets Tableau (#9–#12) hoạt động mượt mà, đúng dữ liệu và bảng màu.
-2. 4 Dashboards (D1 $\to$ D4) được bố cục chuẩn mực, bộ lọc và KPI cards đồng bộ.
-3. Tableau Story có ít nhất 3 Story Points (chuẩn 4 Points) có chú thích dẫn dắt câu chuyện mạch lạc.
+1. 4 Worksheets Tableau (#7–#10) hoạt động mượt mà, đúng dữ liệu và bảng màu.
+2. 3 Dashboards (D1 $\to$ D3) được bố cục chuẩn mực, bộ lọc và KPI cards đồng bộ.
+3. Tableau Story có 3 Story Points dẫn dắt câu chuyện mạch lạc.
 4. Tệp Workbook đóng gói `wildfire_disaster_analysis.twbx` mở lên bình thường mà không đòi hỏi kết nối ngoài.
 5. Bản nhúng trên `dashboard/index.html` hiển thị trơn tru trên GitHub Pages.
