@@ -24,82 +24,88 @@
 
 ---
 
-## 2. Quy Trình Phân Chia 12 Biểu Đồ (Worksheets)
+## 2. Quy Trình Phân Chia 10 Biểu Đồ (Worksheets)
 
-Mỗi thành viên phụ trách **đúng 4 Worksheets** (chia đều 4/4/4), đặt tên Sheet theo quy ước: `Sheet_01`, `Sheet_02`... để dễ dàng quản lý.
+Hệ thống gồm **10 Worksheets** (được chia theo tỷ lệ 2/4/4: TV1 làm 2 biểu đồ, TV2 làm 4 biểu đồ, TV3 làm 4 biểu đồ), đặt tên Sheet theo quy ước: `Sheet_01`, `Sheet_02`... để quản lý đồng bộ.
 
-### 👤 Thành viên 1: Biểu đồ #1 – #4 (Tổng quan & Mùa vụ)
-- **Worksheet #1**: `Sheet_01_Combo_Trend` (Combo Dual-Axis: Cột số vụ + Đường thiệt hại USD theo năm 2006–2025).
-- **Worksheet #2**: `Sheet_02_Stacked_Area` (Stacked Area: Cơ cấu phân bổ các loại thảm họa theo thời gian).
-- **Worksheet #3**: `Sheet_03_Choropleth_Map` (Bản đồ thế giới phân vùng mức độ thiệt hại/số vụ theo quốc gia).
-- **Worksheet #4**: `Sheet_04_Heatmap_Season` (Ma trận Heatmap mùa vụ cháy rừng: Tháng $\times$ Năm).
+### 👤 Thành viên 1: Biểu đồ #1 – #2 (Data & ML Engineer: 2 Sheets)
+> *Ghi chú giảm tải*: TV1 chỉ phụ trách 2 biểu đồ để tập trung toàn lực vào Pipeline xử lý dữ liệu và Xây dựng Mô hình dự báo Linear/Logistic Regression.
+- **Worksheet #1**: `Sheet_01_Combo_Trend` (Combo Dual-Axis: Cột số vụ + Đường thiệt hại USD theo năm 2006–2025; **tích hợp đường Trend Line dự báo Linear Regression**).
+- **Worksheet #2**: `Sheet_02_Stacked_Area` (Stacked Area: Cơ cấu phân bổ các loại thảm họa theo thời gian 2006–2025).
 
-### 👤 Thành viên 2: Biểu đồ #5 – #8 (Phân kỳ, Phân cấp & Tương quan)
-- **Worksheet #5**: `Sheet_05_Diverging_Bar` (Cột phân kỳ: Chênh lệch số vụ so với trung bình chuẩn 20 năm, tâm = 0).
-- **Worksheet #6**: `Sheet_06_Treemap_Damage` (Treemap: Phân cấp tỷ trọng thiệt hại kinh tế từ Châu lục $\to$ Quốc gia).
-- **Worksheet #7**: `Sheet_07_Bubble_Scatter` (Bubble Chart: Tương quan Diện tích vs Thiệt hại vs Số người ảnh hưởng, trục Log).
-- **Worksheet #8**: `Sheet_08_Combo_Histogram` (Combo Histogram diện tích cháy theo bin logarit + Đường phân vị lũy kế).
+### 👤 Thành viên 2: Biểu đồ #3 – #6 (Data Modeling & SQL Engineer: 4 Sheets)
+- **Worksheet #3**: `Sheet_03_Diverging_Bar` (Cột phân kỳ: Chênh lệch số vụ so với trung bình chuẩn 20 năm, tâm = 0).
+- **Worksheet #4**: `Sheet_04_Treemap_Damage` (Treemap: Phân cấp tỷ trọng thiệt hại kinh tế từ Châu lục $\to$ Quốc gia).
+- **Worksheet #5**: `Sheet_05_Bubble_Scatter` (Bubble Chart: Tương quan Diện tích vs Thiệt hại vs Số người ảnh hưởng, trục Log).
+- **Worksheet #6**: `Sheet_06_Combo_Histogram` (Combo Histogram diện tích cháy theo bin logarit + Đường phân vị lũy kế).
 
-### 👤 Thành viên 3: Biểu đồ #9 – #12 (Xếp hạng, Nguyên nhân & Điểm cháy)
-- **Worksheet #9**: `Sheet_09_Combo_Pareto` (Combo Pareto Chart: Cột số người chết top 10 quốc gia + Đường % lũy kế 80/20).
-- **Worksheet #10**: `Sheet_10_Donut_Cause` (Donut / Sunburst phân tích cơ cấu nguyên nhân: Tự nhiên vs Nhân tạo).
-- **Worksheet #11**: `Sheet_11_Sankey_Flow` (Sankey / Bar luồng chuyển giao: Nguyên nhân $\to$ Loại thảm họa $\to$ Mức độ thiệt hại).
-- **Worksheet #12**: `Sheet_12_Proportional_Map` (Bản đồ điểm phân bố không gian các đại vụ cháy rừng lớn).
+### 👤 Thành viên 3: Biểu đồ #7 – #10 (Dashboard & Storytelling Specialist: 4 Sheets)
+- **Worksheet #7**: `Sheet_07_Combo_Pareto` (Combo Pareto Chart: Cột số người chết top 10 quốc gia + Đường % lũy kế 80/20).
+- **Worksheet #8**: `Sheet_08_Donut_Cause` (Donut / Sunburst phân tích cơ cấu nguyên nhân: Tự nhiên vs Nhân tạo).
+- **Worksheet #9**: `Sheet_09_Choropleth_Map` (Bản đồ thế giới phân vùng mức độ thiệt hại/số vụ theo quốc gia - Map #1).
+- **Worksheet #10**: `Sheet_10_Proportional_Map` (Bản đồ điểm phân bố không gian các đại vụ cháy rừng lớn - Map #2).
 
 ---
 
-## 3. Tạo 4 Dashboards Trong Tableau (D1 – D4)
+## 3. Tạo 3 Dashboards Trong Tableau (D1 – D3)
 
-Nhấn nút **New Dashboard** ở thanh dưới để tạo 4 Dashboard tương ứng với 4 câu hỏi nghiên cứu:
+Nhấn nút **New Dashboard** ở thanh dưới để tạo 3 Dashboard tương ứng với 3 câu hỏi nghiên cứu:
 
-1. **Dashboard D1: Bức tranh 20 năm**
+1. **Dashboard D1: Bức tranh 20 năm** (Xu hướng vĩ mô & Dự báo)
    - **Kích thước**: Fixed size (1200 $\times$ 800 px) hoặc Automatic.
-   - **Thành phần**: Header tiêu đề câu hỏi chính + Thẻ KPI Cards + Kéo thả `Sheet_01`, `Sheet_02`, `Sheet_05`.
+   - **Thành phần**: Header tiêu đề + Thẻ KPI Cards + Kéo thả `Sheet_01` (TV1), `Sheet_02` (TV1), `Sheet_03` (TV2).
    - **Tương tác**: Bộ lọc năm dạng Slider gắn cho cả 3 sheet (**Apply to Worksheets $\to$ Selected Worksheets**).
-   - **Hộp Insight**: Hộp văn bản (Text Object) ghi phát hiện chính từ số liệu thật.
+   - **Tích hợp Dự báo**: Thể hiện rõ đường Trend Line (kết quả mô hình hồi quy tuyến tính từ TV1) trên `Sheet_01`.
+   - **Hộp Insight**: Tóm tắt xu hướng 20 năm và xu hướng dự báo thiệt hại trong tương lai.
 
-2. **Dashboard D2: Ở đâu chịu thiệt hại?**
-   - **Thành phần**: Kéo thả `Sheet_03`, `Sheet_06`, `Sheet_09`.
+2. **Dashboard D2: Điểm nóng & Phân cấp thiệt hại** (Không gian & Nguyên lý 80/20)
+   - **Thành phần**: Kéo thả `Sheet_04` (TV2), `Sheet_07` (TV3), `Sheet_09` (TV3).
    - **Tương tác**: Bộ lọc Châu lục, click vào quốc gia trên bản đồ để highlight biểu đồ Treemap và Pareto.
    - **Hộp Insight**: Tóm tắt các điểm nóng toàn cầu và nguyên lý 80/20.
 
-3. **Dashboard D3: Cháy rừng: Khi nào và lớn cỡ nào?**
-   - **Thành phần**: Kéo thả `Sheet_04`, `Sheet_08`, `Sheet_12`.
-   - **Tương tác**: Bộ lọc tháng cao điểm, bộ lọc diện tích siêu đám cháy.
-   - **Hộp Insight**: Nhận xét chu kỳ tháng 6–9 và tần suất các siêu đám cháy.
-
-4. **Dashboard D4: Vì sao và hệ quả**
-   - **Thành phần**: Kéo thả `Sheet_10`, `Sheet_11`, `Sheet_07`.
-   - **Tương tác**: Bộ lọc nhóm nguyên nhân tự nhiên / nhân tạo.
-   - **Hộp Insight & Kết luận**: Kết luận mối tương quan diện tích vs thiệt hại và khuyến nghị phòng ngừa.
+3. **Dashboard D3: Trọng tâm Cháy rừng** (Mùa vụ, Quy mô & Căn nguyên)
+   - **Thành phần**: Kéo thả `Sheet_05` (TV2), `Sheet_06` (TV2), `Sheet_08` (TV3), `Sheet_10` (TV3).
+   - **Tương tác**: Bộ lọc mùa cao điểm, bộ lọc diện tích siêu đám cháy, bộ lọc nguyên nhân.
+   - **Hộp Insight & Kết luận**: Kết luận mối tương quan diện tích vs thiệt hại, tác nhân con người và khuyến nghị phòng ngừa.
 
 ---
 
-## 4. Xây Dựng Tableau Story (Ít Nhất 3 Story Points)
+## 4. Xây Dựng Tableau Story (3 Story Points Trọng Tâm) & Phối Hợp Tuần Tự (TV1 $\to$ TV3)
+
+> **MÔ HÌNH BÀN GIAO TUẦN TỰ GIỮA THÀNH VIÊN 1 VÀ THÀNH VIÊN 3 (BAREM 2.0 ĐIỂM)**:
+> 
+> Barem môn học quy định **Mục 3. Phân tích Insight & Dự báo (2.0 điểm)** gồm 3 tiêu chí:
+> 1. *Mô hình Dự báo (0.5 đ)*: Áp dụng đúng thuật toán Hồi quy tuyến tính (Linear Regression) hoặc Logistic Regression.
+> 2. *Trực quan Dự báo (0.5 đ)*: Tích hợp thành công kết quả dự báo lên một biểu đồ trực quan trong Dashboard.
+> 3. *Khai phá Insight / Storytelling (1.0 đ)*: Rút ra câu chuyện dẫn dắt có chiều sâu, chỉ ra nguyên nhân, xu hướng.
+>
+> **Quy trình bàn giao tuần tự (không chồng chéo, độc lập tuyệt đối)**:
+> - **Bước 1 (TV1 thực hiện trên Python)**:
+>   - TV1 chạy script huấn luyện mô hình ML trong Python (`src/08_predictive_model.py`), đánh giá chỉ số chuẩn ($R^2$, RMSE, MAE).
+>   - TV1 xuất bảng kết quả dự báo `data/clean/forecast_results.csv` (chứa các mốc năm tương lai và giá trị dự báo thiệt hại USD) rồi bàn giao cho pipeline.
+> - **Bước 2 (TV3 tiếp nhận kết quả & dựng trên Dashboard)**:
+>   - TV3 đưa kết quả dự báo vào **Dashboard D1** (bằng cách bật đường Trend Line tuyến tính trên `Sheet_01` hoặc nạp bảng dự báo để vẽ đường xu thế tương lai). Hoàn thành 0.5 đ Trực quan Dự báo.
+> - **Bước 3 (TV3 độc lập xây dựng Tableau Story)**:
+>   - TV3 tự chủ toàn bộ việc thiết kế **3 Story Points**, sử dụng toàn bộ hệ thống biểu đồ và kết quả dự báo của TV1 để dẫn dắt câu chuyện phân tích sâu sắc từ nguyên nhân đến hệ quả tương lai. Hoàn thành 1.0 đ Khai phá Insight.
 
 Nhấn nút **New Story** (biểu tượng cuốn sách mở ở thanh dưới cùng) để tạo **Story**:
 
-### 📖 Cấu trúc 4 Story Points hoàn chỉnh:
+### 📖 Cấu trúc 3 Story Points hoàn chỉnh:
 
 1. **Story Point 1**: 
-   - **Tiêu đề thanh dẫn (Story Navigator)**: `1. Bức tranh 20 năm: Tần suất & Thiệt hại`
-   - **Nội dung nhúng**: Kéo thả **Dashboard D1** vào.
-   - **Chú thích nổi bật (Caption / Annotation)**: Nêu bật đỉnh điểm năm 2020 và xu hướng thảm họa gia tăng sau chu kỳ 2017.
+   - **Tiêu đề thanh dẫn (Story Navigator)**: `1. Bức tranh 20 năm: Tần suất & Xu hướng Thiệt hại`
+   - **Nội dung nhúng**: Kéo thả **Dashboard D1** vào (chứa `Sheet_01` với đường xu hướng dự báo của TV1).
+   - **Chú thích nổi bật (Caption / Annotation)**: Nêu bật đỉnh điểm năm 2020 và kết quả dự báo Linear Regression cho thấy xu thế gia tăng thiệt hại kinh tế.
 
 2. **Story Point 2**:
-   - **Tiêu đề thanh dẫn**: `2. Điểm nóng toàn cầu: Nơi chịu tổn thất nặng nề`
+   - **Tiêu đề thanh dẫn**: `2. Điểm nóng toàn cầu: Phân cấp tổn thất 80/20`
    - **Nội dung nhúng**: Kéo thả **Dashboard D2** vào.
    - **Chú thích nổi bật**: Chỉ ra quy luật 80/20 về số người chết và top các quốc gia gánh chịu thiệt hại kinh tế lớn nhất.
 
 3. **Story Point 3**:
-   - **Tiêu đề thanh dẫn**: `3. Trọng tâm Cháy rừng: Mùa cao điểm & Siêu đám cháy`
+   - **Tiêu đề thanh dẫn**: `3. Trọng tâm Cháy rừng: Quy mô, Căn nguyên & Khuyến nghị`
    - **Nội dung nhúng**: Kéo thả **Dashboard D3** vào.
-   - **Chú thích nổi bật**: Làm rõ chu kỳ mùa cháy rừng bùng nổ vào mùa khô (tháng 6–9) và sự lan rộng của các đám cháy quy mô $> 10.000$ ha.
-
-4. **Story Point 4**:
-   - **Tiêu đề thanh dẫn**: `4. Nguyên nhân & Tác động: Con người vs Tự nhiên`
-   - **Nội dung nhúng**: Kéo thả **Dashboard D4** vào.
-   - **Chú thích nổi bật**: Tổng kết tỷ trọng do tác nhân con người gây ra, bài toán tương quan phi tuyến giữa diện tích cháy và thiệt hại kinh tế, kèm khuyến nghị chính sách.
+   - **Chú thích nổi bật**: Tổng kết tỷ trọng do tác nhân con người gây ra, bài toán các siêu đám cháy $\ge 10.000$ ha và khuyến nghị giải pháp phòng ngừa.
 
 ---
 

@@ -87,12 +87,15 @@
 - [ ] Ghi lại mọi quyết định xử lý vào `docs/CLEANING_LOG.md`.
 - [ ] Cập nhật định nghĩa tất cả các trường dữ liệu và các cột cờ vào `docs/DATA_DICTIONARY.md`.
 
-### E. Xây Dựng Mô Hình Dự Báo (Predictive Model - Barem 1.0 Điểm)
-- [ ] Viết script `src/08_predictive_model.py` (hoặc tích hợp phân tích) bằng `scikit-learn`:
-  - [ ] **Mô hình Hồi quy tuyến tính (Linear Regression)**: Dự báo xu hướng thiệt hại tài chính (`damage_usd`) hoặc diện tích rừng bị cháy (`burned_area_ha`) qua các năm theo yếu tố thời gian và khí hậu.
-  - [ ] Hoặc **Mô hình Hồi quy Logistic (Logistic Regression)**: Phân loại nhị phân/đa lớp xác suất thảm họa trở thành "Đại thảm họa / Mức độ nghiêm trọng cao" (`Damage Severity Level >= Serious`).
-- [ ] Tính toán và báo cáo các chỉ số đánh giá độ chuẩn xác: $R^2$, MAE, RMSE (với Linear) hoặc Accuracy, Precision, Recall, F1, ROC-AUC (với Logistic).
-- [ ] Tích hợp thành công kết quả dự báo (đường xu hướng Trend Line / phân lớp rủi ro) lên biểu đồ trực quan trong Dashboard Tableau (`Sheet_01_Combo_Trend` hoặc phối hợp cùng TV2/TV3).
+### E. Xây Dựng Mô Hình Dự Báo Trên Python (Barem 0.5 Điểm)
+- [ ] Viết script `src/08_predictive_model.py` bằng `scikit-learn`:
+  - [ ] **Mô hình Hồi quy tuyến tính (Linear Regression)**: Huấn luyện mô hình dự báo xu hướng thiệt hại tài chính (`damage_usd`) qua các năm theo chuỗi thời gian 2006–2025.
+  - [ ] Hoặc **Mô hình Hồi quy Logistic (Logistic Regression)**: Phân loại rủi ro thảm họa/cháy rừng nghiêm trọng (`Damage Severity Level >= Serious`).
+- [ ] Tính toán và báo cáo các chỉ số đánh giá độ chuẩn xác: $R^2$, MAE, RMSE (với Linear) hoặc Accuracy, Precision, Recall, F1 (với Logistic).
+- [ ] **Đầu ra bàn giao cho Pipeline (Hoàn thành trách nhiệm của TV1)**:
+  - Xuất bảng kết quả dự báo `data/clean/forecast_results.csv` (chứa các mốc năm tương lai và giá trị dự báo thiệt hại USD).
+  - Bàn giao kết quả này cho TV2 nạp vào DB và TV3 sử dụng trực tiếp để hiển thị lên Dashboard.
+  - Trình bày công thức hồi quy, các hệ số trọng số và bảng chỉ số thực nghiệm vào Mục 5 của Báo cáo khoa học.
 
 ---
 
