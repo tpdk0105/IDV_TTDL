@@ -1,16 +1,17 @@
 # Sơ Đồ Quan Hệ Thực Thể (ENTITY RELATIONSHIP DIAGRAM - ERD)
 
 > **Người phụ trách**: Thành viên 2 - Kỹ sư Mô hình Dữ liệu (Data Modeling Engineer)  
-> **Trạng thái**: Thiết kế Star Schema (Giai đoạn 1)
+> **Phạm vi dữ liệu**: Cháy rừng Bang California / Bắc Mỹ giai đoạn 2006–2025  
+> **Trạng thái**: Thiết kế Star Schema đạt chuẩn tối thiểu 3NF, liên kết $\ge 3$ bảng
 
 ---
 
 ## 1. Thiết Kế Mô Hình Dạng Sao (Star Schema Architecture)
-Mô hình dữ liệu được thiết kế nhằm phục vụ truy vấn phân tích đa chiều (OLAP) và trực quan hóa hiệu năng cao cho 12 biểu đồ tương tác:
-- **Bảng Fact Trung Tâm**: `fact_disaster_event` (lưu vết toàn bộ sự kiện thảm họa thiên nhiên 2006–2025).
-- **Bảng Fact Mở Rộng**: `fact_wildfire_detail` (chi tiết hóa các chỉ số kỹ thuật chuyên biệt cho cháy rừng: diện tích, công suất bức xạ FRP, thời gian kéo dài).
-- **Các Bảng Dimension**: `dim_date`, `dim_location`, `dim_disaster_type`, `dim_cause`, `dim_source`.
-- **Cột cờ kiểm soát chất lượng**: Các cờ ML (`is_outlier_ml`, `deaths_is_imputed`, `damage_usd_is_imputed`, `cause_is_predicted`) được bảo toàn trực tiếp trong bảng fact để hỗ trợ tính năng lọc dữ liệu gốc/ước lượng trên Dashboard.
+Mô hình dữ liệu được thiết kế nhằm phục vụ truy vấn phân tích đa chiều (OLAP) và trực quan hóa hiệu năng cao cho 10 biểu đồ tương tác, liên kết chặt chẽ giữa các vụ cháy rừng và các công trình bị tàn phá:
+- **Bảng Fact Trung Tâm 1**: `fact_fire_incident` (lưu vết 7.342 vụ cháy rừng lịch sử California 2006–2025 từ CAL FIRE FRAP: diện tích Acres/ha, thời gian kéo dài, tọa độ, nguyên nhân).
+- **Bảng Fact Mở Rộng 2**: `fact_structure_damage` (lưu vết chi tiết hơn 130.000 công trình nhà ở, thương mại bị thiêu hại từ CAL FIRE DINS, liên kết $N - 1$ với `fact_fire_incident` qua tên vụ cháy và Hạt).
+- **Các Bảng Dimension**: `dim_county` (58 Hạt California kèm dân số, diện tích), `dim_cause` (bảng mã nguyên nhân CAL FIRE), `dim_date` (thứ bậc thời gian: ngày, tháng, quý, năm, mùa cao điểm cháy rừng).
+- **Cột cờ kiểm soát chất lượng**: Các cờ ML (`is_outlier_ml`, `burned_area_is_imputed`, `cause_is_predicted`, `damage_property_is_imputed`) được bảo toàn trực tiếp trong bảng fact để hỗ trợ tính năng lọc dữ liệu gốc/ước lượng trên Dashboard.
 
 ---
 
@@ -18,12 +19,11 @@ Mô hình dữ liệu được thiết kế nhằm phục vụ truy vấn phân 
 
 ```mermaid
 erDiagram
-    dim_date ||--o{ fact_disaster_event : "occurs_on"
-    dim_location ||--o{ fact_disaster_event : "located_at"
-    dim_disaster_type ||--o{ fact_disaster_event : "classified_as"
-    dim_cause ||--o{ fact_disaster_event : "caused_by"
-    dim_source ||--o{ fact_disaster_event : "recorded_by"
-    fact_disaster_event ||--o| fact_wildfire_detail : "detailed_in"
+    dim_date ||--o{ fact_fire_incident : "occurs_on"
+    dim_county ||--o{ fact_fire_incident : "located_in"
+    dim_cause ||--o{ fact_fire_incident : "triggered_by"
+    fact_fire_incident ||--o{ fact_structure_damage : "damages"
+    dim_county ||--o{ fact_structure_damage : "located_in"
 
     dim_date {
         integer date_id PK "Surrogate Key (YYYYMMDD)"
@@ -36,65 +36,54 @@ erDiagram
         integer is_fire_season "CHECK (is_fire_season IN (0, 1))"
     }
 
-    dim_location {
-        integer location_id PK "Surrogate Key Auto-inc"
-        text country_iso3 "NOT NULL, UNIQUE (ISO 3166-1 alpha-3)"
-        text country_name "NOT NULL"
-        text region "Sub-national region / state"
-        text continent "NOT NULL (Asia, Europe, Americas, Africa, Oceania)"
-        text subregion "UN Subregion"
-        real default_latitude "CHECK (default_latitude BETWEEN -90 AND 90)"
-        real default_longitude "CHECK (default_longitude BETWEEN -180 AND 180)"
-    }
-
-    dim_disaster_type {
-        integer type_id PK "Surrogate Key Auto-inc"
-        text type_name "NOT NULL, UNIQUE (Wildfire, Flood, Storm...)"
-        text group_name "Natural, Meteorological, Hydrological..."
-        text subtype_name "Forest fire, Land fire, Riverine flood..."
+    dim_county {
+        integer county_id PK "Surrogate Key Auto-inc"
+        text county_name "NOT NULL, UNIQUE (58 Hạt California)"
+        text county_fips "Mã FIPS (vd: 06007 cho Butte)"
+        integer census_population "Dân số theo Cục Điều tra Dân số"
+        real area_sqmi "CHECK (area_sqmi > 0.0)"
+        text cdt_abbr "Mã viết tắt Hạt (ALA, BUT, SON...)"
     }
 
     dim_cause {
         integer cause_id PK "Surrogate Key Auto-inc"
-        text cause_name "NOT NULL, UNIQUE (Lightning, Arson, Debris...)"
-        text cause_group "NOT NULL (Natural, Human, Unknown)"
+        integer cause_code "Mã CAL FIRE CAUSE (1-19)"
+        text cause_name "NOT NULL, UNIQUE (Lightning, Equipment Use, Arson...)"
+        text cause_group "NOT NULL (Natural, Human, Undetermined)"
     }
 
-    dim_source {
-        integer source_id PK "Surrogate Key Auto-inc"
-        text source_name "NOT NULL, UNIQUE (EM-DAT, NASA FIRMS, USFS...)"
-        text url "Official data portal URL"
-        text license "CC-BY, Public Domain, etc."
-    }
-
-    fact_disaster_event {
-        integer event_id PK "Surrogate Key Auto-inc"
-        text event_code "NOT NULL, UNIQUE (DIS-YYYY-XXXXX)"
+    fact_fire_incident {
+        integer incident_id PK "Surrogate Key Auto-inc"
+        text fire_name "NOT NULL (Tên chuẩn hóa: CAMP, AUGUST COMPLEX...)"
+        text frap_fire_num "Mã số định danh vụ cháy gốc FRAP"
         integer date_id FK "REFERENCES dim_date(date_id)"
-        integer location_id FK "REFERENCES dim_location(location_id)"
-        integer type_id FK "REFERENCES dim_disaster_type(type_id)"
+        integer county_id FK "REFERENCES dim_county(county_id)"
         integer cause_id FK "REFERENCES dim_cause(cause_id)"
-        integer source_id FK "REFERENCES dim_source(source_id)"
-        integer deaths "DEFAULT 0, CHECK (deaths >= 0)"
-        integer injured "DEFAULT 0, CHECK (injured >= 0)"
-        integer affected "DEFAULT 0, CHECK (affected >= 0)"
-        real damage_usd "CHECK (damage_usd >= 0.0)"
-        real latitude "CHECK (latitude BETWEEN -90 AND 90)"
-        real longitude "CHECK (longitude BETWEEN -180 AND 180)"
+        real acres_burned "CHECK (acres_burned >= 0.0)"
+        real burned_area_ha "CHECK (burned_area_ha >= 0.0)"
+        real duration_days "CHECK (duration_days >= 0.0)"
+        real latitude "CHECK (latitude BETWEEN 32.0 AND 42.0)"
+        real longitude "CHECK (longitude BETWEEN -125.0 AND -114.0)"
+        integer total_structures_destroyed "Tổng số nhà bị phá hủy >50%"
+        integer total_structures_damaged "Tổng số nhà bị hư hại"
+        integer deaths_direct "Thương vong sinh mạng (NOAA)"
+        integer injuries_direct "Số người bị thương (NOAA)"
+        real damage_property_usd "Thiệt hại tài sản USD (NOAA)"
         integer is_outlier_ml "DEFAULT 0, CHECK (is_outlier_ml IN (0, 1))"
         real outlier_score "Anomaly score from Isolation Forest"
-        integer deaths_is_imputed "DEFAULT 0, CHECK (deaths_is_imputed IN (0, 1))"
-        integer damage_usd_is_imputed "DEFAULT 0, CHECK (damage_usd_is_imputed IN (0, 1))"
+        integer burned_area_is_imputed "DEFAULT 0, CHECK (burned_area_is_imputed IN (0, 1))"
         integer cause_is_predicted "DEFAULT 0, CHECK (cause_is_predicted IN (0, 1))"
     }
 
-    fact_wildfire_detail {
-        integer event_id PK, FK "REFERENCES fact_disaster_event(event_id)"
-        real burned_area_ha "CHECK (burned_area_ha >= 0.0)"
-        integer burned_area_is_imputed "DEFAULT 0, CHECK (burned_area_is_imputed IN (0, 1))"
-        real duration_days "CHECK (duration_days >= 0.0)"
-        real fire_radiative_power "FRP in MW (from satellite)"
-        text severity_level "Low, Moderate, High, Extreme"
+    fact_structure_damage {
+        integer record_id PK "Surrogate Key Auto-inc"
+        text global_id "Mã định danh DINS GlobalID"
+        integer incident_id FK "REFERENCES fact_fire_incident(incident_id)"
+        integer county_id FK "REFERENCES dim_county(county_id)"
+        text structure_type "Single Family, Commercial, Outbuilding..."
+        text damage_category "Destroyed (>50%), Major, Minor, Affected"
+        real latitude "CHECK (latitude BETWEEN 32.0 AND 42.0)"
+        real longitude "CHECK (longitude BETWEEN -125.0 AND -114.0)"
     }
 ```
 
@@ -103,5 +92,5 @@ erDiagram
 ## 3. Quy Tắc Toàn Vẹn Tham Chiếu & Ràng Buộc
 1. **Khóa ngoại (Foreign Keys)**: Bật `PRAGMA foreign_keys = ON;`. Mọi quan hệ đều cấu hình `ON DELETE RESTRICT ON UPDATE CASCADE`.
 2. **Cam kết không có khóa mồ côi (Zero Orphaned FKs)**: Bảng fact chỉ được tham chiếu đến các ID đã tồn tại trong các bảng dimension.
-3. **Ràng buộc kiểm tra (CHECK constraints)**: Đảm bảo miền giá trị vật lý và logic nghiệp vụ được bảo vệ ở tầng cơ sở dữ liệu.
-4. **Chỉ mục tăng tốc (Indexes)**: Đánh index trên toàn bộ các cột FK và các trường thường xuyên `GROUP BY` / `WHERE` (ví dụ: `year`, `country_iso3`, `type_name`, `cause_group`).
+3. **Ràng buộc kiểm tra (CHECK constraints)**: Đảm bảo miền giá trị địa lý California (`latitude BETWEEN 32.0 AND 42.0`, `longitude BETWEEN -125.0 AND -114.0`) và logic nghiệp vụ được bảo vệ ở tầng cơ sở dữ liệu.
+4. **Chỉ mục tăng tốc (Indexes)**: Đánh index trên toàn bộ các cột FK và các trường thường xuyên `GROUP BY` / `WHERE` (ví dụ: `year`, `county_id`, `cause_id`, `fire_name`).
