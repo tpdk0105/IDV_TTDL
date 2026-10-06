@@ -48,7 +48,8 @@
   - [ ] Kéo thả `Sheet_01_Combo_Trend`, `Sheet_02_Stacked_Area`, `Sheet_03_Diverging_Bar`.
   - [ ] Thêm 3 thẻ KPI: Tổng số sự kiện, Tổng thiệt hại USD, Tổng diện tích rừng cháy.
   - [ ] Thêm bộ lọc dải năm (Slider) áp dụng đồng thời cho cả 3 Sheet.
-  - [ ] Thêm hộp văn bản Insight tóm tắt xu hướng 20 năm.
+  - [ ] **Trực quan hóa Dự báo trên Dashboard D1 (0.5 đ barem)**: Nhận kết quả mô hình dự báo từ TV1, cấu hình đường **Trend Line (Linear Regression)** hoặc đường Forecast trên `Sheet_01_Combo_Trend` hiển thị rõ xu thế thiệt hại tài chính.
+  - [ ] Thêm hộp văn bản Insight tóm tắt xu hướng 20 năm và ý nghĩa đường dự báo tương lai.
 - [ ] **Dashboard D2 – Điểm nóng & Phân cấp thiệt hại**:
   - [ ] Kéo thả `Sheet_04_Treemap_Damage`, `Sheet_07_Combo_Pareto`, `Sheet_09_Choropleth_Map`.
   - [ ] Thêm bộ lọc Châu lục; gán Filter Action click bản đồ highlight các sheet còn lại.
@@ -58,11 +59,14 @@
   - [ ] Thêm bộ lọc nhóm nguyên nhân và quy mô diện tích.
   - [ ] Thêm hộp văn bản Insight tóm tắt căn nguyên và khuyến nghị.
 
-### B. Xây Dựng Tableau Story (3 Story Points Trọng Tâm)
+### B. Xây Dựng Tableau Story & Khai Phá Insight (Storytelling - 1.0 Điểm Barem)
+> **TIẾP NHẬN BÀN GIAO & TỰ CHỦ THỰC HIỆN CÂU CHUYỆN (TUẦN TỰ)**:  
+> - TV3 tiếp nhận toàn bộ dữ liệu sạch và bảng dự báo `forecast_results.csv` của TV1 sau khi TV1 hoàn tất.  
+> - TV3 tự chủ toàn quyền thiết kế mạch dẫn dắt câu chuyện (Storytelling) xuyên suốt 3 Story Points, biến các kết quả kỹ thuật của TV1 và TV2 thành thông điệp phân tích giá trị.
 - [ ] Tạo Story mới trong Tableau với bố cục thanh điều hướng Story Navigator dạng Text Boxes hoặc Numbers.
-- [ ] **Story Point 1**: Nhúng Dashboard D1 $\to$ Tiêu đề: *"1. Bức tranh 20 năm: Tần suất & Thiệt hại"* $\to$ Gắn Annotation tại năm 2020.
+- [ ] **Story Point 1**: Nhúng Dashboard D1 $\to$ Tiêu đề: *"1. Bức tranh 20 năm: Tần suất & Xu hướng Thiệt hại"* $\to$ Gắn Annotation tại năm 2020 và chú thích đường dự báo tương lai dựa trên mô hình của TV1.
 - [ ] **Story Point 2**: Nhúng Dashboard D2 $\to$ Tiêu đề: *"2. Điểm nóng toàn cầu: Phân cấp tổn thất 80/20"* $\to$ Gắn Annotation đường 80% Pareto.
-- [ ] **Story Point 3**: Nhúng Dashboard D3 $\to$ Tiêu đề: *"3. Trọng tâm Cháy rừng: Quy mô, Căn nguyên & Dự báo"* $\to$ Gắn Annotation đám cháy $\ge 10.000$ ha và tác nhân con người.
+- [ ] **Story Point 3**: Nhúng Dashboard D3 $\to$ Tiêu đề: *"3. Trọng tâm Cháy rừng: Quy mô, Căn nguyên & Khuyến nghị"* $\to$ Gắn Annotation đám cháy $\ge 10.000$ ha và tác nhân con người.
 
 ### C. Xuất Bản & Nhúng Lên Web
 - [ ] Chọn **File $\to$ Export Packaged Workbook...** $\to$ Lưu file `tableau/wildfire_disaster_analysis.twbx`.

@@ -19,13 +19,18 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu toàn c�
 
 ---
 
-## 2. Bảng Danh Sách Thành Viên & Vai Trò
+## 2. Bảng Danh Sách Thành Viên & Vai Trò (Mô Hình Pipeline Tuần Tự - Bàn Giao Độc Lập)
 
-| Thành viên | Họ và tên | MSSV / Email liên hệ | Vai trò chính | Nhánh Git riêng |
-|------------|-----------|----------------------|---------------|-----------------|
-| **Thành viên 1** | [TÊN THÀNH VIÊN 1] | *[Điền MSSV/Email]* | Kỹ sư Dữ liệu & Học máy: Thu thập, EDA tĩnh, Làm sạch dữ liệu, **Mô hình dự báo (Linear/Logistic)**; Phụ trách 2 biểu đồ Tableau #1, #2 | `member-1-data` |
-| **Thành viên 2** | [TÊN THÀNH VIÊN 2] | *[Điền MSSV/Email]* | Kỹ sư Mô hình Dữ liệu (Data Modeling Engineer): Star Schema 3NF, Ràng buộc CSDL SQLite, SQL; Phụ trách 4 biểu đồ Tableau #3–#6 | `member-2-model` |
-| **Thành viên 3** | [TÊN THÀNH VIÊN 3] | *[Điền MSSV/Email]* | Kỹ sư Trực quan hóa & Triển khai (Data Visualization & DevOps): Thiết kế 3 Dashboards & Tableau Story (3 Story Points), CI/CD, Phụ trách 4 biểu đồ Tableau #7–#10 | `member-3-dashboard` |
+> **Mô hình phối hợp tuần tự (Decoupled Pipeline)**:  
+> - **Thành viên 1**: Đảm nhiệm toàn bộ phần Tiền xử lý, EDA tĩnh và Huấn luyện Mô hình ML Dự báo trên Python $\to$ Bàn giao `master_clean.csv` và kết quả dự báo `forecast_results.csv` cho TV2. (TV1 phụ trách 2 biểu đồ #1, #2).  
+> - **Thành viên 2**: Nhận dữ liệu sạch từ TV1 $\to$ Thiết kế Star Schema $\ge 3$ bảng, nạp CSDL SQLite, kiểm thử toàn vẹn $\to$ Bàn giao CSDL SQLite và truy vấn dữ liệu cho TV3. (TV2 phụ trách 4 biểu đồ #3–#6).  
+> - **Thành viên 3**: Nhận dữ liệu và kết quả dự báo từ TV1/TV2 $\to$ Dựng 3 Dashboard tương tác, trực quan hóa kết quả dự báo của TV1 lên Dashboard, và xây dựng toàn bộ Tableau Story (Storytelling). (TV3 phụ trách 4 biểu đồ #7–#10).
+
+| Thành viên | Họ và tên | MSSV / Email liên hệ | Vai trò chính & Nhiệm vụ tuần tự | Nhánh Git riêng |
+|------------|-----------|----------------------|-----------------------------------|-----------------|
+| **Thành viên 1** | [TÊN THÀNH VIÊN 1] | *[Điền MSSV/Email]* | **Kỹ sư Dữ liệu & Học máy**: Thu thập dữ liệu ($\ge 5.000$ dòng), EDA tĩnh (3–5 hình Seaborn/Matplotlib), Làm sạch dữ liệu, **Huấn luyện Mô hình dự báo Linear/Logistic trên Python**; Phụ trách 2 biểu đồ #1, #2 | `member-1-data` |
+| **Thành viên 2** | [TÊN THÀNH VIÊN 2] | *[Điền MSSV/Email]* | **Kỹ sư Mô hình Dữ liệu**: Thiết kế Star Schema $\ge 3$ bảng, Ràng buộc toàn vẹn CSDL SQLite (PK, FK, CHECK), Truy vấn SQL; Phụ trách 4 biểu đồ #3–#6 | `member-2-model` |
+| **Thành viên 3** | [TÊN THÀNH VIÊN 3] | *[Điền MSSV/Email]* | **Kỹ sư Trực quan hóa & Triển khai**: Dựng 3 Dashboards (Bộ lọc, Drill-down, Tooltip), **Trực quan hóa kết quả dự báo của TV1 lên Dashboard**, **Khai phá Insight & Storytelling (3 Story Points)**, DevOps CI/CD; Phụ trách 4 biểu đồ #7–#10 | `member-3-dashboard` |
 
 ---
 
@@ -113,9 +118,10 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu toàn c�
   2. *KNN Imputer hoặc Iterative Imputer (MICE)*: Điền giá trị thiếu cho biến số (không điền cột thiếu $> 60\%$), gắn cờ `<col>_is_imputed`. Đánh giá bằng che ngẫu nhiên 10–20% đối chiếu MAE/RMSE so với Median Baseline.
   3. *(Khuyến khích)*: *Random Forest Classifier* dự đoán `cause_group` khi xác suất $\ge 0.7$, gắn cờ `cause_is_predicted`.
 - [ ] **Yêu cầu cứng**: `data/clean/master_clean.csv` sau khi xử lý phải có $\ge 5.000$ dòng; script phải có lệnh `assert len(df) >= 5000`.
-- [ ] **Xây dựng Mô hình dự báo (Barem 1.0 điểm)**: Áp dụng thuật toán **Hồi quy tuyến tính (Linear Regression)** hoặc **Hồi quy Logistic (Logistic Regression)** bằng `scikit-learn`; đánh giá sai số ($R^2$, RMSE / Accuracy, F1) và tích hợp đường dự báo lên Dashboard Tableau (`Sheet_01_Combo_Trend`).
+- [ ] **Xây dựng Mô hình dự báo trên Python (`src/08_predictive_model.py`) (Barem 0.5 điểm)**: Áp dụng thuật toán **Hồi quy tuyến tính (Linear Regression)** hoặc **Hồi quy Logistic** bằng thư viện `scikit-learn`; huấn luyện và đánh giá sai số ($R^2$, RMSE, MAE).
+- [ ] **Bàn giao kết quả dự báo cho Pipeline**: Xuất tệp kết quả dự báo `data/clean/forecast_results.csv` (chứa các mốc năm tương lai và giá trị dự báo thiệt hại USD) và bàn giao lại cho TV2/TV3 sử dụng trực tiếp trên Dashboard.
 - [ ] Hoàn thiện `docs/ML_CLEANING_REPORT.md`, `docs/CLEANING_LOG.md` và `docs/DATA_DICTIONARY.md`.
-- [ ] Chịu trách nhiệm thực hiện trọn vẹn 2 biểu đồ: **#1 (`Sheet_01_Combo_Trend`), #2 (`Sheet_02_Stacked_Area`)** (giảm tải đồ họa để tập trung dữ liệu & ML).
+- [ ] Chịu trách nhiệm dựng 2 biểu đồ độc lập: **#1 (`Sheet_01_Combo_Trend`), #2 (`Sheet_02_Stacked_Area`)** (TV1 chỉ cần dựng khung biểu đồ cơ bản và đường Trend Line cơ bản).
 - [ ] Đảm bảo cơ chế tự động tương thích: Khi crawl/thêm dữ liệu mới vào `data/raw/`, chỉ cần refresh trong Tableau là biểu đồ tự cập nhật.
 
 ### Thành viên 2 – MÔ HÌNH DỮ LIỆU (Tách bảng $\to$ CSDL SQLite $\to$ Star Schema 3NF)
@@ -128,11 +134,12 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu toàn c�
 - [ ] Viết script `src/06_export_json.py` (xuất JSON vào `dashboard/data/`) và các truy vấn SQL cho biểu đồ của mình trong `sql/queries_for_charts.sql`.
 - [ ] Chịu trách nhiệm thực hiện trọn vẹn 4 biểu đồ: **#3 (`Sheet_03_Diverging_Bar`), #4 (`Sheet_04_Treemap_Damage`), #5 (`Sheet_05_Bubble_Scatter`), #6 (`Sheet_06_Combo_Histogram`)**.
 
-### Thành viên 3 – DASHBOARD & TRIỂN KHAI (Tableau Public $\to$ Storytelling $\to$ DevOps)
+### Thành viên 3 – DASHBOARD & TRIỂN KHAI (Tableau Public $\to$ Trực quan hóa Dự báo $\to$ Storytelling $\to$ DevOps)
 - [ ] Thiết lập môi trường Tableau Desktop / Tableau Public, kết nối nguồn dữ liệu sạch từ `data/clean/master_clean.csv`.
 - [ ] Phụ trách thực hiện 4 biểu đồ chuyên sâu của mình: **#7 (`Sheet_07_Combo_Pareto`), #8 (`Sheet_08_Donut_Cause`), #9 (`Sheet_09_Choropleth_Map`), #10 (`Sheet_10_Proportional_Map`)** dưới dạng các Tableau Worksheets.
 - [ ] Thiết kế **3 Dashboards** hoàn chỉnh (D1: Bức tranh 20 năm, D2: Điểm nóng & Phân cấp thiệt hại, D3: Cháy rừng: Mùa vụ, Quy mô & Tác nhân) với bố cục khoa học, thẻ KPI Cards, tính năng Lọc (Filter nhiều cấp) và Đi sâu chi tiết (Drill-down).
-- [ ] Xây dựng **Tableau Story với 3 Story Points** dẫn dắt câu chuyện phân tích logic theo chuẩn barem đề thi (ít nhất 3 Points), có chú thích Annotation làm nổi bật phát hiện từ dữ liệu thật.
+- [ ] **Trực quan hóa kết quả dự báo lên Dashboard (Barem 0.5 điểm)**: Nhận kết quả mô hình dự báo từ TV1, cấu hình hiển thị đường xu hướng dự báo (Trend Line / Forecast) trực tiếp trên Dashboard D1.
+- [ ] **Khai phá Insight & Xây dựng Tableau Story (Barem 1.0 điểm)**: Dựa trên toàn bộ hệ thống 10 biểu đồ và kết quả dự báo của TV1, TV3 độc lập xây dựng **Tableau Story với 3 Story Points** dẫn dắt câu chuyện phân tích chuyên sâu (Bức tranh 20 năm $\to$ Điểm nóng tổn thất 80/20 $\to$ Cháy rừng, Căn nguyên & Xu thế tương lai), gắn các chú thích Annotation sắc sảo.
 - [ ] Đóng gói và lưu tệp Workbook `tableau/wildfire_disaster_analysis.twbx`, xuất bản lên Tableau Public và lấy đường link nhúng vào `dashboard/index.html`.
 - [ ] Triển khai pipeline CI/CD `.github/workflows/deploy.yml` tự động xuất bản trang web chứa bản nhúng Tableau lên GitHub Pages.
 - [ ] Quay **Video Demo** đóng vai Data Analyst và chuẩn bị **Video backup tóm tắt** đề phòng khi bảo vệ.

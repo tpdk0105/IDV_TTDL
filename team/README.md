@@ -12,19 +12,34 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                   DÒNG CHẢY CÔNG VIỆC TOÀN NHÓM                        │
+│             DÒNG CHẢY CÔNG VIỆC TUẦN TỰ (DECOUPLED PIPELINE)            │
 │                                                                        │
-│   [Thành viên 1]        ──> master_clean.csv (>= 5.000 dòng)          │
-│   (Thu thập, ML & Dự báo)           │                                  │
-│                                     ▼                                  │
-│   [Thành viên 2]        ──> Tách bảng Star Schema & CSDL SQLite        │
-│   (Mô hình hóa & SQL)               │                                  │
-│                                     ▼                                  │
-│   [Cả 3 thành viên]     ──> 10 Worksheets trong Tableau (2/4/4)       │
-│                                     │                                  │
-│                                     ▼                                  │
-│   [Thành viên 3]        ──> 3 Dashboards & Tableau Story (3 Points)    │
-│   (Dashboard & DevOps)  ──> Xuất bản Tableau Public & GitHub Pages     │
+│   [Thành viên 1]                                                       │
+│   (Kỹ sư Dữ liệu & ML)                                                 │
+│        │                                                               │
+│        ├─ Tiền xử lý, EDA tĩnh (3-5 hình Seaborn)                      │
+│        ├─ Huấn luyện Mô hình ML Dự báo (Linear/Logistic)               │
+│        ▼                                                               │
+│   BÀN GIAO: master_clean.csv (>= 5.000 dòng) + forecast_results.csv    │
+│        │                                                               │
+│        ▼                                                               │
+│   [Thành viên 2]                                                       │
+│   (Kỹ sư Mô hình Dữ liệu)                                              │
+│        │                                                               │
+│        ├─ Thiết kế Star Schema (Fact + Dims >= 3 bảng)                 │
+│        ├─ Nạp CSDL SQLite (PK, FK, CHECK constraints)                  │
+│        ▼                                                               │
+│   BÀN GIAO: database.sqlite + Các bảng chuẩn hóa & Views SQL           │
+│        │                                                               │
+│        ▼                                                               │
+│   [Thành viên 3]                                                       │
+│   (Kỹ sư Trực quan hóa, Storytelling & DevOps)                         │
+│        │                                                               │
+│        ├─ Dựng 3 Dashboards hoàn chỉnh (10 biểu đồ, Bộ lọc, Drill-down)│
+│        ├─ Trực quan hóa kết quả dự báo của TV1 lên Dashboard           │
+│        ├─ Xây dựng toàn bộ Tableau Story (3 Points Storytelling)       │
+│        ▼                                                               │
+│   BÀN GIAO: .twbx + Tableau Public + Deploy GitHub Pages               │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -45,11 +60,10 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
 5. **Làm sạch bằng Học máy (Machine Learning Cleaning)**: Viết [src/03b_ml_clean.py](../src/03b_ml_clean.py) áp dụng **tối thiểu 2 mô hình ML**:
    - *Phát hiện ngoại lai*: Áp dụng **Isolation Forest** (đối soát với LOF) trên biến logarit, gắn cờ `is_outlier_ml` và điểm số `outlier_score`.
    - *Điền giá trị khuyết thiếu*: Áp dụng **KNN Imputer** hoặc **Iterative Imputer (MICE)**, gắn cờ `<col>_is_imputed`. Thử nghiệm che ngẫu nhiên 10–20% đối soát sai số MAE/RMSE so với Baseline (Median).
-   - **Cam kết số dòng**: Đặt lệnh `assert len(df) >= 5000` ở cuối script $\to$ xuất file `data/clean/master_clean.csv`.
-6. **Xây dựng Mô hình dự báo (Predictive Modeling - Barem 1.0 Điểm)**: Áp dụng thuật toán **Hồi quy tuyến tính (Linear Regression)** hoặc **Hồi quy Logistic (Logistic Regression)** bằng `scikit-learn` theo barem Mục II.3 (1.0 điểm); đánh giá độ chính xác ($R^2$, MAE, RMSE / Accuracy, F1) và tích hợp đường dự báo vào biểu đồ trên Tableau.
+6. **Xây dựng Mô hình dự báo trên Python (Barem 0.5 Điểm)**: Áp dụng thuật toán **Hồi quy tuyến tính (Linear Regression)** hoặc **Hồi quy Logistic** bằng `scikit-learn` theo barem Mục II.3; đánh giá độ chính xác ($R^2$, MAE, RMSE / Accuracy, F1); xuất bảng kết quả dự báo `data/clean/forecast_results.csv` bàn giao cho TV2/TV3 sử dụng trên Dashboard.
 7. **Tài liệu làm sạch & mô hình**: Hoàn thiện [docs/ML_CLEANING_REPORT.md](../docs/ML_CLEANING_REPORT.md), [docs/CLEANING_LOG.md](../docs/CLEANING_LOG.md) và [docs/DATA_DICTIONARY.md](../docs/DATA_DICTIONARY.md).
 8. **Phụ trách 2 Worksheets trên Tableau**:
-   - `Sheet_01_Combo_Trend`: Combo Dual-Axis cột số vụ + đường thiệt hại USD theo năm 2006–2025 (tích hợp Trend Line dự báo).
+   - `Sheet_01_Combo_Trend`: Combo Dual-Axis cột số vụ + đường thiệt hại USD theo năm 2006–2025 (kèm Trend Line cơ bản).
    - `Sheet_02_Stacked_Area`: Stacked Area tần suất theo loại thảm họa theo thời gian.
 
 ---
@@ -94,12 +108,12 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
    - `Sheet_09_Choropleth_Map`: Bản đồ thế giới phân vùng mức độ thiệt hại/số vụ theo quốc gia (Bản đồ Map bắt buộc).
    - `Sheet_10_Proportional_Map`: Bản đồ điểm phân bố không gian các đại vụ cháy rừng lớn (Cỡ = ha, Màu = USD).
 2. **Thiết kế 3 Dashboards chuyên đề trong Tableau**:
-   - **Dashboard D1: Bức tranh 20 năm** (Ghép `Sheet_01`, `Sheet_02`, `Sheet_03` + KPI Cards + Slider dải năm).
+   - **Dashboard D1: Bức tranh 20 năm** (Ghép `Sheet_01`, `Sheet_02`, `Sheet_03` + KPI Cards + Slider dải năm). **Trực quan hóa kết quả dự báo của TV1 (0.5 đ barem)** qua đường xu hướng Trend Line / Forecast.
    - **Dashboard D2: Điểm nóng & Phân cấp thiệt hại** (Ghép `Sheet_04`, `Sheet_07`, `Sheet_09` + Filter Châu lục).
    - **Dashboard D3: Cháy rừng: Mùa vụ, Quy mô & Tác nhân** (Ghép `Sheet_05`, `Sheet_06`, `Sheet_08`, `Sheet_10` + Filter nguyên nhân & tháng).
-3. **Xây dựng Tableau Story với 3 Story Points**:
-   - Dẫn dắt câu chuyện phân tích logic theo 3 chủ đề lớn (Bức tranh 20 năm $\to$ Điểm nóng 80/20 $\to$ Trọng tâm Cháy rừng & Dự báo).
-   - Gắn chú thích (Annotation) làm nổi bật số liệu thật (đỉnh kỷ lục 2020, ngưỡng 80/20, siêu đám cháy $\ge 10.000$ ha).
+3. **Khai phá Insight & Xây dựng Tableau Story (1.0 đ barem)**:
+   - Độc lập dẫn dắt câu chuyện phân tích logic xuyên suốt qua 3 Story Points (Bức tranh 20 năm $\to$ Điểm nóng tổn thất 80/20 $\to$ Cháy rừng, Căn nguyên & Dự báo tương lai).
+   - Gắn chú thích (Annotation) làm nổi bật số liệu thật (đỉnh kỷ lục 2020, ngưỡng 80/20, siêu đám cháy $\ge 10.000$ ha, và kết quả mô hình dự báo của TV1).
 4. **Đóng gói & Xuất bản**:
    - Xuất file workbook đóng gói: `tableau/wildfire_disaster_analysis.twbx`.
    - Xuất bản lên **Tableau Public** và nhúng vào `dashboard/index.html`.

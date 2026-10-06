@@ -88,12 +88,15 @@ Cấu trúc Story Point dẫn dắt mạch lạc theo đúng barem yêu cầu (�
 ## 4. CHI TIẾT KỸ THUẬT KÉO THẢ TỪNG SHEET TRONG TABLEAU
 
 ### Sheet 01: Tần Suất & Tổng Thiệt Hại Theo Năm (Dual-Axis Combo)
-- **Người phụ trách**: Thành viên 1
+- **Người phụ trách**: Thành viên 1 (Data & ML Engineer)
 - **Columns**: `YEAR([start_date])` (Discrete / Dimension).
 - **Rows**: 
   - Trục 1: `CNT([event_id])` $\to$ Marks: **Bar** (Cột màu xanh `#4A90E2`).
   - Trục 2: `SUM([Damage Bil USD])` $\to$ Marks: **Line** (Đường màu cam `#D55E00`).
-- **Thao tác Dual Axis**: Chuột phải vào trục thứ 2 $\to$ chọn **Dual Axis** $\to$ bỏ đồng bộ trục (hoặc giữ 2 thang đo độc lập vì đơn vị khác nhau: Số vụ vs Tỷ USD).
+- **Thao tác Dual Axis**: Chuột phải vào trục thứ 2 $\to$ chọn **Dual Axis** $\to$ giữ 2 thang đo độc lập vì đơn vị khác nhau: Số vụ vs Tỷ USD.
+- **Tích hợp Mô hình Dự báo & Trực quan (Barem 1.0 Điểm)**:
+  - **TV1 (0.5 đ Mô hình)**: Huấn luyện Linear Regression trong `src/08_predictive_model.py`, xuất kết quả dự báo ra `forecast_results.csv` và kiểm thử đường Trend Line.
+  - **TV3 (0.5 đ Trực quan)**: Tiếp nhận `Sheet_01` đưa vào **Dashboard D1**, bật/hiển thị đường **Trend Line (Linear)** (tab Analytics $\to$ Trend Line $\to$ Model: Linear) ăn khớp với mô hình của TV1; lồng ghép ý nghĩa dự báo vào **Story Point 1** để khai phá Insight (1.0 đ).
 - **Tooltip**: Hiển thị rõ số vụ và số tiền thiệt hại quy đổi.
 
 ---

@@ -31,15 +31,19 @@ Theo yêu cầu chính thức của môn học Tương tác Dữ liệu Trực q
 - **3.3. Tính tương tác cao**: Bộ lọc đa cấp (Multi-level Filters), Đi sâu chi tiết (Drill-down), Tooltip khi hover chuột, và Tương tác liên kết giữa các biểu đồ (Cross-filtering / Filter Actions).
 - **3.4. Giải thích ý nghĩa từng biểu đồ**: Lý do chọn biểu đồ, trục đo và câu hỏi kinh doanh mà biểu đồ trả lời.
 
-### 4. Khai Phá Insight (Kể Chuyện Bằng Dữ Liệu - Storytelling)
-- **4.1. Cốt truyện phân tích (Tableau Story với $\ge 3$ Story Points)**: Dẫn dắt logic người xem qua 4 chủ đề lớn (Bức tranh 20 năm $\to$ Điểm nóng tổn thất $\to$ Mùa vụ & Siêu đám cháy $\to$ Nguyên nhân & Tác động).
-- **4.2. Phân tích nguyên nhân và xu hướng**: Rút ra bài học sâu sắc từ số liệu thật, không chỉ đơn thuần trình diễn biểu đồ.
-- **4.3. Đề xuất giải pháp và khuyến nghị chính sách**.
+### 4. Khai Phá Insight & Kể Chuyện Dữ Liệu (Storytelling - 1.0 Điểm Barem) *(Thành viên 3 độc lập chủ trì)*
+- **4.1. Cốt truyện phân tích (Tableau Story với 3 Story Points trọng tâm)**: Thành viên 3 độc lập dẫn dắt logic người xem qua 3 chủ đề xuyên suốt (Point 1: Bức tranh 20 năm & Xu hướng $\to$ Point 2: Điểm nóng toàn cầu 80/20 $\to$ Point 3: Cháy rừng, Căn nguyên & Khuyến nghị tương lai).
+- **4.2. Phân tích nguyên nhân và xu hướng từ Dashboard**: Rút ra bài học sâu sắc từ số liệu thật 2006–2025, giải thích nguyên nhân đằng sau các biến động thay vì chỉ mô tả biểu đồ.
+- **4.3. Đề xuất giải pháp và khuyến nghị chính sách dựa trên dữ liệu**.
 
-### 5. Mô Hình Dự Báo (Machine Learning Predictive Model)
-- **5.1. Thuật toán dự báo**: Áp dụng thuật toán **Hồi quy tuyến tính (Linear Regression)** dự báo xu hướng thiệt hại/số vụ theo thời gian, hoặc **Hồi quy Logistic (Logistic Regression)** phân lớp rủi ro thảm họa/cháy rừng nghiêm trọng.
-- **5.2. Đánh giá hiệu năng mô hình**: Phân tích các chỉ số đánh giá (R-squared, MAE, RMSE đối với Linear; Accuracy, Precision, Recall, F1, ROC-AUC đối với Logistic).
-- **5.3. Trực quan hóa kết quả dự báo trên Dashboard**: Tích hợp thành công đường xu hướng dự báo (Trend Line / Forecast) hoặc lớp rủi ro dự báo lên một biểu đồ trực quan trong Dashboard.
+### 5. Mô Hình Dự Báo & Trực Quan Hóa (Predictive Model - 1.0 Điểm Barem)
+- **5.1. Thuật toán dự báo trên Python (0.5 đ barem - Thành viên 1 thực hiện)**: 
+  - Thành viên 1 áp dụng thuật toán **Hồi quy tuyến tính (Linear Regression)** dự báo xu hướng thiệt hại tài chính theo thời gian hoặc **Hồi quy Logistic** phân lớp rủi ro thảm họa nghiêm trọng bằng thư viện `scikit-learn`.
+  - Đánh giá hiệu năng mô hình ($R^2$, MAE, RMSE đối với Linear; Accuracy, Precision, Recall, F1 đối với Logistic).
+  - Xuất bảng kết quả dự báo `forecast_results.csv` bàn giao cho pipeline.
+- **5.2. Trực quan hóa kết quả dự báo trên Dashboard (0.5 đ barem - Thành viên 3 thực hiện)**:
+  - Thành viên 3 nhận kết quả dự báo của TV1, trực tiếp cấu hình đường xu hướng dự báo (Trend Line / Forecast) lên Dashboard D1.
+  - Lồng ghép đường dự báo vào Story Point 1 để hoàn thiện câu chuyện phân tích.
 
 ### 6. Hướng Dẫn Cài Đặt / Sử Dụng & Link Video Demo
 - **6.1. Hướng dẫn cài đặt và tái lập môi trường**: Mã nguồn tái lập (`requirements.txt`, script `src/`).
