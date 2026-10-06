@@ -1,88 +1,59 @@
 # Danh Mục Nguồn Dữ Liệu (DATA SOURCES)
 
-> **Người phụ trách**: Thành viên 1 - Kỹ sư Dữ liệu (Data Engineer)  
-> **Trạng thái**: Đã hoàn thành thu thập dữ liệu thô (Giai đoạn 2)  
-> **Cập nhật ngày**: 2026-10-01  
+> **Người phụ trách**: Thành viên 1 - Kỹ sư Dữ liệu & Học máy (Data & ML Engineer)  
+> **Trạng thái**: Đã hoàn thành thu thập dữ liệu thô (Đạt chỉ tiêu $\ge 5.000$ dòng và $\ge 3$ bảng)  
+> **Cập nhật ngày**: 2026-10-06  
+> **Phân vùng nghiên cứu trọng tâm**: Bang California (Hoa Kỳ / Bắc Mỹ) — Tâm điểm thảm họa cháy rừng khốc liệt nhất thế giới.
 
 ---
 
 ## 1. Mục Tiêu & Tiêu Chí Đánh Giá Nguồn Dữ Liệu
 
-Đề tài nghiên cứu: **"Nghiên cứu – phân tích tần suất và thiệt hại của các trận cháy rừng / thảm họa thiên nhiên trong 20 năm qua (2006–2025)"**.  
-Trọng tâm là cháy rừng (Wildfire / Forest Fire); các thảm họa thiên nhiên khác (Lũ lụt, Bão, Hạn hán, Động đất, Núi lửa...) được sử dụng để so sánh và đặt vào bối cảnh toàn cục.
-
-### Tiêu chí lựa chọn nguồn:
-1. **Tính xác thực & Uy tín học thuật**: Dữ liệu từ các cơ quan chính phủ, viện nghiên cứu khoa học hoặc tổ chức quốc tế uy tín (NASA, NOAA, USDA Forest Service, CRED UCLouvain, Our World in Data).
-2. **Phạm vi thời gian**: Bao quát giai đoạn 2006–2025 (hoặc các năm đại diện trong giai đoạn).
-3. **Mức độ chi tiết (Granularity)**: Ưu tiên dữ liệu cấp sự kiện (Event-level) có tọa độ, thời gian bùng phát, nguyên nhân, diện tích thiệt hại và tác động kinh tế/sinh mạng.
-4. **Quy mô mẫu**: Đảm bảo sau khi tiền xử lý và làm sạch đạt tối thiểu 5.000 bản ghi hợp lệ.
-5. **Tính mở & Tái lập (Reproducibility)**: Có thể tải tự động bằng script (`src/01_download.py`), giấy phép rõ ràng (Public Domain, Open Access, CC-BY 4.0).
-
----
-
-## 2. Bảng So Sánh Chi Tiết Các Nguồn Dữ Liệu
-
-| Tiêu chí | 1. Our World in Data (OWID) | 2. NASA FIRMS (MODIS & VIIRS) | 3. NOAA NCEI Storm Events | 4. USFS FPA-FOD (Wildfires) | 5. EM-DAT (CRED UCLouvain) |
-|---|---|---|---|---|---|
-| **Tổ chức quản lý** | Global Change Data Lab / Oxford | NASA Earthdata | NOAA (National Centers for Env. Information) | USDA Forest Service (Karen Short) | CRED, UCLouvain (Bỉ) |
-| **URL chính thức** | [ourworldindata.org](https://ourworldindata.org/natural-disasters) | [firms.modaps.eosdis.nasa.gov](https://firms.modaps.eosdis.nasa.gov/) | [ncei.noaa.gov](https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/) | [apps.fs.usda.gov](https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_FireOccurrence6thEdition_01/MapServer/29) | [public.emdat.be](https://public.emdat.be/) |
-| **Khoảng năm có sẵn** | 1900–2024+ | 2000–nay (File 7 ngày gần nhất) | 1950–2024+ (Theo từng năm) | 1992–2020 (Phiên bản thứ 6) | 1900–2025 |
-| **Phạm vi địa lý** | Toàn cầu (theo quốc gia/khu vực) | Toàn cầu | Hoa Kỳ & Lãnh thổ | Hoa Kỳ | Toàn cầu |
-| **Cấp dữ liệu** | Tổng hợp theo năm / quốc gia | Điểm ảnh vệ tinh phát hiện nhiệt (Hotspots) | Cấp sự kiện thiên tai chi tiết | Cấp sự kiện cháy rừng | Cấp sự kiện thảm họa vĩ mô |
-| **Số dòng quan sát thực tế** | 605 dòng (số vụ), 1.129 dòng (thiệt hại) | 68.312 dòng (MODIS), 385.296 dòng (VIIRS) | 61.281 dòng (2020), 75.593 dòng (2023) | 1.000 dòng mẫu (từ 2,3+ triệu bản ghi) | ~11.000 thảm họa (2006–2025) |
-| **Dung lượng tải** | ~50 KB | ~35 MB (2 file) | ~22 MB (2 năm gzip) | ~104 KB (mẫu) | ~5–10 MB |
-| **Giấy phép** | Creative Commons Attribution (CC-BY 4.0) | NASA Open Data Policy (Public Domain) | U.S. Federal Government (Public Domain) | U.S. Federal Government (Public Domain) | Nghiên cứu phi thương mại (Đăng ký tài khoản) |
-| **Phương thức thu thập** | Tải tự động qua HTTP GET trực tiếp | Tải tự động qua HTTP GET trực tiếp | Tải tự động qua HTTP GET trực tiếp | Tải tự động qua REST API (ArcGIS MapServer) | Tải thủ công sau khi đăng nhập tài khoản |
-| **Điểm mạnh** | Dễ tải, đối soát xu hướng 20 năm toàn cầu rất chuẩn | Tọa độ chuẩn xác, thời gian thực, độ phân giải cao | Dữ liệu sự kiện cực kỳ phong phú (51 cột, gồm cả Wildfire, Flood, Tornado...) | Dữ liệu cháy rừng chuyên sâu nhất: nguyên nhân NWCG, diện tích đám cháy | Đầy đủ thiệt hại USD, số người chết, số người ảnh hưởng trên toàn cầu |
-| **Hạn chế** | Không có cấp sự kiện chi tiết, không có nguyên nhân | Là hotspot nhiệt vệ tinh chứ không trực tiếp đo thiệt hại USD | Giới hạn lãnh thổ Mỹ | API bị nghẽn nếu query diện rộng; cần chia năm | Yêu cầu đăng nhập, không tải tự động trực tiếp bằng script không có token |
-| **Quyết định sử dụng** | **CHỌN (Dữ liệu vĩ mô)**: Dùng đối soát xu hướng Dashboard D1 & D2 | **CHỌN (Bản đồ & Mật độ)**: Dùng cho Dashboard D3 (Bản đồ điểm & Heatmap) | **CHỌN (Cấp sự kiện so sánh)**: Dùng để so sánh Cháy rừng vs Thảm họa khác | **CHỌN (Cấp sự kiện cháy rừng)**: Cung cấp cột nguyên nhân, diện tích đám cháy | **CHỌN (Nguồn bổ trợ thủ công)**: Dùng làm nguồn tham chiếu quốc tế |
+Đề tài nghiên cứu: **"Nghiên cứu – phân tích tần suất và thiệt hại của các trận cháy rừng tại California / Bắc Mỹ trong 20 năm qua (2006–2025)"**.  
+Theo thống nhất chuyên môn, tập dữ liệu tập trung toàn diện vào 2 khía cạnh cốt lõi:
+1. **Tần suất bùng phát cháy rừng**: Thời gian, chu kỳ theo tháng/mùa vụ, phân bố không gian theo từng hạt (County).
+2. **Thiệt hại toàn diện**:
+   - *Thiệt hại diện tích*: Số mẫu Anh (Acres) / Hecta (ha) rừng bị thiêu rụi, phân cấp quy mô đám cháy.
+   - *Thiệt hại tài sản & hạ tầng*: Số lượng công trình, nhà ở đơn lập, công trình tiện ích bị phá hủy hoàn toàn (>50%) hoặc hư hại một phần (DINS).
+   - *Thiệt hại con người*: Thương vong trực tiếp và gián tiếp (tử vong, bị thương) theo báo cáo NOAA.
+   - *Căn nguyên kích hoạt*: Phân loại chi tiết nguyên nhân Tự nhiên (Sét đánh) vs Tác nhân con người (Tia lửa máy móc, bất cẩn, phóng hỏa...).
 
 ---
 
-## 3. Nhật Ký Thu Thập Dữ Liệu Thô (Raw Data Manifest Log)
+## 2. Bảng So Sánh Chi Tiết Các Nguồn Dữ Liệu Thực Tế
 
-Toàn bộ các tệp tin dưới đây đã được tải tự động và kiểm tra tính toàn vẹn thông qua mã băm SHA-256 (ghi nhận tại `data/raw/MANIFEST.md` và `data/raw/manifest.json`):
-
-| Tệp tin lưu tại `data/raw/` | Nguồn dữ liệu | Dung lượng | Số dòng | Số cột | Giấy phép | Mã băm SHA-256 |
-|---|---|---|---|---|---|---|
-| `owid/natural-disasters-by-type.csv` | Our World in Data | 15.515 bytes (0.01 MB) | 605 | 3 | CC-BY 4.0 | `91fa90c4b8bdb4d9cbbc9d8768d765db6fe75802047321726b3440b188057860` |
-| `owid/economic-damage-from-natural-disasters.csv` | Our World in Data | 36.081 bytes (0.03 MB) | 1.129 | 3 | CC-BY 4.0 | `973aa8553a7dc6a68092d98a8fc86e0fb03dd5f038119947dd960d4428f159de` |
-| `nasa_firms/MODIS_C6_1_Global_7d.csv` | NASA FIRMS (Terra/Aqua) | 5.291.808 bytes (5.05 MB) | 68.312 | 13 | Public Domain | `cf3429fc60517d7efcdbae015358fa7a8f7d5b44040cebe9289c1bf4531ab24c` |
-| `nasa_firms/SUOMI_VIIRS_C2_Global_7d.csv` | NASA FIRMS (Suomi NPP) | 31.423.731 bytes (29.97 MB) | 385.296 | 13 | Public Domain | `174fc1a4cecfab7ca11c403ce3010355b083449ed03a3a95abf1c3f132eb5798` |
-| `noaa_ncei/StormEvents_details_2020.csv.gz` | NOAA NCEI Storm Events | 10.444.606 bytes (9.96 MB) | 61.281 | 51 | Public Domain | `895c56fd46991c4d9a135d67558dc4b447a02a2314efac0ace645135b98f9c9d` |
-| `noaa_ncei/StormEvents_details_2023.csv.gz` | NOAA NCEI Storm Events | 12.888.092 bytes (12.29 MB) | 75.593 | 51 | Public Domain | `713784bed40d9e5a95b1d6240a654f865f3ef97703713105c7b35437270da134` |
-| `usfs_fod/usfs_wildfires_sample.csv` | USDA Forest Service (FPA-FOD) | 104.658 bytes (0.1 MB) | 1.000 | 10 | Public Domain | `68e0b7306cd83da40d5bb39f0761732a249345ffcc797fd2eb2adcf60ea4f010` |
-
----
-
-## 4. Hướng Dẫn Tải Dữ Liệu Thủ Công Bổ Trợ (EM-DAT)
-
-Do cổng dữ liệu **EM-DAT** yêu cầu xác thực tài khoản học thuật và không hỗ trợ tải trực tiếp qua script không có API Key, người dùng có thể tải thủ công tệp bổ trợ theo các bước sau:
-
-1. **Truy cập cổng dữ liệu**: [https://public.emdat.be/](https://public.emdat.be/)
-2. **Đăng nhập**: Sử dụng tài khoản cá nhân / học thuật (đăng ký miễn phí).
-3. **Thiết lập bộ lọc dữ liệu**:
-   - Tab **Disaster Classification**: Chọn `Natural` (bao gồm `Wildfire`, `Flood`, `Storm`, `Drought`, `Earthquake`, `Extreme temperature`, `Volcanic activity`).
-   - Tab **Period**: Chọn từ năm `2006` đến năm `2025`.
-   - Tab **Geography**: Chọn `All Continents` / `All Countries`.
-4. **Tải về**:
-   - Nhấn **Download** $\to$ Chọn định dạng **CSV** (hoặc Excel `.xlsx`).
-5. **Vị trí lưu trữ trong dự án**:
-   - Đổi tên tệp thành `emdat_raw.csv`.
-   - Di chuyển vào thư mục: `data/raw/emdat/emdat_raw.csv`.
-   - Xem chi tiết tại [data/raw/emdat/README.md](file:///c:/Users/ASUS/Documents/Tương tác dữ liệu/đồ án ck/IDV_TTDL/data/raw/emdat/README.md).
+| Tiêu chí | 1. CAL FIRE Fire Perimeters (FRAP) | 2. CAL FIRE Damage Inspection (DINS) | 3. CA Counties Boundaries & Demographics | 4. NOAA Storm Events (California) |
+|---|---|---|---|---|
+| **Cơ quan phát hành** | CAL FIRE FRAP / California Natural Resources Agency | CAL FIRE / State of California Open Data | California Dept of Technology / US Census | NOAA NCEI (U.S. Federal Government) |
+| **URL chính thức** | [gis.data.cnra.ca.gov](https://gis.data.cnra.ca.gov/datasets/CALFIRE-Forestry::california-fire-perimeters-all) | [gis.data.cnra.ca.gov](https://gis.data.cnra.ca.gov/datasets/CALFIRE-Forestry::cal-fire-damage-inspection-dins-data) | [gis.data.ca.gov](https://gis.data.ca.gov/datasets/CDB::california-county-boundaries-and-identifiers) | [ncei.noaa.gov](https://www.ncei.noaa.gov/pub/data/swdi/stormevents/) |
+| **Khoảng thời gian** | 1878–2025 (Chuỗi 20 năm 2006–2025 có 7.646 vụ) | 2013–2025 (Hơn 132.500 bản ghi chi tiết) | Dữ liệu hành chính chuẩn hóa hiện tại | 2006–2025 (Sự kiện thiên tai cấp bang) |
+| **Phạm vi địa lý** | Toàn bộ bang California (58 Hạt) | Toàn bộ bang California (vùng cháy SRA) | 58 Hạt (Counties) thuộc California | Toàn bộ bang California |
+| **Số dòng quan sát** | **23.334 dòng** (vượt xa yêu cầu 5.000 dòng) | **132.522 dòng** (kiểm kê từng công trình) | **58 dòng** (danh mục 58 hạt chuẩn) | **139+ sự kiện** có thương vong/USD |
+| **Giấy phép** | Public Domain / California Open Data | Public Domain / California Open Data | Public Domain / State Geoportal | U.S. Federal Government (Public Domain) |
+| **Các trường thông tin chính** | `Fire Name`, `Year`, `Alarm Date`, `Containment Date`, `Cause`, `GIS Calculated Acres`, `Unit ID` | `* Incident Name`, `* Damage`, `* Structure Type`, `County`, `Latitude`, `Longitude`, `Assessed Improved Value` | `CDTFA_COUNTY`, `CENSUS_POPULATION`, `AREA_SQMI`, `GNIS_ID`, `CDT_COUNTY_ABBR` | `EVENT_ID`, `CZ_NAME`, `DAMAGE_PROPERTY`, `DAMAGE_CROPS`, `DEATHS_DIRECT`, `INJURIES_DIRECT` |
+| **Mục đích sử dụng** | **Bảng Fact chính**: Đo lường tần suất theo năm/tháng, diện tích tàn phá, căn nguyên đám cháy | **Bảng Fact phụ / Chi tiết**: Phân tích mức độ phá hủy nhà cửa, công trình, loại hình kiến trúc | **Bảng Dimension Địa lý**: Join phân cấp từ Hạt $\to$ Khu vực, tính tỷ lệ thiệt hại trên dân số | **Bảng Đối soát Thiệt hại**: Bổ sung số liệu thương vong sinh mạng và giá trị USD quy đổi |
 
 ---
 
-## 5. Trích Dẫn Chuẩn Học Thuật (Citations)
+## 3. Bản Kê Chi Tiết Dữ Liệu Thô Đã Tải (`data/raw/calfire/`)
 
-1. **Our World in Data**:
-   > Ritchie, H., Roser, M., & Rosado, P. (2024). *Natural Disasters*. Published online at OurWorldInData.org. Retrieved from: https://ourworldindata.org/natural-disasters [Online Resource].
-2. **NASA FIRMS**:
-   > NASA Land, Atmosphere Near real-time Capability for EOS (LANCE) / Fire Information for Resource Management System (FIRMS). *MODIS and VIIRS Active Fire Data*. NASA Goddard Space Flight Center. DOI: 10.5067/FIRMS/MODIS/MCD14DL.NRT.0061.
-3. **NOAA NCEI Storm Events**:
-   > National Oceanic and Atmospheric Administration (NOAA) National Centers for Environmental Information (NCEI). *Storm Events Database*. https://www.ncei.noaa.gov/stormevents/
-4. **USDA Forest Service (FPA-FOD)**:
-   > Short, Karen C. (2022). *Spatial wildfire occurrence data for the United States, 1992-2020 [FPA_FOD_20221014]*. 6th Edition. Fort Collins, CO: Forest Service Research Data Archive. https://doi.org/10.2737/RDS-2013-0009.6.
-5. **EM-DAT**:
-   > CRED / UCLouvain. (2024). *EM-DAT: The International Disaster Database*. Brussels, Belgium. https://www.emdat.be.
+Toàn bộ các tệp dữ liệu đã được tải về lưu trữ tại `data/raw/calfire/`, tự động sinh mã băm kiểm tra tính toàn vẹn (SHA-256):
+
+1. **`California_Fire_Perimeters_all.csv`** (Dung lượng: ~4.18 MB, **23.334 dòng**):
+   - Chứa toàn bộ chu vi, diện tích mẫu Anh (Acres) và mã nguyên nhân của các vụ cháy rừng tại California từ cơ quan lâm nghiệp CAL FIRE.
+2. **`CAL_FIRE_Damage_Inspection_DINS.csv`** (Dung lượng: ~60.59 MB, **132.522 dòng**):
+   - Chứa cơ sở dữ liệu kiểm kê thiệt hại tài sản thực tế: 70.390 công trình bị phá hủy hoàn toàn (>50%), 7.127 công trình bị hư hại, phân loại rõ nhà ở dân cư, xe cộ, nhà phụ trợ, kèm tọa độ GPS và tên hạt.
+3. **`California_Counties_Demographics.csv`** (Dung lượng: ~8.7 KB, **58 dòng**):
+   - Danh mục 58 hạt của bang California kèm diện tích dặm vuông (`AREA_SQMI`) và dân số điều tra Census (`CENSUS_POPULATION`).
+4. **`NOAA_California_Wildfires_Casualties.csv`** (Dung lượng: ~178 KB):
+   - Các vụ cháy rừng nghiêm trọng tại California được NOAA ghi nhận thương vong trực tiếp và thiệt hại tài sản quy đổi.
+
+---
+
+## 4. Cam Kết Đáp Ứng Chuẩn Barem Môn Học (File PDF)
+
+- **Quy mô dữ liệu**: Đạt **23.334 dòng** trong bảng Perimeters và **132.522 dòng** trong bảng DINS (Yêu cầu đề bài $\ge 5.000$ dòng $\implies$ **VƯỢT XA YÊU CẦU**).
+- **Cấu trúc đa bảng**: Có 4 bảng độc lập với các khóa liên kết rõ ràng (`Fire Name`, `Incident Name`, `County`, `Year`) để thực hiện thao tác **Join/Merge** xây dựng mô hình Star Schema.
+- **Tính khả thi của Dashboard & Storytelling**:
+  - Dễ dàng dựng **Map chuyên đề California theo 58 Hạt** (Choropleth Map diện tích cháy theo hạt, Proportional Symbol Map các điểm cháy lớn).
+  - Đầy đủ các chiều phân tích: Bar Chart (số vụ), Line/Dual Axis (diện tích vs công trình phá hủy theo năm), Pareto 80/20 (top các hạt chịu thiệt hại nặng nhất), Donut Chart (cơ cấu nguyên nhân), Scatter Plot (diện tích vs số nhà bị phá hủy).

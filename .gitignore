@@ -32,20 +32,12 @@ Thumbs.db
 desktop.ini
 
 # Large Raw Data & SQLite Database (To stay well under 90MB Git limit)
-data/raw/*
+data/raw/calfire/*.csv
+!data/raw/calfire/California_Counties_Demographics.csv
+!data/raw/calfire/NOAA_California_Wildfires_Casualties.csv
 !data/raw/.gitkeep
 !data/raw/MANIFEST.md
 !data/raw/manifest.json
-!data/raw/emdat/
-!data/raw/emdat/**
-!data/raw/owid/
-!data/raw/owid/**
-!data/raw/usfs_fod/
-!data/raw/usfs_fod/**
-!data/raw/nasa_firms/
-!data/raw/nasa_firms/**
-!data/raw/noaa_ncei/
-!data/raw/noaa_ncei/**
 data/interim/*
 !data/interim/.gitkeep
 *.sqlite
