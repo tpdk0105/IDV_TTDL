@@ -1,7 +1,7 @@
 # Sổ Tay Phân Công Nhiệm Vụ & Quy Ước Đặt Tên File Khi Đưa Lên Git
 
 > **Kho lưu trữ (Repository)**: [https://github.com/tpdk0105/IDV_TTDL](https://github.com/tpdk0105/IDV_TTDL)  
-> **Đồ án**: "Nghiên cứu – phân tích tần suất và thiệt hại của các trận cháy rừng / thảm họa thiên nhiên trong 20 năm qua (2006–2025)"  
+> **Đề tài**: "Nghiên cứu – phân tích tần suất và thiệt hại của các trận cháy rừng tại California / Bắc Mỹ trong 20 năm qua (2006–2025)"  
 > **Áp dụng cho**: Cả 3 thành viên nhóm (`member-1-data`, `member-2-model`, `member-3-dashboard`)  
 
 ---
@@ -50,21 +50,21 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
 - **Nhánh Git phụ trách**: `member-1-data`
 - **File chi tiết công việc**: [team/member-1-data/TASKS.md](member-1-data/TASKS.md)
 - **Trọng tâm**: Xây dựng toàn bộ Data Pipeline từ dữ liệu thô $\to$ làm sạch quy tắc & học máy $\to$ Huấn luyện Mô hình dự báo Linear/Logistic $\to$ phụ trách 2 biểu đồ Tableau #1, #2 (giảm tải việc vẽ đồ họa để tập trung toàn lực vào xử lý dữ liệu và ML).
-- **Tính thích ứng dữ liệu**: Toàn bộ hệ thống đảm bảo khi TV1 crawl bổ sung dữ liệu mới, chạy lại script thì Tableau tự động Refresh cập nhật toàn bộ mà không gãy vỡ layout.
+- **Tính thích ứng dữ liệu**: Toàn bộ hệ thống đảm bảo khi TV1 làm sạch dữ liệu mới, Tableau tự động Refresh cập nhật toàn bộ mà không gãy vỡ layout.
 
 #### Danh sách công việc cụ thể:
-1. **Khảo sát nguồn dữ liệu**: Đánh giá ít nhất 3–5 nguồn quốc tế uy tín (OWID, NASA FIRMS, NOAA NCEI, USFS FPA-FOD, EM-DAT), viết bảng so sánh và phân tích tại [docs/DATA_SOURCES.md](../docs/DATA_SOURCES.md).
-2. **Thu thập dữ liệu thô tự động**: Viết script tái lập [src/01_download.py](../src/01_download.py) tải dữ liệu vào `data/raw/` kèm theo tự động sinh bản kiểm tra tính toàn vẹn `data/raw/MANIFEST.md` (mã băm SHA-256).
+1. **Khảo sát nguồn dữ liệu**: Đánh giá 4 nguồn California uy tín (CAL FIRE FRAP, CAL FIRE DINS, California Demographics, NOAA Casualties), viết bảng so sánh và phân tích tại [docs/DATA_SOURCES.md](../docs/DATA_SOURCES.md).
+2. **Thu thập dữ liệu thô tự động**: Viết script tái lập [src/01_download.py](../src/01_download.py) tải dữ liệu vào `data/raw/calfire/` kèm theo tự động sinh bản kiểm tra tính toàn vẹn `data/raw/MANIFEST.md` (mã băm SHA-256).
 3. **Phân tích khám phá dữ liệu (EDA)**: Viết [src/02_eda.py](../src/02_eda.py) và tạo Jupyter Notebook [notebooks/01_initial_eda.ipynb](../notebooks/01_initial_eda.ipynb); dùng **Matplotlib** và **Seaborn** vẽ tối thiểu **3–5 biểu đồ tĩnh** (histogram phân phối, boxplot ngoại lai, heatmap tương quan, ma trận thiếu); lưu vào `reports/figures/` và xuất báo cáo chất lượng ban đầu [docs/DATA_QUALITY_REPORT.md](../docs/DATA_QUALITY_REPORT.md).
-4. **Làm sạch theo quy tắc (Rule-based Cleaning)**: Viết [src/03_clean.py](../src/03_clean.py) chuẩn hóa mã quốc gia ISO3, tọa độ, đơn vị diện tích (ha), thiệt hại (USD) $\to$ xuất `data/interim/master_rules_cleaned.csv`.
+4. **Làm sạch theo quy tắc (Rule-based Cleaning)**: Viết [src/03_clean.py](../src/03_clean.py) chuẩn hóa tên vụ cháy (`fire_name`), Hạt (`county`), quy đổi đơn vị (acres sang ha), xử lý giá trị âm và loại trùng lặp $\to$ xuất `data/interim/master_rules_cleaned.csv`.
 5. **Làm sạch bằng Học máy (Machine Learning Cleaning)**: Viết [src/03b_ml_clean.py](../src/03b_ml_clean.py) áp dụng **tối thiểu 2 mô hình ML**:
    - *Phát hiện ngoại lai*: Áp dụng **Isolation Forest** (đối soát với LOF) trên biến logarit, gắn cờ `is_outlier_ml` và điểm số `outlier_score`.
    - *Điền giá trị khuyết thiếu*: Áp dụng **KNN Imputer** hoặc **Iterative Imputer (MICE)**, gắn cờ `<col>_is_imputed`. Thử nghiệm che ngẫu nhiên 10–20% đối soát sai số MAE/RMSE so với Baseline (Median).
-6. **Xây dựng Mô hình dự báo trên Python (Barem 0.5 Điểm)**: Áp dụng thuật toán **Hồi quy tuyến tính (Linear Regression)** hoặc **Hồi quy Logistic** bằng `scikit-learn` theo barem Mục II.3; đánh giá độ chính xác ($R^2$, MAE, RMSE / Accuracy, F1); xuất bảng kết quả dự báo `data/clean/forecast_results.csv` bàn giao cho TV2/TV3 sử dụng trên Dashboard.
+6. **Xây dựng Mô hình dự báo trên Python (Barem 0.5 Điểm)**: Áp dụng thuật toán **Hồi quy tuyến tính (Linear Regression)** hoặc **Hồi quy Logistic** bằng `scikit-learn` theo barem Mục II.3; đánh giá độ chính xác ($R^2$, MAE, RMSE); xuất bảng kết quả dự báo `data/clean/forecast_results.csv` bàn giao cho TV2/TV3 sử dụng trên Dashboard.
 7. **Tài liệu làm sạch & mô hình**: Hoàn thiện [docs/ML_CLEANING_REPORT.md](../docs/ML_CLEANING_REPORT.md), [docs/CLEANING_LOG.md](../docs/CLEANING_LOG.md) và [docs/DATA_DICTIONARY.md](../docs/DATA_DICTIONARY.md).
 8. **Phụ trách 2 Worksheets trên Tableau**:
-   - `Sheet_01_Combo_Trend`: Combo Dual-Axis cột số vụ + đường thiệt hại USD theo năm 2006–2025 (kèm Trend Line cơ bản).
-   - `Sheet_02_Stacked_Area`: Stacked Area tần suất theo loại thảm họa theo thời gian.
+   - `Sheet_01_Combo_Trend`: Combo Dual-Axis cột số vụ cháy + đường diện tích cháy theo năm 2006–2025 (kèm Trend Line dự báo).
+   - `Sheet_02_Stacked_Area`: Stacked Area cơ cấu nguyên nhân cháy theo thời gian.
 
 ---
 
@@ -72,25 +72,25 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
 
 - **Nhánh Git phụ trách**: `member-2-model`
 - **File chi tiết công việc**: [team/member-2-model/TASKS.md](member-2-model/TASKS.md)
-- **Trọng tâm**: Thiết kế Star Schema 3NF, CSDL SQLite với đầy đủ ràng buộc toàn vẹn, kiểm thử tự động $\to$ phụ trách 4 biểu đồ Tableau #5–#8.
+- **Trọng tâm**: Thiết kế Star Schema $\ge 3$ bảng 3NF, CSDL SQLite với đầy đủ ràng buộc toàn vẹn, kiểm thử tự động $\to$ phụ trách 4 biểu đồ Tableau #3–#6.
 
 #### Danh sách công việc cụ thể:
 1. **Thiết kế Star Schema 3NF**:
-   - Các bảng chiều (Dimensions): `dim_date`, `dim_location`, `dim_disaster_type`, `dim_cause`, `dim_source`.
-   - Các bảng sự kiện (Facts): `fact_disaster_event`, `fact_wildfire_detail`. Bảo toàn đầy đủ các cột cờ ML (`is_outlier_ml`, `*_is_imputed`).
+   - Các bảng chiều (Dimensions): `dim_county` (58 Hạt California), `dim_cause`, `dim_date`.
+   - Các bảng sự kiện (Facts): `fact_fire_incident` (7.342 vụ cháy), `fact_structure_damage` (>130.000 công trình). Bảo toàn đầy đủ các cột cờ ML (`is_outlier_ml`, `*_is_imputed`).
    - Vẽ sơ đồ quan hệ thực thể bằng cú pháp Mermaid `erDiagram` trong [docs/ERD.md](../docs/ERD.md).
 2. **Tách bảng tự động**: Viết script [src/04_split_tables.py](../src/04_split_tables.py) đọc từ `master_clean.csv`, tạo surrogate keys và xuất các file CSV vào thư mục `data/tables/`.
 3. **Soạn thảo DDL CSDL**: Viết [sql/schema.sql](../sql/schema.sql) với đầy đủ:
    - `PRIMARY KEY`, `FOREIGN KEY (ON DELETE RESTRICT ON UPDATE CASCADE)`.
-   - Ràng buộc kiểm tra `CHECK` (`deaths >= 0`, `damage_usd >= 0`, `burned_area_ha >= 0`, `year BETWEEN 2006 AND 2025`, `latitude BETWEEN -90 AND 90`, `longitude BETWEEN -180 AND 180`).
+   - Ràng buộc kiểm tra `CHECK` (`acres_burned >= 0`, `structures_destroyed >= 0`, `year BETWEEN 2006 AND 2025`, `latitude BETWEEN 32 AND 42`, `longitude BETWEEN -125 AND -114`).
    - Ràng buộc `UNIQUE`, `NOT NULL`, giá trị `DEFAULT` và chỉ mục `CREATE INDEX`.
 4. **Xây dựng CSDL SQLite**: Viết script [src/05_build_db.py](../src/05_build_db.py) kích hoạt `PRAGMA foreign_keys = ON;`, tạo `data/tables/database.sqlite` và nạp dữ liệu.
 5. **Kiểm thử toàn vẹn tự động**: Viết [src/07_validate.py](../src/07_validate.py) và bộ kiểm thử [tests/test_pipeline.py](../tests/test_pipeline.py) (chạy qua `pytest`), kiểm tra 100% không có khóa ngoại mồ côi (Zero Orphan FK) và bảng fact $\ge 5.000$ dòng.
-6. **Viết truy vấn SQL**: Hoàn thiện [sql/queries_for_charts.sql](../sql/queries_for_charts.sql) tối ưu cho 10 biểu đồ.
+6. **Viết truy vấn SQL**: Hoàn thiện [sql/queries_for_charts.sql](../sql/queries_for_charts.sql) tối ưu cho các biểu đồ.
 7. **Phụ trách 4 Worksheets trên Tableau**:
-   - `Sheet_03_Diverging_Bar`: Biến động số vụ so với mức chuẩn trung bình 20 năm (tâm = 0).
-   - `Sheet_04_Treemap_Damage`: Treemap phân cấp cơ cấu thiệt hại kinh tế: Châu lục $\to$ Quốc gia.
-   - `Sheet_05_Bubble_Scatter`: Bubble Scatter tương quan diện tích cháy vs thiệt hại USD (Trục Log-Log).
+   - `Sheet_03_Diverging_Bar`: Biến động số vụ cháy so với mức chuẩn trung bình 20 năm (tâm = 0).
+   - `Sheet_04_Treemap_Damage`: Treemap phân cấp cơ cấu nhà cửa bị phá hủy: Hạt $\to$ Loại công trình.
+   - `Sheet_05_Bubble_Scatter`: Bubble Scatter tương quan diện tích cháy vs số nhà phá hủy vs thương vong (Trục Log-Log).
    - `Sheet_06_Combo_Histogram`: Combo Histogram phân phối diện tích cháy theo logarit + Đường phân vị lũy kế.
 
 ---
@@ -103,17 +103,17 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
 
 #### Danh sách công việc cụ thể:
 1. **Phụ trách 4 Worksheets trên Tableau**:
-   - `Sheet_07_Combo_Pareto`: Combo Pareto Chart cột số người chết top 10 quốc gia + Đường % lũy kế 80/20.
-   - `Sheet_08_Donut_Cause`: Donut / Sunburst 2 tầng phân tích nguyên nhân cháy rừng (Tự nhiên vs Con người).
-   - `Sheet_09_Choropleth_Map`: Bản đồ thế giới phân vùng mức độ thiệt hại/số vụ theo quốc gia (Bản đồ Map bắt buộc).
-   - `Sheet_10_Proportional_Map`: Bản đồ điểm phân bố không gian các đại vụ cháy rừng lớn (Cỡ = ha, Màu = USD).
+   - `Sheet_07_Combo_Pareto`: Combo Pareto Chart cột số nhà bị phá hủy top 10 Hạt + Đường % lũy kế 80/20.
+   - `Sheet_08_Donut_Cause`: Donut 2 tầng phân tích nguyên nhân cháy rừng (Tự nhiên vs Con người).
+   - `Sheet_09_Choropleth_Map`: Bản đồ phân vùng 58 Hạt California theo mức độ thiệt hại/số nhà bị cháy (Bản đồ Map bắt buộc).
+   - `Sheet_10_Proportional_Map`: Bản đồ điểm phân bố không gian các đại vụ cháy lớn California (Cỡ = Acres, Màu = Nhà phá hủy).
 2. **Thiết kế 3 Dashboards chuyên đề trong Tableau**:
-   - **Dashboard D1: Bức tranh 20 năm** (Ghép `Sheet_01`, `Sheet_02`, `Sheet_03` + KPI Cards + Slider dải năm). **Trực quan hóa kết quả dự báo của TV1 (0.5 đ barem)** qua đường xu hướng Trend Line / Forecast.
-   - **Dashboard D2: Điểm nóng & Phân cấp thiệt hại** (Ghép `Sheet_04`, `Sheet_07`, `Sheet_09` + Filter Châu lục).
-   - **Dashboard D3: Cháy rừng: Mùa vụ, Quy mô & Tác nhân** (Ghép `Sheet_05`, `Sheet_06`, `Sheet_08`, `Sheet_10` + Filter nguyên nhân & tháng).
+   - **Dashboard D1: Bức tranh 20 năm Cháy rừng California** (Ghép `Sheet_01`, `Sheet_02`, `Sheet_03` + KPI Cards + Slider dải năm). **Trực quan hóa kết quả dự báo của TV1 (0.5 đ barem)** qua đường xu hướng Trend Line / Forecast.
+   - **Dashboard D2: Điểm nóng & Phân cấp thiệt hại theo 58 Hạt** (Ghép `Sheet_04`, `Sheet_07`, `Sheet_09` + Filter Hạt/Vùng).
+   - **Dashboard D3: Mùa vụ, Căn nguyên & Siêu đám cháy** (Ghép `Sheet_05`, `Sheet_06`, `Sheet_08`, `Sheet_10` + Filter nguyên nhân & diện tích).
 3. **Khai phá Insight & Xây dựng Tableau Story (1.0 đ barem)**:
-   - Độc lập dẫn dắt câu chuyện phân tích logic xuyên suốt qua 3 Story Points (Bức tranh 20 năm $\to$ Điểm nóng tổn thất 80/20 $\to$ Cháy rừng, Căn nguyên & Dự báo tương lai).
-   - Gắn chú thích (Annotation) làm nổi bật số liệu thật (đỉnh kỷ lục 2020, ngưỡng 80/20, siêu đám cháy $\ge 10.000$ ha, và kết quả mô hình dự báo của TV1).
+   - Độc lập dẫn dắt câu chuyện phân tích logic xuyên suốt qua 3 Story Points (Bức tranh 20 năm California $\to$ Điểm nóng tổn thất 58 Hạt 80/20 $\to$ Căn nguyên, Siêu đám cháy & Thách thức tương lai).
+   - Gắn chú thích (Annotation) làm nổi bật số liệu thật (đỉnh kỷ lục 2020 hơn 4.3 triệu Acres, ngưỡng 80/20, siêu đám cháy $\ge 100.000$ Acres, và kết quả mô hình dự báo của TV1).
 4. **Đóng gói & Xuất bản**:
    - Xuất file workbook đóng gói: `tableau/wildfire_disaster_analysis.twbx`.
    - Xuất bản lên **Tableau Public** và nhúng vào `dashboard/index.html`.
@@ -145,7 +145,7 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
 
 #### A. Thư mục mã nguồn Python (`src/`)
 - **Quy tắc**: `src/XX_ten_hanh_dong.py`
-  - `XX`: 2 chữ số biểu thị thứ tự thực thi trong pipeline (`01`, `02`, `03`, `03b`, `04`, `05`, `06`, `07`).
+  - `XX`: 2 chữ số biểu thị thứ tự thực thi trong pipeline (`01`, `02`, `03`, `03b`, `04`, `05`, `06`, `07`, `08`).
   - `ten_hanh_dong`: Viết bằng tiếng Anh, kiểu `snake_case` (chữ thường nối bằng gạch dưới `_`).
 - **Danh sách file chuẩn mực**:
   - ✅ `src/01_download.py`
@@ -156,24 +156,23 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
   - ✅ `src/05_build_db.py`
   - ✅ `src/06_export_json.py`
   - ✅ `src/07_validate.py`
+  - ✅ `src/08_predictive_model.py`
 
 #### B. Thư mục dữ liệu (`data/`)
 - **Dữ liệu thô (`data/raw/`)**:
-  - Cấu trúc: `data/raw/<ten_nguon>/<ten_file_goc>.<ext>`
-  - Giữ nguyên tên file từ nhà cung cấp để bảo toàn tính nguyên bản và đối soát mã băm SHA-256 (ví dụ: `data/raw/nasa_firms/MODIS_C6_1_Global_7d.csv`, `data/raw/owid/natural-disasters-by-type.csv`).
+  - Cấu trúc: `data/raw/calfire/<ten_file_goc>.<ext>`
+  - Lưu trữ 4 file: `California_Fire_Perimeters_all.csv`, `CAL_FIRE_Damage_Inspection_DINS.csv`, `California_Counties_Demographics.csv`, `NOAA_California_Wildfires_Casualties.csv`.
 - **Dữ liệu trung gian (`data/interim/`)**:
-  - Cấu trúc: `snake_case.csv` (ví dụ: `data/interim/master_rules_cleaned.csv`).
+  - File: `data/interim/master_rules_cleaned.csv`.
 - **Dữ liệu sạch hoàn chỉnh (`data/clean/`)**:
-  - File bắt buộc: `data/clean/master_clean.csv`.
+  - File bắt buộc: `data/clean/master_clean.csv` ($\ge 5.000$ dòng) và `data/clean/forecast_results.csv`.
 - **Dữ liệu các bảng phân rã (`data/tables/`)**:
   - Tên file CSV **bắt buộc trùng khớp 100% với tên bảng trong CSDL SQLite**:
     - ✅ `dim_date.csv`
-    - ✅ `dim_location.csv`
-    - ✅ `dim_disaster_type.csv`
+    - ✅ `dim_county.csv`
     - ✅ `dim_cause.csv`
-    - ✅ `dim_source.csv`
-    - ✅ `fact_disaster_event.csv`
-    - ✅ `fact_wildfire_detail.csv`
+    - ✅ `fact_fire_incident.csv`
+    - ✅ `fact_structure_damage.csv`
   - File CSDL SQLite duy nhất: `data/tables/database.sqlite`.
 
 #### C. Thư mục truy vấn SQL (`sql/`)
@@ -181,7 +180,7 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
 - **Danh sách file chuẩn mực**:
   - ✅ `sql/schema.sql`: Định nghĩa cấu trúc bảng DDL (PK, FK, CHECK).
   - ✅ `sql/load.sql`: Kịch bản nạp dữ liệu.
-  - ✅ `sql/queries_for_charts.sql`: Toàn bộ các truy vấn SQL cho 12 biểu đồ (có ghi chú rõ `-- Chart #N | Thành viên X`).
+  - ✅ `sql/queries_for_charts.sql`: Toàn bộ các truy vấn SQL cho 10 biểu đồ.
 
 #### D. Thư mục tài liệu kỹ thuật (`docs/`)
 - **Quy tắc**: `docs/UPPER_SNAKE_CASE.md` (chữ in hoa nối bằng gạch dưới `_`).
@@ -201,11 +200,11 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
 - **Quy tắc đặt tên file workbook**:
   - Tên file đóng gói: `tableau/wildfire_disaster_analysis.twbx` (`snake_case`).
 - **Quy tắc đặt tên Worksheet bên trong Tableau**:
-  - `Sheet_XX_<Ten_Bieu_Do>` (ví dụ: `Sheet_01_Combo_Trend`, `Sheet_03_Choropleth_Map`, `Sheet_09_Combo_Pareto`).
+  - `Sheet_XX_<Ten_Bieu_Do>` (ví dụ: `Sheet_01_Combo_Trend`, `Sheet_09_Choropleth_Map`, `Sheet_07_Combo_Pareto`).
 - **Quy tắc đặt tên Dashboard bên trong Tableau**:
-  - `Dashboard_DX_<Ten_Chu_De>` (ví dụ: `Dashboard_D1_Buc_Tranh_20_Nam`, `Dashboard_D2_O_Dau_Chiu_Thiet_Hai`).
+  - `Dashboard_D1_Buc_Tranh_20_Nam`, `Dashboard_D2_Diem_Nong_58_Hat`, `Dashboard_D3_Mua_Vu_Can_Nguyen`.
 - **Quy tắc đặt tên Story Point trong Tableau Story**:
-  - Tiêu đề thanh dẫn: `X. <Noi_Dung_Ngan_Gon>` (ví dụ: `1. Bức tranh 20 năm`, `2. Điểm nóng toàn cầu`, `3. Mùa vụ & Siêu đám cháy`, `4. Nguyên nhân & Tác động`).
+  - Tiêu đề thanh dẫn: `1. Bức tranh 20 năm California`, `2. Điểm nóng 58 Hạt (80/20)`, `3. Căn nguyên & Siêu đám cháy`.
 
 #### F. Quy ước nhánh Git (Git Branches) & Commit Message
 - **Tên nhánh bắt buộc**:
@@ -214,21 +213,19 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
   - Nhánh TV2: `member-2-model`
   - Nhánh TV3: `member-3-dashboard`
 - **Quy chuẩn thông điệp Commit (Conventional Commits)**:
-  - `feat:` Thêm tính năng mới / script mới (vd: `feat: add isolation forest model in 03b_ml_clean.py`)
-  - `data:` Thêm hoặc cập nhật dữ liệu thô/sạch (vd: `data: add master_clean.csv with 5200 rows`)
-  - `docs:` Cập nhật tài liệu kỹ thuật (vd: `docs: update chart spec with tableau shelves`)
-  - `fix:` Sửa lỗi mã nguồn hoặc CSDL (vd: `fix: resolve foreign key constraint in build_db.py`)
-  - `test:` Bổ sung hoặc chỉnh sửa bộ test (vd: `test: add assertions for table row count`)
-  - `chore:` Cấu hình công cụ, môi trường (vd: `chore: update requirements.txt and gitignore`)
+  - `feat:` Thêm tính năng mới / script mới
+  - `data:` Thêm hoặc cập nhật dữ liệu thô/sạch
+  - `docs:` Cập nhật tài liệu kỹ thuật
+  - `fix:` Sửa lỗi mã nguồn hoặc CSDL
+  - `test:` Bổ sung hoặc chỉnh sửa bộ test
+  - `chore:` Cấu hình công cụ, môi trường
 
 ---
 
 ## PHẦN 3: BẢNG KIỂM TRA NHANH TRƯỚC KHI PUSH LÊN GIT (PRE-PUSH CHECKLIST)
 
-Trước khi thực hiện lệnh `git push`, mỗi thành viên hãy tự kiểm tra 5 câu hỏi vàng sau:
-
-- [ ] **1. Tên file**: Có file nào chứa dấu cách, chữ có dấu tiếng Việt, hoặc ký tự lạ không?
-- [ ] **2. Kích thước**: Có file nào vượt quá 90 MB không? (Chạy lệnh kiểm tra nếu nghi ngờ).
-- [ ] **3. Vị trí lưu**: File có được đặt đúng thư mục quy định (`src/`, `data/`, `sql/`, `tableau/`, `docs/`) chưa?
-- [ ] **4. Thông điệp commit**: Commit message có đúng chuẩn Conventional Commits (`feat:`, `docs:`, `data:`...) không?
-- [ ] **5. Nhánh làm việc**: Bạn có đang ở đúng nhánh của mình (`member-X-...`) trước khi push không?
+- [ ] **1. Tên file**: Không chứa dấu cách, chữ có dấu tiếng Việt, hoặc ký tự lạ.
+- [ ] **2. Kích thước**: Không vượt quá 90 MB (dữ liệu thô lớn đã nằm trong `.gitignore`).
+- [ ] **3. Vị trí lưu**: Đặt đúng thư mục quy định (`src/`, `data/`, `sql/`, `tableau/`, `docs/`).
+- [ ] **4. Thông điệp commit**: Đúng chuẩn Conventional Commits (`feat:`, `docs:`, `data:`...).
+- [ ] **5. Nhánh làm việc**: Đang ở đúng nhánh của mình (`member-X-...`) trước khi push.

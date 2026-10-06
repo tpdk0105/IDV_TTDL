@@ -1,6 +1,6 @@
 # Danh Mục Các Trường Tính Toán Trong Tableau (CALCULATED FIELDS)
 
-> Tài liệu hướng dẫn Thành viên 1, Thành viên 2, Thành viên 3 tạo các trường tính toán (Calculated Fields) trong Tableau Desktop / Tableau Public để phục vụ cho 12 biểu đồ và 4 Dashboard.
+> Tài liệu hướng dẫn Thành viên 1, Thành viên 2, Thành viên 3 tạo các trường tính toán (Calculated Fields) trong Tableau Desktop / Tableau Public phục vụ cho 10 biểu đồ, 3 Dashboard và Tableau Story về Cháy rừng California (2006–2025).
 
 ---
 
@@ -10,70 +10,70 @@
 - **Tên trường**: `[Event Year]`
 - **Công thức**:
   ```tableau
-  YEAR([start_date])
+  YEAR([alarm_date])
   ```
-- **Ý nghĩa**: Trích xuất năm dạng số nguyên hoặc thứ bậc thời gian.
+- **Ý nghĩa**: Trích xuất năm dạng số nguyên hoặc thứ bậc thời gian (nếu dùng trường `year` thì không cần tính).
 
-### CF2: Tháng Sự Kiện (Event Month)
+### CF2: Tháng Bùng Phát (Event Month)
 - **Tên trường**: `[Event Month]`
 - **Công thức**:
   ```tableau
-  MONTH([start_date])
+  MONTH([alarm_date])
   ```
-- **Ý nghĩa**: Phục vụ biểu đồ Heatmap tháng $\times$ năm (#4).
+- **Ý nghĩa**: Phục vụ phân tích chu kỳ mùa vụ cháy rừng.
 
-### CF3: Thiệt Hại Kinh Tế (Tỷ USD)
-- **Tên trường**: `[Damage Bil USD]`
+### CF3: Quy Đổi Diện Tích Sang Hecta (Burned Area Hectares)
+- **Tên trường**: `[Burned Area Ha]`
 - **Công thức**:
   ```tableau
-  ZN([damage_usd]) / 1000000000
+  ZN([acres_burned]) * 0.404686
   ```
-- **Ý nghĩa**: Đổi đơn vị sang Tỷ USD để hiển thị gọn gàng trên trục số.
+- **Ý nghĩa**: Quy đổi đơn vị mẫu Anh (Acres) sang Hecta (ha) chuẩn quốc tế.
 
-### CF4: Phân Loại Nhóm Thiệt Hại (Damage Severity Level)
-- **Tên trường**: `[Damage Severity Level]`
+### CF4: Phân Loại Quy Mô Đám Cháy (Fire Size Class)
+- **Tên trường**: `[Fire Size Class]`
 - **Công thức**:
   ```tableau
-  IF ISNULL([damage_usd]) OR [damage_usd] = 0 THEN "Không xác định"
-  ELSEIF [damage_usd] < 10000000 THEN "Thấp (< 10M USD)"
-  ELSEIF [damage_usd] < 100000000 THEN "Trung bình (10M - 100M USD)"
-  ELSEIF [damage_usd] < 1000000000 THEN "Nghiêm trọng (100M - 1B USD)"
-  ELSE "Đại thảm họa (> 1B USD)"
+  IF ISNULL([acres_burned]) OR [acres_burned] = 0 THEN "Chưa ghi nhận"
+  ELSEIF [acres_burned] < 1000 THEN "Nhỏ (< 1.000 Acres)"
+  ELSEIF [acres_burned] < 10000 THEN "Trung bình (1.000 - 10.000 Acres)"
+  ELSEIF [acres_burned] < 100000 THEN "Lớn (10.000 - 100.000 Acres)"
+  ELSE "Siêu đám cháy (≥ 100.000 Acres - Megafire)"
   END
   ```
-- **Ý nghĩa**: Phục vụ phân tầng thiệt hại trong biểu đồ Sankey / Flow (#11).
+- **Ý nghĩa**: Phân cấp quy mô đám cháy theo chuẩn phân loại lâm nghiệp Hoa Kỳ.
 
 ---
 
-## 2. Các Trường Tính Toán Cho Thành Viên 1 (#1 – #4)
+## 2. Các Trường Tính Toán Cho Thành Viên 1 (#1 – #2)
 
-### CF5: Số Vụ Cháy Rừng Riêng Biệt (Wildfire Event Count)
-- **Tên trường**: `[Wildfire Events]`
+### CF5: Số Vụ Cháy Hàng Năm (Annual Fire Count)
+- **Tên trường**: `[Fire Incidents Count]`
 - **Công thức**:
   ```tableau
-  IF [disaster_type] = "Wildfire" THEN 1 ELSE 0 END
+  COUNTD([incident_id])
   ```
-- **Ý nghĩa**: Dùng cho Heatmap (#4) và so sánh cơ cấu.
+- **Ý nghĩa**: Trục cột cho biểu đồ Combo Trend (#1).
 
 ---
 
-## 3. Các Trường Tính Toán Cho Thành Viên 2 (#5 – #8)
+## 3. Các Trường Tính Toán Cho Thành Viên 2 (#3 – #6)
 
-### CF6: Trung Bình Số Vụ 20 Năm (20-Year Benchmark Average)
+### CF6: Trung Bình Số Vụ Cháy 20 Năm (20-Year Benchmark Average)
 - **Tên trường**: `[Avg Events 20Yr]`
 - **Công thức**:
   ```tableau
-  WINDOW_AVG(COUNTD([event_id]))
+  WINDOW_AVG(COUNTD([incident_id]))
   ```
-- **Thiết lập bảng**: Compute using `[Event Year]`.
+- **Thiết lập bảng**: Compute using `[year]`.
 
 ### CF7: Độ Lệch So Với Trung Bình (Divergence from Average)
 - **Tên trường**: `[Diff from 20Yr Avg]`
 - **Công thức**:
   ```tableau
-  COUNTD([event_id]) - [Avg Events 20Yr]
+  COUNTD([incident_id]) - [Avg Events 20Yr]
   ```
-- **Ý nghĩa**: Trục đo cho Diverging Bar (#5), giá trị âm (xanh) hoặc dương (đỏ).
+- **Ý nghĩa**: Trục đo cho Diverging Bar (#3), giá trị âm (xanh) hoặc dương (đỏ cam).
 
 ### CF8: Màu Phân Kỳ (Diverging Color Flag)
 - **Tên trường**: `[Divergence Flag]`
@@ -84,65 +84,66 @@
   END
   ```
 
-### CF9: Log10 Diện Tích Cháy (Log10 Burned Area)
-- **Tên trường**: `[Log10 Burned Area]`
+### CF9: Log10 Diện Tích Cháy (Log10 Acres Burned)
+- **Tên trường**: `[Log10 Acres Burned]`
 - **Công thức**:
   ```tableau
-  LOG(ZN([burned_area_ha]) + 1, 10)
+  LOG(ZN([acres_burned]) + 1, 10)
   ```
-- **Ý nghĩa**: Trục hoành cho Bubble Scatter (#7).
+- **Ý nghĩa**: Trục hoành cho Bubble Scatter (#5) (hoặc có thể chọn trực tiếp Logarithmic Scale trên trục của Tableau).
 
-### CF10: Log10 Thiệt Hại (Log10 Damage USD)
-- **Tên trường**: `[Log10 Damage USD]`
+### CF10: Log10 Nhà Cửa Phá Hủy (Log10 Structures Destroyed)
+- **Tên trường**: `[Log10 Structures Destroyed]`
 - **Công thức**:
   ```tableau
-  LOG(ZN([damage_usd]) + 1, 10)
+  LOG(ZN([structures_destroyed]) + 1, 10)
   ```
-- **Ý nghĩa**: Trục tung cho Bubble Scatter (#7).
+- **Ý nghĩa**: Trục tung cho Bubble Scatter (#5).
 
-### CF11: Nhóm Phân Vị Diện Tích Cháy (Burned Area Size Bin)
-- **Tên trường**: `[Burned Area Bin]`
+### CF11: Nhóm Phân Vị Diện Tích (Burned Acres Bin)
+- **Tên trường**: `[Acres Bin Log]`
 - **Công thức**:
   ```tableau
-  IF ISNULL([burned_area_ha]) OR [burned_area_ha] = 0 THEN "Chưa ghi nhận"
-  ELSEIF [burned_area_ha] < 100 THEN "< 100 ha (Nhỏ)"
-  ELSEIF [burned_area_ha] < 1000 THEN "100 - 1.000 ha (Vừa)"
-  ELSEIF [burned_area_ha] < 10000 THEN "1.000 - 10.000 ha (Lớn)"
-  ELSE "≥ 10.000 ha (Siêu đám cháy)"
+  IF ISNULL([acres_burned]) OR [acres_burned] < 300 THEN "< 300 Acres"
+  ELSEIF [acres_burned] < 1000 THEN "300 - 1.000 Acres"
+  ELSEIF [acres_burned] < 5000 THEN "1.000 - 5.000 Acres"
+  ELSEIF [acres_burned] < 25000 THEN "5.000 - 25.000 Acres"
+  ELSEIF [acres_burned] < 100000 THEN "25.000 - 100.000 Acres"
+  ELSE "≥ 100.000 Acres (Siêu đám cháy)"
   END
   ```
-- **Ý nghĩa**: Trục phân loại cho Histogram (#8).
+- **Ý nghĩa**: Trục phân loại cho Histogram (#6).
 
 ---
 
-## 4. Các Trường Tính Toán Cho Thành Viên 3 (#9 – #12)
+## 4. Các Trường Tính Toán Cho Thành Viên 3 (#7 – #10)
 
-### CF12: Tỷ Lệ % Lũy Kế Tử Vong (Cumulative Death %)
-- **Tên trường**: `[Cumulative Death %]`
+### CF12: Tỷ Lệ % Lũy Kế Nhà Cửa Bị Phá Hủy (Cumulative Destroyed %)
+- **Tên trường**: `[Cumulative Destroyed %]`
 - **Công thức**:
   ```tableau
-  RUNNING_SUM(SUM([deaths])) / TOTAL(SUM([deaths]))
+  RUNNING_SUM(SUM([structures_destroyed])) / TOTAL(SUM([structures_destroyed]))
   ```
-- **Thiết lập bảng**: Compute using `[country_name]` (đã sắp xếp giảm dần theo `SUM([deaths])`).
-- **Ý nghĩa**: Đường cong Pareto lũy kế (#9) so sánh với ngưỡng tham chiếu 80%.
+- **Thiết lập bảng**: Compute using `[county]` (đã sắp xếp giảm dần theo `SUM([structures_destroyed])`).
+- **Ý nghĩa**: Đường cong Pareto lũy kế (#7) so sánh với ngưỡng tham chiếu 80%.
 
-### CF13: Phân Loại Nguyên Nhân 2 Cấp (Cause Category Level 1)
+### CF13: Phân Loại Nhóm Nguyên Nhân (Cause Group High Level)
 - **Tên trường**: `[Cause Group High Level]`
 - **Công thức**:
   ```tableau
-  IF CONTAINS(LOWER([cause_group]), "natural") OR CONTAINS(LOWER([cause_group]), "lightning") THEN "Tự nhiên (Sấm sét, Khí hậu)"
-  ELSEIF CONTAINS(LOWER([cause_group]), "human") OR CONTAINS(LOWER([cause_group]), "arson") OR CONTAINS(LOWER([cause_group]), "accident") THEN "Tác động con người (Bất cẩn, Đốt phá)"
+  IF CONTAINS(LOWER([cause_name]), "lightning") OR [cause_code] = 1 THEN "Tự nhiên (Sấm sét)"
+  ELSEIF [cause_code] IN (2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 16) OR CONTAINS(LOWER([cause_group]), "human") THEN "Tác động con người (Thiết bị, Điện, Đốt phá)"
   ELSE "Chưa xác định / Khác"
   END
   ```
-- **Ý nghĩa**: Vòng trong của biểu đồ Donut / Sunburst (#10) và nút nguồn của luồng (#11).
+- **Ý nghĩa**: Vòng trong của biểu đồ Donut 2 tầng (#8).
 
 ---
 
 ## 5. Quy Chuẩn Bảng Màu Trong Tableau
 
 Khi chọn màu trên thẻ **Color (Marks)**:
-- **Biểu đồ thời gian / Số lượng**: Bảng màu `Tableau Classic 10` hoặc `Color Blind`.
-- **Cháy rừng (Wildfire)**: Luôn cố định màu Đỏ Cam `#D55E00` (hoặc `Orange-Red`).
-- **Bản đồ nhiệt / Độ nghiêm trọng**: Chọn dải tuần tự `Orange-Red` hoặc `YlOrRd`.
-- **Biểu đồ phân kỳ (#5)**: Chọn dải phân kỳ `Red-Blue Diverging` (Tâm = 0).
+- **Biểu đồ thời gian / Số lượng**: Bảng màu `Tableau Classic 10` hoặc `Color Blind` (Okabe-Ito).
+- **Cháy rừng / Thiệt hại**: Luôn cố định dải màu Đỏ Cam `#D55E00` (hoặc `Orange-Red`).
+- **Bản đồ phân vùng 58 Hạt (Choropleth Map)**: Chọn dải tuần tự `Orange-Red`.
+- **Biểu đồ phân kỳ (#3)**: Chọn dải phân kỳ `Red-Blue Diverging` (Tâm = 0).
