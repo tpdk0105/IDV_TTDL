@@ -34,12 +34,18 @@
 - **Thao tác**:  
   Click vào khối `Americas` trên Treemap để phóng to các quốc gia; sau đó click vào Hoa Kỳ trên bản đồ thế giới để lọc toàn bộ dashboard về dữ liệu của Mỹ.
 
-### Phút 4:00 – 5:30 | Phân Tích Chuyên Sâu Cháy Rừng: Nguyên Nhân, Quy Mô & Dòng Luồng
+### Phút 4:00 – 5:15 | Phân Tích Chuyên Sâu Cháy Rừng: Nguyên Nhân, Quy Mô & Dòng Luồng
 - **Lời dẫn**:  
   *"Để trả lời câu hỏi nguyên nhân gốc rễ, Biểu đồ #10 Sunburst cho thấy sự đối lập giữa yếu tố tự nhiên (sét) và tác động con người. Tiếp tục nhìn vào Biểu đồ #11 Sankey Diagram, chúng ta thấy đường truyền từ nguồn lửa đến mức độ thiệt hại thảm họa."*
 - **Thao tác**:  
   Hover chuột vào luồng `Human` $\to$ `Wildfire` $\to$ `Catastrophic Damage` trên biểu đồ Sankey để làm sáng luồng quan hệ. Bật công tắc *"Chỉ hiển thị số liệu gốc"* để chứng minh tính minh bạch của các giá trị sau xử lý bằng Machine Learning.
 
-### Phút 5:30 – 6:30 | Tổng Kết & Câu Chuyện Dữ Liệu (Data Storytelling)
+### Phút 5:15 – 6:00 | Trình Diễn Mô Hình Dự Báo (Predictive Model Integration)
 - **Lời dẫn**:  
-  *"Tóm lại, qua 12 biểu đồ tương tác, nhóm đã rút ra được 5 phát hiện then chốt về xu hướng gia tăng của các siêu thảm họa cháy rừng trong thập kỷ gần đây. Toàn bộ mã nguồn, dữ liệu chuẩn hóa và tài liệu chi tiết đã được công khai trên GitHub. Xin cảm ơn Thầy Cô đã theo dõi!"*
+  *"Thưa Thầy Cô, nhóm không chỉ dừng lại ở mô tả quá khứ mà còn tích hợp Mô hình Hồi quy tuyến tính / Logistic để dự báo xu hướng tương lai. Nhìn vào đường xu hướng dự báo (Trend Line) trên Biểu đồ #7 (Bubble Scatter) và Biểu đồ #5, mô hình cho thấy mức độ biến động thiệt hại có xu hướng dốc lên với hệ số tin cậy R-squared đạt chuẩn, giúp các nhà quản lý rủi ro lường trước kịch bản thiệt hại cho các năm tiếp theo."*
+- **Thao tác**:  
+  Bật đường Trend line/Dự báo trên Dashboard, hover xem phương trình hồi quy và mức độ giải thích $R^2$.
+
+### Phút 6:00 – 7:00 | Tổng Kết & Câu Chuyện Dữ Liệu (Data Storytelling & Q&A)
+- **Lời dẫn**:  
+  *"Tóm lại, đóng vai trò như các Data Analyst tư vấn chiến lược cho tổ chức ứng phó thiên tai, nhóm đã rút ra được câu chuyện trọn vẹn từ nguyên nhân, chu kỳ mùa cho đến dự báo thiệt hại. Nhóm cũng đã chuẩn bị sẵn Video demo và Video backup tóm tắt dự phòng. Toàn bộ mã nguồn, tài liệu chuẩn IEEE và file .twbx đã sẵn sàng. Chúng em xin lắng nghe ý kiến đóng góp và trả lời phản biện của Thầy Cô!"*

@@ -5,44 +5,51 @@
 
 ---
 
-## Phần A: Dàn Ý Báo Cáo Chi Tiết Đồ Án (Report Outline)
+## Phần A: Cấu Trúc Báo Cáo Khoa Học Bắt Buộc (Chuẩn IEEE, Tối Thiểu 40 Trang)
 
-### Chương 1: Giới Thiệu Đề Tài & Bối Cảnh Nghiên Cứu
-1.1. Tính cấp thiết của đề tài: Tác động biến đổi khí hậu toàn cầu và sự gia tăng các vụ cháy rừng khốc liệt (2005–2024).  
-1.2. Mục tiêu nghiên cứu: Phân tích tần suất, mức độ thiệt hại tài chính và sinh mạng; so sánh vị thế của cháy rừng trong tổng thể các thảm họa thiên nhiên.  
-1.3. Phạm vi dữ liệu & Phương pháp tiếp cận: Dữ liệu đa nguồn (EM-DAT, NASA FIRMS, USFS/NOAA), quy trình Data Engineering kết hợp Machine Learning và Visual Analytics.
+Theo yêu cầu chính thức của môn học Tương tác Dữ liệu Trực quan (IDV), báo cáo đồ án được trình bày theo cấu trúc khoa học (định dạng IEEE, tối thiểu 40 trang) gồm 7 phần bắt buộc sau:
 
-### Chương 2: Thu Thập & Kỹ Thuật Làm Sạch Dữ Liệu
-2.1. Đánh giá và so sánh các nguồn dữ liệu quốc tế.  
-2.2. Phân tích khám phá dữ liệu ban đầu (EDA) & phát hiện các khiếm khuyết dữ liệu thô.  
-2.3. Quy trình làm sạch dữ liệu dựa trên quy tắc (Rule-based cleaning): Chuẩn hóa ISO3, tọa độ, tiền tệ và diện tích.  
-2.4. Ứng dụng Học máy trong làm sạch dữ liệu:
-- Phát hiện bất thường đa biến bằng **Isolation Forest** và **Local Outlier Factor (LOF)**.
-- Xử lý giá trị khuyết thiếu bằng **KNN Imputer** / **Iterative Imputer (MICE)** với cơ chế đánh giá sai số nghiêm ngặt.
-- Dự đoán phân loại nguyên nhân cháy bằng **Random Forest Classifier**.
-2.5. Minh bạch hóa và kiểm soát chất lượng: Các cột cờ độ tin cậy và hạn chế dữ liệu.
+### 1. Giới Thiệu Đề Tài & Mô Tả Tập Dữ Liệu
+- **1.1. Bối cảnh & Mục tiêu nghiên cứu**: Bài toán phân tích tần suất, mức độ thiệt hại tài chính và sinh mạng của thảm họa thiên nhiên và cháy rừng giai đoạn 2006–2025.
+- **1.2. Khảo sát nguồn dữ liệu thực tế**: Dẫn nguồn & minh chứng hợp lệ (EM-DAT, NASA FIRMS, USFS/NOAA, Our World in Data). Cam kết quy mô $\ge 5.000$ dòng và kiến trúc đa bảng ($\ge 3$ bảng).
+- **1.3. Từ điển dữ liệu (Data Dictionary)**: Mô tả chi tiết từng thuộc tính, ý nghĩa nghiệp vụ và kiểu dữ liệu.
 
-### Chương 3: Thiết Kế Mô Hình Dữ Liệu (Star Schema & Ràng Buộc Cơ Sở Dữ Liệu)
-3.1. Phân rã dữ liệu đạt chuẩn tối thiểu 3NF và kiến trúc hình sao (Star Schema).  
-3.2. Chi tiết các bảng Dimension và Fact (`fact_disaster_event`, `fact_wildfire_detail`).  
-3.3. Hệ thống ràng buộc toàn vẹn: Primary Key, Foreign Key, CHECK constraints, UNIQUE, NOT NULL và các Indexes tối ưu hóa truy vấn.  
-3.4. Kiểm thử toàn vẹn dữ liệu tự động (`07_validate.py` & pytest).
+### 2. Quy Trình Tiền Xử Lý & Khám Phá Dữ Liệu (EDA)
+- **2.1. Quy trình xử lý (Pipeline) rõ ràng**: Sơ đồ kiến trúc luồng dữ liệu viết bằng Python/R.
+- **2.2. Khám phá dữ liệu (EDA) bằng thư viện biểu đồ tĩnh**: Dùng **Matplotlib** và **Seaborn** vẽ tối thiểu **3 – 5 biểu đồ tĩnh** (phân phối Histogram/KDE, ngoại lai sơ bộ Boxplot, bản đồ nhiệt tương quan Heatmap, ma trận khuyết thiếu) trước khi đưa dữ liệu lên Dashboard.
+- **2.3. Làm sạch dữ liệu triệt để**:
+  - Xử lý thiếu (Missing Values): KNN Imputer / Iterative Imputer (MICE) gắn cờ `<col>_is_imputed`.
+  - Xử lý ngoại lai (Outliers): Mô hình không giám sát **Isolation Forest** & LOF gắn cờ `is_outlier_ml`.
+  - Chuẩn hóa định dạng ngày tháng, chuỗi, mã ISO3, tọa độ địa lý và đơn vị đo chuẩn (ha, USD).
+- **2.4. Biến đổi dữ liệu (Data Transformation) & Tạo Calculated Fields**:
+  - Tạo các trường dữ liệu tính toán mới có ý nghĩa (phân nhóm mức độ thiệt hại, chu kỳ mùa, log scale...).
+  - Thiết kế Star Schema (3NF) và kết nối/phân rã bảng chính xác trong CSDL SQLite.
 
-### Chương 4: Hệ Thống 12 Biểu Đồ Trực Quan Hóa Tương Tác
-4.1. Quy chuẩn mã hóa thị giác và bảng màu thân thiện người dùng (WCAG AA, Okabe-Ito, OrRd, RdBu).  
-4.2. Phân tích chi tiết 12 biểu đồ (Mục tiêu phân tích, kiểu dữ liệu, kỹ thuật tương tác).  
-4.3. Các biểu đồ kết hợp (Combo charts) và biểu đồ phân cấp (Treemap, Sunburst, Sankey).  
-4.4. Trực quan hóa không gian: Bản đồ phân vùng Choropleth và bản đồ điểm Proportional Symbol Map.
+### 3. Thiết Kế Dashboard & Luồng Tương Tác
+- **3.1. Bố cục (Layout) & Trải nghiệm người dùng (UI/UX)**: Bố cục hợp lý, màu sắc hài hòa (WCAG AA, dải màu Okabe-Ito, OrRd), có tiêu đề và chú thích (Legend) rõ ràng.
+- **3.2. Hệ thống biểu đồ đa dạng**: Sử dụng $\ge 8$ loại biểu đồ khác nhau (Bar, Line, Area, Scatter, Heatmap, Treemap, Donut/Pie, Pareto...), trong đó **BẮT BUỘC có ít nhất 1 Bản đồ địa lý (Geographic Map)**.
+- **3.3. Tính tương tác cao**: Bộ lọc đa cấp (Multi-level Filters), Đi sâu chi tiết (Drill-down), Tooltip khi hover chuột, và Tương tác liên kết giữa các biểu đồ (Cross-filtering / Filter Actions).
+- **3.4. Giải thích ý nghĩa từng biểu đồ**: Lý do chọn biểu đồ, trục đo và câu hỏi kinh doanh mà biểu đồ trả lời.
 
-### Chương 5: Thiết Kế Dashboard & Triển Khai Hệ Thống
-5.1. Kiến trúc web tĩnh hiệu năng cao với Apache ECharts và thuần JavaScript (Vanilla JS).  
-5.2. Hệ thống bộ lọc toàn cục tương tác, Cross-filtering, cơ chế lọc dữ liệu gốc/ước lượng.  
-5.3. Quy trình CI/CD tự động triển khai lên GitHub Pages.
+### 4. Khai Phá Insight (Kể Chuyện Bằng Dữ Liệu - Storytelling)
+- **4.1. Cốt truyện phân tích (Tableau Story với $\ge 3$ Story Points)**: Dẫn dắt logic người xem qua 4 chủ đề lớn (Bức tranh 20 năm $\to$ Điểm nóng tổn thất $\to$ Mùa vụ & Siêu đám cháy $\to$ Nguyên nhân & Tác động).
+- **4.2. Phân tích nguyên nhân và xu hướng**: Rút ra bài học sâu sắc từ số liệu thật, không chỉ đơn thuần trình diễn biểu đồ.
+- **4.3. Đề xuất giải pháp và khuyến nghị chính sách**.
 
-### Chương 6: Phát Hiện Chính (Key Insights), Hạn Chế & Hướng Phát Triển
-6.1. 5–7 phát hiện cốt lõi từ số liệu thực tế 2005–2024.  
-6.2. Các hạn chế tồn đọng về độ trễ dữ liệu và phạm vi thống kê của các quốc gia.  
-6.3. Đề xuất mở rộng mô hình dự báo nguy cơ cháy rừng theo thời gian thực.
+### 5. Mô Hình Dự Báo (Machine Learning Predictive Model)
+- **5.1. Thuật toán dự báo**: Áp dụng thuật toán **Hồi quy tuyến tính (Linear Regression)** dự báo xu hướng thiệt hại/số vụ theo thời gian, hoặc **Hồi quy Logistic (Logistic Regression)** phân lớp rủi ro thảm họa/cháy rừng nghiêm trọng.
+- **5.2. Đánh giá hiệu năng mô hình**: Phân tích các chỉ số đánh giá (R-squared, MAE, RMSE đối với Linear; Accuracy, Precision, Recall, F1, ROC-AUC đối với Logistic).
+- **5.3. Trực quan hóa kết quả dự báo trên Dashboard**: Tích hợp thành công đường xu hướng dự báo (Trend Line / Forecast) hoặc lớp rủi ro dự báo lên một biểu đồ trực quan trong Dashboard.
+
+### 6. Hướng Dẫn Cài Đặt / Sử Dụng & Link Video Demo
+- **6.1. Hướng dẫn cài đặt và tái lập môi trường**: Mã nguồn tái lập (`requirements.txt`, script `src/`).
+- **6.2. Hướng dẫn sử dụng Dashboard**: Thao tác tương tác với các bộ lọc và xem các điểm Story.
+- **6.3. Link Video Demo (Bắt buộc có Video backup tóm tắt)**: Kịch bản demo lôi cuốn, đóng vai trò như một Data Analyst trình bày với cấp trên/khách hàng.
+
+### 7. Kết Luận & Tài Liệu Tham Khảo (Chuẩn IEEE)
+- **7.1. Tóm tắt kết quả đạt được và bài học kinh nghiệm**.
+- **7.2. Hạn chế của đề tài & hướng phát triển tương lai**.
+- **7.3. Danh mục tài liệu tham khảo theo định dạng chuẩn khoa học IEEE**.
 
 ---
 
