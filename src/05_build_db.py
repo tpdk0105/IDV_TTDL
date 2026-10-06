@@ -1,6 +1,6 @@
 """
 Module: src/05_build_db.py
-Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy rừng / thảm họa thiên nhiên (2006–2025)
+Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy rừng / thảm họa thiên nhiên (2005–2024)
 Người phụ trách: Thành viên 2 - Kỹ sư Mô hình Dữ liệu (Data Modeling Engineer)
 Mục đích:
     - Khởi tạo cơ sở dữ liệu SQLite tại `data/tables/database.sqlite`.

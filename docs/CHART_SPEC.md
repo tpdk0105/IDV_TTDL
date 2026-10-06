@@ -116,7 +116,7 @@ Tableau Story là tầng trình bày cao nhất, kết nối các Dashboard thà
 - **Người phụ trách**: Thành viên 1
 - **Bộ lọc (Filters)**: `[disaster_type] = 'Wildfire'`.
 - **Columns**: `MONTH([start_date])` (Discrete 1..12).
-- **Rows**: `YEAR([start_date])` (Discrete 2006..2025).
+- **Rows**: `YEAR([start_date])` (Discrete 2005..2024).
 - **Marks Card**: Chọn kiểu **Square**.
 - **Color**: Kéo `CNT([event_id])` vào **Color** $\to$ Chọn dải màu `YlOrRd`.
 

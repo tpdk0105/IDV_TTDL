@@ -1,6 +1,6 @@
 """
 Module: src/02_eda.py
-Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy rừng / thảm họa thiên nhiên (2006–2025)
+Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy rừng / thảm họa thiên nhiên (2005–2024)
 Người phụ trách: Thành viên 1 - Kỹ sư Dữ liệu (Data Engineer)
 Mục đích:
     - Thực hiện phân tích khám phá dữ liệu ban đầu (EDA) trên các tập dữ liệu thô trong `data/raw/`.

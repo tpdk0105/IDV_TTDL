@@ -15,8 +15,8 @@
    - Chọn mục **Data** $\to$ **Custom Query / Advanced Search**.
    - Thiết lập các bộ lọc:
      - **Disaster Group**: `Natural`
-     - **Disaster Subgroup**: Chọn toàn bộ (`Meteorological`, `Hydrological`, `Climatological`, `Geophysical`, `Biological`).
-     - **Time Period**: Từ `2006-01-01` đến `2025-12-31`.
+     - **Disaster Subgroup**: Chọn toàn bộ (`Meteorological`, `Hydrological`, `Climatological`, `Geophysical`, `Biological`, `Extra-terrestrial`).
+     - **Time Period**: Từ `2005-01-01` đến `2024-12-31`.
      - **Geographical Scope**: `All Countries` (Toàn cầu).
    - Chọn định dạng xuất: **CSV** hoặc **Excel (.xlsx)**.
 
@@ -27,3 +27,16 @@
 
 4. **Kiểm tra**:
    - Tệp tin sẽ tự động được nhận diện trong các giai đoạn xử lý tiếp theo của pipeline.
+
+---
+
+## Phiên Bản Đang Dùng
+
+| Thông tin | Giá trị |
+|---|---|
+| Tệp tin | `data/raw/emdat/emdat_raw.xlsx` |
+| Sheet dữ liệu | `EM-DAT Data` (sheet `EM-DAT Info` chứa nguồn và phiên bản) |
+| Phiên bản EM-DAT | `2026-10-02` |
+| Ngày xuất tệp | 2026-10-06 |
+| Phạm vi thời gian | 2005–2024 (theo `Start Year`) |
+| Số bản ghi | 8.111 dòng × 47 cột (mỗi dòng = 1 thảm họa × 1 quốc gia) |

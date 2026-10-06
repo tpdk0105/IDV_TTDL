@@ -1,6 +1,6 @@
 """
 Module: src/03b_ml_clean.py
-Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy rừng / thảm họa thiên nhiên (2006–2025)
+Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy rừng / thảm họa thiên nhiên (2005–2024)
 Người phụ trách: Thành viên 1 - Kỹ sư Dữ liệu (Data Engineer)
 Mục đích:
     - Làm sạch dữ liệu Bước 2 bằng TỐI THIỂU 2 MÔ HÌNH HỌC MÁY (Machine Learning):

@@ -8,7 +8,7 @@
 ## Phần A: Dàn Ý Báo Cáo Chi Tiết Đồ Án (Report Outline)
 
 ### Chương 1: Giới Thiệu Đề Tài & Bối Cảnh Nghiên Cứu
-1.1. Tính cấp thiết của đề tài: Tác động biến đổi khí hậu toàn cầu và sự gia tăng các vụ cháy rừng khốc liệt (2006–2025).  
+1.1. Tính cấp thiết của đề tài: Tác động biến đổi khí hậu toàn cầu và sự gia tăng các vụ cháy rừng khốc liệt (2005–2024).  
 1.2. Mục tiêu nghiên cứu: Phân tích tần suất, mức độ thiệt hại tài chính và sinh mạng; so sánh vị thế của cháy rừng trong tổng thể các thảm họa thiên nhiên.  
 1.3. Phạm vi dữ liệu & Phương pháp tiếp cận: Dữ liệu đa nguồn (EM-DAT, NASA FIRMS, USFS/NOAA), quy trình Data Engineering kết hợp Machine Learning và Visual Analytics.
 
@@ -40,7 +40,7 @@
 5.3. Quy trình CI/CD tự động triển khai lên GitHub Pages.
 
 ### Chương 6: Phát Hiện Chính (Key Insights), Hạn Chế & Hướng Phát Triển
-6.1. 5–7 phát hiện cốt lõi từ số liệu thực tế 2006–2025.  
+6.1. 5–7 phát hiện cốt lõi từ số liệu thực tế 2005–2024.  
 6.2. Các hạn chế tồn đọng về độ trễ dữ liệu và phạm vi thống kê của các quốc gia.  
 6.3. Đề xuất mở rộng mô hình dự báo nguy cơ cháy rừng theo thời gian thực.
 

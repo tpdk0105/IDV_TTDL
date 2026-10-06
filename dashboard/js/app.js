@@ -10,8 +10,8 @@
 
   // 1. Trạng thái bộ lọc toàn cục (Global Filter State)
   const state = {
-    yearMin: 2006,
-    yearMax: 2025,
+    yearMin: 2005,
+    yearMax: 2024,
     disasterType: "ALL",
     continent: "ALL",
     rawOnly: false,
@@ -102,15 +102,15 @@
     // Nút Reset bộ lọc
     if (btnReset) {
       btnReset.addEventListener("click", () => {
-        if (yearMinInput) yearMinInput.value = 2006;
-        if (yearMaxInput) yearMaxInput.value = 2025;
-        if (yearDisplay) yearDisplay.textContent = "2006 - 2025";
+        if (yearMinInput) yearMinInput.value = 2005;
+        if (yearMaxInput) yearMaxInput.value = 2024;
+        if (yearDisplay) yearDisplay.textContent = "2005 - 2024";
         if (typeSelect) typeSelect.value = "ALL";
         if (continentSelect) continentSelect.value = "ALL";
         if (toggleRaw) toggleRaw.checked = false;
 
-        state.yearMin = 2006;
-        state.yearMax = 2025;
+        state.yearMin = 2005;
+        state.yearMax = 2024;
         state.disasterType = "ALL";
         state.continent = "ALL";
         state.rawOnly = false;

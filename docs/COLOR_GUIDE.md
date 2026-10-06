@@ -31,7 +31,7 @@ Màu sắc trong trực quan hóa dữ liệu không chỉ mang tính thẩm m�
 - **Dải màu thứ cấp (General Disasters - Blues)**: `#EFF3FF` $\to$ `#C6DBEF` $\to$ `#9ECAE1` $\to$ `#6BAED6` $\to$ `#4292C6` $\to$ `#2171B5` $\to$ `#084594`.
 
 ### 2.2. Bảng Màu Phân Kỳ (Diverging Palette)
-- **Áp dụng**: Biểu diễn độ lệch (Anomaly / Difference) so với mốc tham chiếu có ý nghĩa (Mốc 0, hoặc giá trị trung bình 20 năm 2006–2025).
+- **Áp dụng**: Biểu diễn độ lệch (Anomaly / Difference) so với mốc tham chiếu có ý nghĩa (Mốc 0, hoặc giá trị trung bình 20 năm 2005–2024).
 - **Quy tắc**: Điểm giữa (Neutral Midpoint) mang màu xám nhạt trung tính; hai đầu mang hai tông màu tương phản rõ rệt.
 - **Dải màu RdBu (Diverging Red-Blue)**:
   - Cực âm (Dưới mức trung bình / Giảm sâu): `#2166AC` (Xanh dương đậm)

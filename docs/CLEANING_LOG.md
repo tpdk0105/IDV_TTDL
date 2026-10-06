@@ -18,7 +18,7 @@
 | Bước # | Thao tác thực hiện | Điều kiện / Quy tắc | Số dòng trước | Số dòng sau | Số dòng loại bỏ | Lý do & Ghi chú |
 |--------|---------------------|----------------------|---------------|-------------|-----------------|-----------------|
 | 1 | Nạp dữ liệu thô | Gộp các nguồn từ `data/raw/` | *TODO* | *TODO* | *TODO* | Nạp file CSV/Excel |
-| 2 | Lọc khoảng thời gian | `year BETWEEN 2006 AND 2025` | *TODO* | *TODO* | *TODO* | Giới hạn nghiên cứu 20 năm |
+| 2 | Lọc khoảng thời gian | `year BETWEEN 2005 AND 2024` | *TODO* | *TODO* | *TODO* | Giới hạn nghiên cứu 20 năm |
 | 3 | Khử trùng lặp chính xác | Duplicate trên tập thuộc tính định danh | *TODO* | *TODO* | *TODO* | Loại bỏ bản ghi trùng |
 | 4 | Chuẩn hóa mã quốc gia | Ánh xạ tên nước về ISO 3166-1 alpha-3 | *TODO* | *TODO* | *TODO* | Dùng thư viện country-converter |
 | 5 | Chuẩn hóa tọa độ | Vĩ độ [-90, 90], Kinh độ [-180, 180] | *TODO* | *TODO* | *TODO* | Loại hoặc set NULL tọa độ lỗi |

@@ -8,7 +8,7 @@
 ---
 
 ## 1. Mục Tiêu Chính
-1. Khảo sát và lựa chọn tối thiểu 3 nguồn dữ liệu quốc tế đáng tin cậy về thảm họa thiên nhiên và cháy rừng giai đoạn 2006–2025.
+1. Khảo sát và lựa chọn tối thiểu 3 nguồn dữ liệu quốc tế đáng tin cậy về thảm họa thiên nhiên và cháy rừng giai đoạn 2005–2024.
 2. Xây dựng quy trình tự động hóa thu thập dữ liệu thô vào `data/raw/` bằng script có khả năng tái lập.
 3. Thực hiện phân tích khám phá dữ liệu (EDA), phát hiện các khiếm khuyết và lập báo cáo chất lượng ban đầu.
 4. Triển khai quy trình làm sạch 2 giai đoạn:
@@ -53,7 +53,7 @@
 
 ### C. Làm Sạch Theo Quy Tắc (Rule-based Cleaning)
 - [ ] Viết `src/03_clean.py`:
-  - [ ] Lọc phạm vi thời gian 2006–2025.
+  - [ ] Lọc phạm vi thời gian 2005–2024.
   - [ ] Chuẩn hóa tên quốc gia về chuẩn ISO 3166-1 alpha-3 bằng `country_converter` hoặc `pycountry`.
   - [ ] Chuẩn hóa tọa độ địa lý (Vĩ độ: [-90, 90], Kinh độ: [-180, 180]).
   - [ ] Chuẩn hóa đơn vị đo: diện tích về Hecta (ha), thiệt hại quy về USD.

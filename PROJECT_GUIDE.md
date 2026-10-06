@@ -1,7 +1,7 @@
 # HƯỚNG DẪN DỰ ÁN & PHÂN CÔNG NHIỆM VỤ (PROJECT GUIDE)
 
 > **Môn học**: Tương tác dữ liệu trực quan (Interactive Data Visualization)  
-> **Đề tài**: Nghiên cứu – phân tích tần suất và thiệt hại của các trận cháy rừng / thảm họa thiên nhiên trong 20 năm qua (2006–2025)  
+> **Đề tài**: Nghiên cứu – phân tích tần suất và thiệt hại của các trận cháy rừng / thảm họa thiên nhiên trong 20 năm qua (2005–2024)  
 > **Kho lưu trữ (Repository)**: `https://github.com/tpdk0105/IDV_TTDL`  
 
 ---
@@ -9,10 +9,10 @@
 ## 1. Giới Thiệu Đề Tài & Mục Tiêu
 
 ### 1.1. Bối cảnh & Tính cấp thiết
-Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu toàn cầu diễn biến phức tạp với sự gia tăng mạnh mẽ cả về tần suất, cường độ và mức độ tàn phá của các thảm họa thiên nhiên. Trong đó, **cháy rừng (Wildfires)** nổi lên như một trong những thách thức nghiêm trọng nhất đối với môi trường sinh thái, an ninh con người và nền kinh tế toàn cầu (các đợt siêu cháy rừng tại Úc 2019–2020, California, Hy Lạp, Canada 2023, Maui 2023).
+Trong giai đoạn 20 năm qua (2005–2024), biến đổi khí hậu toàn cầu diễn biến phức tạp với sự gia tăng mạnh mẽ cả về tần suất, cường độ và mức độ tàn phá của các thảm họa thiên nhiên. Trong đó, **cháy rừng (Wildfires)** nổi lên như một trong những thách thức nghiêm trọng nhất đối với môi trường sinh thái, an ninh con người và nền kinh tế toàn cầu (các đợt siêu cháy rừng tại Úc 2019–2020, California, Hy Lạp, Canada 2023, Maui 2023).
 
 ### 1.2. Mục tiêu nghiên cứu
-- Thu thập, làm sạch và tích hợp dữ liệu thảm họa thiên nhiên toàn cầu giai đoạn 2006–2025 từ các nguồn dữ liệu khoa học uy tín (EM-DAT, NASA FIRMS, USFS/NOAA, Our World in Data).
+- Thu thập, làm sạch và tích hợp dữ liệu thảm họa thiên nhiên toàn cầu giai đoạn 2005–2024 từ các nguồn dữ liệu khoa học uy tín (EM-DAT, NASA FIRMS, USFS/NOAA, Our World in Data).
 - Áp dụng các kỹ thuật Kỹ thuật Dữ liệu (Data Engineering) hiện đại kết hợp Học máy (Machine Learning) để chuẩn hóa, phát hiện ngoại lai bất thường (Isolation Forest/LOF) và xử lý giá trị khuyết thiếu (KNN/Iterative Imputer).
 - Thiết kế mô hình dữ liệu chuẩn hình sao (Star Schema) tối ưu hóa trên SQLite với hệ thống ràng buộc toàn vẹn nghiêm ngặt (PK, FK, CHECK, UNIQUE, NOT NULL).
 - Xây dựng hệ thống bảng điều khiển và câu chuyện dữ liệu trực quan tương tác (**Interactive Dashboard & Tableau Story**) bằng **Tableau Desktop / Tableau Public** với 12 biểu đồ trực quan chuyên sâu, phân thành 4 Dashboard (D1 $\to$ D4) và 1 Tableau Story (với 4 Story Points dẫn dắt câu chuyện phân tích), đồng thời nhúng trực tiếp vào giao diện web GitHub Pages.
@@ -115,7 +115,7 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu toàn c�
 ### Thành viên 2 – MÔ HÌNH DỮ LIỆU (Tách bảng $\to$ Quan hệ $\to$ Ràng buộc CSDL)
 - [ ] Thiết kế Star Schema từ `master_clean.csv`: `dim_date`, `dim_location`, `dim_disaster_type`, `dim_cause`, `dim_source`, `fact_disaster_event`, `fact_wildfire_detail`. Mỗi bảng đạt tối thiểu 3NF, có surrogate key. Bảo toàn các cột cờ ML trong bảng fact (`is_outlier_ml`, `*_is_imputed`, `cause_is_predicted`).
 - [ ] Viết `src/04_split_tables.py` tách bảng thành các file CSV lưu tại `data/tables/`.
-- [ ] Viết DDL `sql/schema.sql` với đầy đủ: PRIMARY KEY, FOREIGN KEY (`ON DELETE RESTRICT ON UPDATE CASCADE`), NOT NULL, UNIQUE, CHECK constraints (`deaths >= 0`, `damage_usd >= 0`, `burned_area_ha >= 0`, `year BETWEEN 2006 AND 2025`, `latitude BETWEEN -90 AND 90`, `longitude BETWEEN -180 AND 180`), DEFAULT hợp lý, và INDEX tối ưu truy vấn JOIN/WHERE.
+- [ ] Viết DDL `sql/schema.sql` với đầy đủ: PRIMARY KEY, FOREIGN KEY (`ON DELETE RESTRICT ON UPDATE CASCADE`), NOT NULL, UNIQUE, CHECK constraints (`deaths >= 0`, `damage_usd >= 0`, `burned_area_ha >= 0`, `year BETWEEN 2005 AND 2024`, `latitude BETWEEN -90 AND 90`, `longitude BETWEEN -180 AND 180`), DEFAULT hợp lý, và INDEX tối ưu truy vấn JOIN/WHERE.
 - [ ] Viết script `src/05_build_db.py` tạo `database.sqlite`, kích hoạt `PRAGMA foreign_keys = ON;`, nạp dữ liệu và kiểm tra vi phạm ràng buộc.
 - [ ] Vẽ sơ đồ thực thể liên kết `docs/ERD.md` bằng Mermaid `erDiagram` với đầy đủ bản số quan hệ (Cardinality 1–N).
 - [ ] Viết `src/07_validate.py` và bộ kiểm thử `tests/`: kiểm tra toàn vẹn tham chiếu (không có FK mồ côi), không trùng khóa chính, fact $\ge 5.000$ dòng, toàn bộ ràng buộc CHECK đạt chuẩn, cột cờ nhận 0/1.

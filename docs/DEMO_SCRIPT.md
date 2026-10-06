@@ -9,7 +9,7 @@
 ## 1. Chuẩn Bị Trước Khi Demo
 - [ ] Mở sẵn đường dẫn Dashboard trên trình duyệt (hoặc máy chủ cục bộ: `http://localhost:8080`).
 - [ ] Bật chế độ Fullscreen (F11), kiểm tra phóng to thu nhỏ ở mức 100%.
-- [ ] Đặt sẵn các bộ lọc ở trạng thái mặc định (Default: Toàn bộ giai đoạn 2006–2025, tất cả loại thảm họa).
+- [ ] Đặt sẵn các bộ lọc ở trạng thái mặc định (Default: Toàn bộ giai đoạn 2005–2024, tất cả loại thảm họa).
 - [ ] Chuẩn bị sẵn 2 kịch bản phân tích tình huống (Use cases) để thao tác mượt mà.
 
 ---
@@ -18,7 +18,7 @@
 
 ### Phút 0:00 – 1:00 | Giới Thiệu Tổng Quan & Hàng Thẻ KPI
 - **Lời dẫn (Presenter)**:  
-  *"Kính thưa Thầy Cô và các bạn, đây là sản phẩm Dashboard phân tích trực quan 20 năm thảm họa thiên nhiên toàn cầu (2006–2025) với trọng tâm là cháy rừng. Phía trên cùng là 4 thẻ KPI phản ánh ngay lập tức quy mô tổng quan: Tổng số sự kiện, Tổng thiệt hại tài chính quy đổi theo USD, Tổng diện tích rừng bị thiêu rụi và Tổng số sinh mạng thương vong."*
+  *"Kính thưa Thầy Cô và các bạn, đây là sản phẩm Dashboard phân tích trực quan 20 năm thảm họa thiên nhiên toàn cầu (2005–2024) với trọng tâm là cháy rừng. Phía trên cùng là 4 thẻ KPI phản ánh ngay lập tức quy mô tổng quan: Tổng số sự kiện, Tổng thiệt hại tài chính quy đổi theo USD, Tổng diện tích rừng bị thiêu rụi và Tổng số sinh mạng thương vong."*
 - **Thao tác**:  
   Di chuyển chuột qua các thẻ KPI, chỉ ra cơ chế hiển thị số liệu tức thời.
 

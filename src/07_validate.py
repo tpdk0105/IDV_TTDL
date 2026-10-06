@@ -1,6 +1,6 @@
 """
 Module: src/07_validate.py
-Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy rừng / thảm họa thiên nhiên (2006–2025)
+Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy rừng / thảm họa thiên nhiên (2005–2024)
 Người phụ trách: Thành viên 2 - Kỹ sư Mô hình Dữ liệu (Data Modeling Engineer)
 Mục đích:
     - Kiểm thử tự động tính toàn vẹn và chất lượng của cơ sở dữ liệu `database.sqlite`:
@@ -9,7 +9,7 @@ Mục đích:
         3. Kiểm tra số lượng bản ghi: Bảng `fact_disaster_event` đạt tối thiểu 5.000 dòng.
         4. Kiểm tra các ràng buộc miền giá trị (CHECK constraints):
            - deaths >= 0, damage_usd >= 0, burned_area_ha >= 0
-           - year BETWEEN 2006 AND 2025
+           - year BETWEEN 2005 AND 2024
            - latitude [-90, 90], longitude [-180, 180]
            - Các cột cờ ML chỉ nhận giá trị 0 hoặc 1.
     - Trả về mã thoát (exit code) = 0 nếu đạt toàn bộ tiêu chuẩn; khác 0 nếu phát hiện lỗi.

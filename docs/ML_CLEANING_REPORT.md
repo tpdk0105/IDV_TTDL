@@ -6,7 +6,7 @@
 ---
 
 ## 1. Mục Đích & Nguyên Tắc Áp Dụng Học Máy
-Trong bài toán phân tích thảm họa thiên nhiên và cháy rừng giai đoạn 2006–2025, dữ liệu thu thập từ các nguồn quốc tế thường gặp hai vấn đề lớn:
+Trong bài toán phân tích thảm họa thiên nhiên và cháy rừng giai đoạn 2005–2024, dữ liệu thu thập từ các nguồn quốc tế thường gặp hai vấn đề lớn:
 1. **Giá trị ngoại lai cực đoan (Extreme Outliers)**: Các thảm họa có quy mô lớn bất thường, lỗi nhập thừa chữ số (sai lệch bậc độ lớn $10^3, 10^6$), hoặc lỗi đơn vị đo.
 2. **Giá trị khuyết thiếu (Missing Data)**: Nhiều sự kiện thảm họa chỉ ghi nhận thiệt hại người (`deaths`, `affected`) nhưng thiếu diện tích cháy (`burned_area_ha`) hoặc thiếu thiệt hại kinh tế (`damage_usd`).
 

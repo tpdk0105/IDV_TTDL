@@ -1,13 +1,13 @@
 """
 Module: src/01_download.py
-Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy rừng / thảm họa thiên nhiên (2006–2025)
+Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy rừng / thảm họa thiên nhiên (2005–2024)
 Người phụ trách: Thành viên 1 - Kỹ sư Dữ liệu (Data Engineer)
 Mục đích:
     - Thu thập dữ liệu thô NGUYÊN BẢN từ các nguồn mở uy tín quốc tế:
         1. Our World in Data (OWID): Thống kê vĩ mô thảm họa thiên nhiên toàn cầu (CC-BY 4.0).
         2. NASA FIRMS: Dữ liệu điểm cháy vệ tinh MODIS & VIIRS thời gian thực (Public Domain).
         3. NOAA NCEI Storm Events: Dữ liệu sự kiện thảm họa và cháy rừng cấp sự kiện (Public Domain).
-        4. USDA Forest Service FPA-FOD: Dữ liệu sự kiện cháy rừng 2006-2020 (Public Domain).
+        4. USDA Forest Service FPA-FOD: Dữ liệu sự kiện cháy rừng 2005-2020 (Public Domain).
     - Lưu trữ tệp tin nguyên bản vào thư mục `data/raw/<ten_nguon>/` mà không chỉnh sửa giá trị.
     - Tự động sinh `data/raw/MANIFEST.md` và `data/raw/manifest.json`.
 """

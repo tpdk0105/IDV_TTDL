@@ -60,7 +60,7 @@
     - [ ] `deaths >= 0`, `injured >= 0`, `affected >= 0`
     - [ ] `damage_usd >= 0.0`
     - [ ] `burned_area_ha >= 0.0`
-    - [ ] `year BETWEEN 2006 AND 2025`
+    - [ ] `year BETWEEN 2005 AND 2024`
     - [ ] `latitude BETWEEN -90.0 AND 90.0`
     - [ ] `longitude BETWEEN -180.0 AND 180.0`
     - [ ] Các cột cờ: `CHECK (col IN (0, 1))`

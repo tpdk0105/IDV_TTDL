@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Pipeline Execution Script for Linux / macOS Bash
-# Project: Global Wildfire & Natural Disasters (2006-2025)
+# Project: Global Wildfire & Natural Disasters (2005-2024)
 # Sequence: 01_download -> 02_eda -> 03_clean -> 03b_ml_clean ->
 #           04_split_tables -> 05_build_db -> 06_export_json -> 07_validate
 # ==============================================================================
@@ -9,7 +9,7 @@
 set -e
 
 echo "=========================================================="
-echo " STARTING DATA PIPELINE: IDV_TTDL (2006-2025)"
+echo " STARTING DATA PIPELINE: IDV_TTDL (2005-2024)"
 echo "=========================================================="
 
 echo -e "\n>>> Running Step 1: Download Raw Data..."

@@ -7,7 +7,7 @@
 
 ## 1. Thiết Kế Mô Hình Dạng Sao (Star Schema Architecture)
 Mô hình dữ liệu được thiết kế nhằm phục vụ truy vấn phân tích đa chiều (OLAP) và trực quan hóa hiệu năng cao cho 12 biểu đồ tương tác:
-- **Bảng Fact Trung Tâm**: `fact_disaster_event` (lưu vết toàn bộ sự kiện thảm họa thiên nhiên 2006–2025).
+- **Bảng Fact Trung Tâm**: `fact_disaster_event` (lưu vết toàn bộ sự kiện thảm họa thiên nhiên 2005–2024).
 - **Bảng Fact Mở Rộng**: `fact_wildfire_detail` (chi tiết hóa các chỉ số kỹ thuật chuyên biệt cho cháy rừng: diện tích, công suất bức xạ FRP, thời gian kéo dài).
 - **Các Bảng Dimension**: `dim_date`, `dim_location`, `dim_disaster_type`, `dim_cause`, `dim_source`.
 - **Cột cờ kiểm soát chất lượng**: Các cờ ML (`is_outlier_ml`, `deaths_is_imputed`, `damage_usd_is_imputed`, `cause_is_predicted`) được bảo toàn trực tiếp trong bảng fact để hỗ trợ tính năng lọc dữ liệu gốc/ước lượng trên Dashboard.
@@ -28,7 +28,7 @@ erDiagram
     dim_date {
         integer date_id PK "Surrogate Key (YYYYMMDD)"
         date full_date "NOT NULL, UNIQUE"
-        integer year "CHECK (year BETWEEN 2006 AND 2025)"
+        integer year "CHECK (year BETWEEN 2005 AND 2024)"
         integer quarter "CHECK (quarter BETWEEN 1 AND 4)"
         integer month "CHECK (month BETWEEN 1 AND 12)"
         text month_name "Jan, Feb, ... Dec"

@@ -1,5 +1,5 @@
 -- ==============================================================================
--- CSDL THẢM HỌA THIÊN NHIÊN & CHÁY RỪNG TOÀN CẦU (2006 - 2025)
+-- CSDL THẢM HỌA THIÊN NHIÊN & CHÁY RỪNG TOÀN CẦU (2005 - 2024)
 -- Tệp tin DDL: sql/schema.sql
 -- Người phụ trách: Thành viên 2 (Kỹ sư Mô hình Dữ liệu)
 -- Trạng thái: Khung cấu trúc DDL hoàn chỉnh (Giai đoạn 1)
@@ -14,7 +14,7 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS dim_date (
   date_id INTEGER PRIMARY KEY,                      -- Surrogate Key: YYYYMMDD
   full_date TEXT NOT NULL UNIQUE,                   -- Định dạng ISO: YYYY-MM-DD
-  year INTEGER NOT NULL CHECK (year BETWEEN 2006 AND 2025),
+  year INTEGER NOT NULL CHECK (year BETWEEN 2005 AND 2024),
   quarter INTEGER NOT NULL CHECK (quarter BETWEEN 1 AND 4),
   month INTEGER NOT NULL CHECK (month BETWEEN 1 AND 12),
   month_name TEXT NOT NULL,                         -- Jan, Feb, ... Dec

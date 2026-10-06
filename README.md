@@ -1,4 +1,4 @@
-# IDV_TTDL: Nghiên Cứu – Phân Tích Tần Suất và Thiệt Hại Cháy Rừng & Thảm Họa Thiên Nhiên (2006–2025)
+# IDV_TTDL: Nghiên Cứu – Phân Tích Tần Suất và Thiệt Hại Cháy Rừng & Thảm Họa Thiên Nhiên (2005–2024)
 
 [![Deploy Dashboard to GitHub Pages](https://github.com/tpdk0105/IDV_TTDL/actions/workflows/deploy.yml/badge.svg)](https://github.com/tpdk0105/IDV_TTDL/actions/workflows/deploy.yml)
 [![Tableau Public](https://img.shields.io/badge/Tableau%20Public-Interactive%20Story-E97627.svg?logo=tableau)](https://public.tableau.com/)
@@ -15,7 +15,7 @@
 ---
 
 ## 1. Giới Thiệu Đề Tài & Trọng Tâm Nghiên Cứu
-Dự án tập trung nghiên cứu, làm sạch, mô hình hóa và trực quan hóa tương tác đa chiều về **tần suất và thiệt hại của các trận cháy rừng toàn cầu trong 20 năm qua (2006–2025)**. Các thảm họa thiên nhiên khác (lũ lụt, bão nhiệt đới, hạn hán, động đất, núi lửa...) được đặt song song làm bối cảnh so sánh quy mô tác động kinh tế và sinh mạng.
+Dự án tập trung nghiên cứu, làm sạch, mô hình hóa và trực quan hóa tương tác đa chiều về **tần suất và thiệt hại của các trận cháy rừng toàn cầu trong 20 năm qua (2005–2024)**. Các thảm họa thiên nhiên khác (lũ lụt, bão nhiệt đới, hạn hán, động đất, núi lửa...) được đặt song song làm bối cảnh so sánh quy mô tác động kinh tế và sinh mạng.
 
 ### Điểm nổi bật về kỹ thuật:
 - **Kỹ thuật dữ liệu vững chắc (Python Pipeline)**: Tự động tải từ các nguồn dữ liệu uy tín (OWID, NASA FIRMS, NOAA NCEI, USFS FPA-FOD) $\to$ làm sạch quy tắc $\to$ làm sạch thông minh bằng **Học máy (Isolation Forest, LOF, MICE/KNN)** $\to$ cam kết tập dữ liệu sạch đạt $\ge 5.000$ dòng.

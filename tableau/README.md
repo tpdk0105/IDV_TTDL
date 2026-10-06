@@ -1,6 +1,6 @@
 # Hướng Dẫn Thực Hiện Trực Quan Hóa Trên Tableau Public
 
-> **Đồ án**: "Nghiên cứu – phân tích tần suất và thiệt hại của các trận cháy rừng / thảm họa thiên nhiên trong 20 năm qua (2006–2025)"  
+> **Đồ án**: "Nghiên cứu – phân tích tần suất và thiệt hại của các trận cháy rừng / thảm họa thiên nhiên trong 20 năm qua (2005–2024)"  
 > **Công cụ trực quan hóa**: Tableau Desktop / Tableau Public  
 > **Sản phẩm bàn giao**: 
 > 1. File workbook đóng gói: `tableau/wildfire_disaster_analysis.twbx`
@@ -29,7 +29,7 @@
 Mỗi thành viên phụ trách **đúng 4 Worksheets** (chia đều 4/4/4), đặt tên Sheet theo quy ước: `Sheet_01`, `Sheet_02`... để dễ dàng quản lý.
 
 ### 👤 Thành viên 1: Biểu đồ #1 – #4 (Tổng quan & Mùa vụ)
-- **Worksheet #1**: `Sheet_01_Combo_Trend` (Combo Dual-Axis: Cột số vụ + Đường thiệt hại USD theo năm 2006–2025).
+- **Worksheet #1**: `Sheet_01_Combo_Trend` (Combo Dual-Axis: Cột số vụ + Đường thiệt hại USD theo năm 2005–2024).
 - **Worksheet #2**: `Sheet_02_Stacked_Area` (Stacked Area: Cơ cấu phân bổ các loại thảm họa theo thời gian).
 - **Worksheet #3**: `Sheet_03_Choropleth_Map` (Bản đồ thế giới phân vùng mức độ thiệt hại/số vụ theo quốc gia).
 - **Worksheet #4**: `Sheet_04_Heatmap_Season` (Ma trận Heatmap mùa vụ cháy rừng: Tháng $\times$ Năm).
@@ -114,7 +114,7 @@ Nhấn nút **New Story** (biểu tượng cuốn sách mở ở thanh dưới c
 2. **Xuất bản lên Tableau Public**:
    - Chọn menu **Server $\to$ Tableau Public $\to$ Save to Tableau Public As...**
    - Đăng nhập tài khoản Tableau Public.
-   - Đặt tên Workbook: `Nghien Cuu Chay Rung Va Tham Hoa Thien Nhien 2006-2025`.
+   - Đặt tên Workbook: `Nghien Cuu Chay Rung Va Tham Hoa Thien Nhien 2005-2024`.
    - Sau khi xuất bản, sao chép đường link công khai (URL) và cập nhật vào `README.md`.
 
 3. **Nhúng vào trang web GitHub Pages**:

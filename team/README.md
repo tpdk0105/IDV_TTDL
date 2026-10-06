@@ -1,7 +1,7 @@
 # Sổ Tay Phân Công Nhiệm Vụ & Quy Ước Đặt Tên File Khi Đưa Lên Git
 
 > **Kho lưu trữ (Repository)**: [https://github.com/tpdk0105/IDV_TTDL](https://github.com/tpdk0105/IDV_TTDL)  
-> **Đồ án**: "Nghiên cứu – phân tích tần suất và thiệt hại của các trận cháy rừng / thảm họa thiên nhiên trong 20 năm qua (2006–2025)"  
+> **Đồ án**: "Nghiên cứu – phân tích tần suất và thiệt hại của các trận cháy rừng / thảm họa thiên nhiên trong 20 năm qua (2005–2024)"  
 > **Áp dụng cho**: Cả 3 thành viên nhóm (`member-1-data`, `member-2-model`, `member-3-dashboard`)  
 
 ---
@@ -47,7 +47,7 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
    - **Cam kết số dòng**: Đặt lệnh `assert len(df) >= 5000` ở cuối script $\to$ xuất file `data/clean/master_clean.csv`.
 6. **Tài liệu làm sạch**: Hoàn thiện [docs/ML_CLEANING_REPORT.md](../docs/ML_CLEANING_REPORT.md), [docs/CLEANING_LOG.md](../docs/CLEANING_LOG.md) và [docs/DATA_DICTIONARY.md](../docs/DATA_DICTIONARY.md).
 7. **Phụ trách 4 Worksheets trên Tableau**:
-   - `Sheet_01_Combo_Trend`: Combo Dual-Axis cột số vụ + đường thiệt hại USD theo năm 2006–2025.
+   - `Sheet_01_Combo_Trend`: Combo Dual-Axis cột số vụ + đường thiệt hại USD theo năm 2005–2024.
    - `Sheet_02_Stacked_Area`: Stacked Area tần suất theo loại thảm họa theo thời gian.
    - `Sheet_03_Choropleth_Map`: Bản đồ thế giới phân vùng mức độ thiệt hại/số vụ theo quốc gia.
    - `Sheet_04_Heatmap_Season`: Heatmap ma trận chu kỳ mùa cháy rừng (Tháng $\times$ Năm).
@@ -68,7 +68,7 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
 2. **Tách bảng tự động**: Viết script [src/04_split_tables.py](../src/04_split_tables.py) đọc từ `master_clean.csv`, tạo surrogate keys và xuất các file CSV vào thư mục `data/tables/`.
 3. **Soạn thảo DDL CSDL**: Viết [sql/schema.sql](../sql/schema.sql) với đầy đủ:
    - `PRIMARY KEY`, `FOREIGN KEY (ON DELETE RESTRICT ON UPDATE CASCADE)`.
-   - Ràng buộc kiểm tra `CHECK` (`deaths >= 0`, `damage_usd >= 0`, `burned_area_ha >= 0`, `year BETWEEN 2006 AND 2025`, `latitude BETWEEN -90 AND 90`, `longitude BETWEEN -180 AND 180`).
+   - Ràng buộc kiểm tra `CHECK` (`deaths >= 0`, `damage_usd >= 0`, `burned_area_ha >= 0`, `year BETWEEN 2005 AND 2024`, `latitude BETWEEN -90 AND 90`, `longitude BETWEEN -180 AND 180`).
    - Ràng buộc `UNIQUE`, `NOT NULL`, giá trị `DEFAULT` và chỉ mục `CREATE INDEX`.
 4. **Xây dựng CSDL SQLite**: Viết script [src/05_build_db.py](../src/05_build_db.py) kích hoạt `PRAGMA foreign_keys = ON;`, tạo `data/tables/database.sqlite` và nạp dữ liệu.
 5. **Kiểm thử toàn vẹn tự động**: Viết [src/07_validate.py](../src/07_validate.py) và bộ kiểm thử [tests/test_pipeline.py](../tests/test_pipeline.py) (chạy qua `pytest`), kiểm tra 100% không có khóa ngoại mồ côi (Zero Orphan FK) và bảng fact $\ge 5.000$ dòng.

@@ -8,12 +8,12 @@
 
 ## 1. Mục Tiêu & Tiêu Chí Đánh Giá Nguồn Dữ Liệu
 
-Đề tài nghiên cứu: **"Nghiên cứu – phân tích tần suất và thiệt hại của các trận cháy rừng / thảm họa thiên nhiên trong 20 năm qua (2006–2025)"**.  
+Đề tài nghiên cứu: **"Nghiên cứu – phân tích tần suất và thiệt hại của các trận cháy rừng / thảm họa thiên nhiên trong 20 năm qua (2005–2024)"**.  
 Trọng tâm là cháy rừng (Wildfire / Forest Fire); các thảm họa thiên nhiên khác (Lũ lụt, Bão, Hạn hán, Động đất, Núi lửa...) được sử dụng để so sánh và đặt vào bối cảnh toàn cục.
 
 ### Tiêu chí lựa chọn nguồn:
 1. **Tính xác thực & Uy tín học thuật**: Dữ liệu từ các cơ quan chính phủ, viện nghiên cứu khoa học hoặc tổ chức quốc tế uy tín (NASA, NOAA, USDA Forest Service, CRED UCLouvain, Our World in Data).
-2. **Phạm vi thời gian**: Bao quát giai đoạn 2006–2025 (hoặc các năm đại diện trong giai đoạn).
+2. **Phạm vi thời gian**: Bao quát giai đoạn 2005–2024 (hoặc các năm đại diện trong giai đoạn).
 3. **Mức độ chi tiết (Granularity)**: Ưu tiên dữ liệu cấp sự kiện (Event-level) có tọa độ, thời gian bùng phát, nguyên nhân, diện tích thiệt hại và tác động kinh tế/sinh mạng.
 4. **Quy mô mẫu**: Đảm bảo sau khi tiền xử lý và làm sạch đạt tối thiểu 5.000 bản ghi hợp lệ.
 5. **Tính mở & Tái lập (Reproducibility)**: Có thể tải tự động bằng script (`src/01_download.py`), giấy phép rõ ràng (Public Domain, Open Access, CC-BY 4.0).
@@ -29,7 +29,7 @@ Trọng tâm là cháy rừng (Wildfire / Forest Fire); các thảm họa thiên
 | **Khoảng năm có sẵn** | 1900–2024+ | 2000–nay (File 7 ngày gần nhất) | 1950–2024+ (Theo từng năm) | 1992–2020 (Phiên bản thứ 6) | 1900–2025 |
 | **Phạm vi địa lý** | Toàn cầu (theo quốc gia/khu vực) | Toàn cầu | Hoa Kỳ & Lãnh thổ | Hoa Kỳ | Toàn cầu |
 | **Cấp dữ liệu** | Tổng hợp theo năm / quốc gia | Điểm ảnh vệ tinh phát hiện nhiệt (Hotspots) | Cấp sự kiện thiên tai chi tiết | Cấp sự kiện cháy rừng | Cấp sự kiện thảm họa vĩ mô |
-| **Số dòng quan sát thực tế** | 605 dòng (số vụ), 1.129 dòng (thiệt hại) | 68.312 dòng (MODIS), 385.296 dòng (VIIRS) | 61.281 dòng (2020), 75.593 dòng (2023) | 1.000 dòng mẫu (từ 2,3+ triệu bản ghi) | ~11.000 thảm họa (2006–2025) |
+| **Số dòng quan sát thực tế** | 605 dòng (số vụ), 1.129 dòng (thiệt hại) | 68.312 dòng (MODIS), 385.296 dòng (VIIRS) | 61.281 dòng (2020), 75.593 dòng (2023) | 1.000 dòng mẫu (từ 2,3+ triệu bản ghi) | 8.111 dòng (2005–2024) |
 | **Dung lượng tải** | ~50 KB | ~35 MB (2 file) | ~22 MB (2 năm gzip) | ~104 KB (mẫu) | ~5–10 MB |
 | **Giấy phép** | Creative Commons Attribution (CC-BY 4.0) | NASA Open Data Policy (Public Domain) | U.S. Federal Government (Public Domain) | U.S. Federal Government (Public Domain) | Nghiên cứu phi thương mại (Đăng ký tài khoản) |
 | **Phương thức thu thập** | Tải tự động qua HTTP GET trực tiếp | Tải tự động qua HTTP GET trực tiếp | Tải tự động qua HTTP GET trực tiếp | Tải tự động qua REST API (ArcGIS MapServer) | Tải thủ công sau khi đăng nhập tài khoản |
@@ -63,7 +63,7 @@ Do cổng dữ liệu **EM-DAT** yêu cầu xác thực tài khoản học thu�
 2. **Đăng nhập**: Sử dụng tài khoản cá nhân / học thuật (đăng ký miễn phí).
 3. **Thiết lập bộ lọc dữ liệu**:
    - Tab **Disaster Classification**: Chọn `Natural` (bao gồm `Wildfire`, `Flood`, `Storm`, `Drought`, `Earthquake`, `Extreme temperature`, `Volcanic activity`).
-   - Tab **Period**: Chọn từ năm `2006` đến năm `2025`.
+   - Tab **Period**: Chọn từ năm `2005` đến năm `2024`.
    - Tab **Geography**: Chọn `All Continents` / `All Countries`.
 4. **Tải về**:
    - Nhấn **Download** $\to$ Chọn định dạng **CSV** (hoặc Excel `.xlsx`).
