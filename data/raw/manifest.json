@@ -1,34 +1,22 @@
-[
-  {
-    "file_name": "CAL_FIRE_Damage_Inspection_DINS.csv",
-    "path": "data/raw/calfire/CAL_FIRE_Damage_Inspection_DINS.csv",
-    "size_bytes": 60595742,
-    "sha256": "af01e965145420695504db3385782c6879dee00dc66586feec8a6bfc0938404f",
-    "source": "CAL FIRE / State of California Open Data",
-    "downloaded_at": "2026-10-06T21:20:20.730858"
+{
+  "California_Fire_Perimeters_all.csv": {
+    "sha256": "9917d9d325b9f66443ad0497417b46dc19197f6c639be1c219c6c8bf6ef4f721",
+    "size_bytes": 4164556,
+    "size_mb": 3.97
   },
-  {
-    "file_name": "California_Counties_Demographics.csv",
-    "path": "data/raw/calfire/California_Counties_Demographics.csv",
-    "size_bytes": 8723,
-    "sha256": "aab2929157aa1f24218ceb64e070c5e3d61b2fba976725fdd702c879ee5ccaf5",
-    "source": "CAL FIRE / State of California Open Data",
-    "downloaded_at": "2026-10-06T21:20:20.731096"
+  "CAL_FIRE_Damage_Inspection_DINS.csv": {
+    "sha256": "2a724adda8348770e0746fac75204508ac3eb67ac786ac39ece485a9f9d3c6a0",
+    "size_bytes": 60463219,
+    "size_mb": 57.66
   },
-  {
-    "file_name": "California_Fire_Perimeters_all.csv",
-    "path": "data/raw/calfire/California_Fire_Perimeters_all.csv",
-    "size_bytes": 4187912,
-    "sha256": "fca2afc8c4397f43481475578bf595bd893caf6ccf8e86eed2bb9332b0ddfc95",
-    "source": "CAL FIRE / State of California Open Data",
-    "downloaded_at": "2026-10-06T21:20:20.734392"
+  "California_Counties_Demographics.csv": {
+    "sha256": "62dd563a81cd8b83f84ff746f7620eaddc05c3f505cd4b95351d4ed1daa46dd6",
+    "size_bytes": 8664,
+    "size_mb": 0.01
   },
-  {
-    "file_name": "NOAA_California_Wildfires_Casualties.csv",
-    "path": "data/raw/calfire/NOAA_California_Wildfires_Casualties.csv",
-    "size_bytes": 178874,
-    "sha256": "c1d0a8efc86dca2369d2f757034d59906f3c56f8c292d9670651e6306f301645",
-    "source": "NOAA NCEI Storm Events Database",
-    "downloaded_at": "2026-10-06T21:20:20.734693"
+  "NOAA_California_Wildfires_Casualties.csv": {
+    "sha256": "77dee7957bab18b8f0ff51a24d4c4c04e183f8c24d527d6d7e7002046fbd55b7",
+    "size_bytes": 902386,
+    "size_mb": 0.86
   }
-]
+}
