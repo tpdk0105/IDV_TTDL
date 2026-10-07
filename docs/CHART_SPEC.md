@@ -95,7 +95,7 @@ Cấu trúc Story Point dẫn dắt mạch lạc theo đúng barem yêu cầu (�
   - Trục 1: `CNT([incident_id])` $\to$ Marks: **Bar** (Cột màu xanh `#4A90E2`).
   - Trục 2: `SUM([acres_burned])` $\to$ Marks: **Line** (Đường màu cam `#D55E00`).
 - **Thao tác Dual Axis**: Chuột phải vào trục thứ 2 $\to$ chọn **Dual Axis** (hai thang đo độc lập: Số vụ cháy vs Mẫu rừng thiêu rụi).
-- **Tích hợp mô hình dự báo**: Thêm đường **Trend Line** tuyến tính trên trục diện tích cháy để minh họa kết quả Linear Regression của TV1 (hoặc nạp bảng `forecast_results.csv`).
+- **Tích hợp mô hình dự báo**: Thêm đường **Trend Line** tuyến tính trên trục diện tích cháy, cấu hình Forward Forecast 10 năm (giai đoạn 2026–2035) kèm dải độ tin cậy 95% (phương trình $y = 32.967 \times \text{Year} - 65.475.936$) để trực quan hóa kết quả dự báo Linear Regression theo đúng Barem (0.5 điểm).
 - **Tooltip**: Hiển thị năm, số vụ cháy xảy ra, tổng diện tích cháy (Acres và Hecta).
 
 ---

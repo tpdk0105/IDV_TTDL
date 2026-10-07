@@ -30,7 +30,7 @@ Hệ thống gồm **10 Worksheets** (được chia theo tỷ lệ 2/4/4: TV1 l�
 
 ### 👤 Thành viên 1: Biểu đồ #1 – #2 (Data & ML Engineer: 2 Sheets)
 > *Ghi chú*: TV1 phụ trách 2 biểu đồ để tập trung toàn lực vào Pipeline xử lý dữ liệu và Xây dựng Mô hình dự báo Linear/Logistic Regression.
-- **Worksheet #1**: `Sheet_01_Combo_Trend` (Combo Dual-Axis: Cột số vụ cháy + Đường diện tích cháy Acres theo năm 2006–2025; **tích hợp đường Trend Line dự báo Linear Regression**).
+- **Worksheet #1**: `Sheet_01_Combo_Trend` (Combo Dual-Axis: Cột số vụ cháy + Đường diện tích cháy Acres theo năm 2006–2025; **tích hợp đường Trend Line Forward 10 năm dự báo 2026–2035 đạt tiêu chí Barem 0.5 điểm**).
 - **Worksheet #2**: `Sheet_02_Stacked_Area` (Stacked Area: Cơ cấu nguyên nhân cháy theo thời gian 2006–2025).
 
 ### 👤 Thành viên 2: Biểu đồ #3 – #6 (Data Modeling & SQL Engineer: 4 Sheets)
@@ -55,7 +55,7 @@ Nhấn nút **New Dashboard** ở thanh dưới để tạo 3 Dashboard tương 
    - **Kích thước**: Fixed size (1200 $\times$ 800 px) hoặc Automatic.
    - **Thành phần**: Header tiêu đề + Thẻ KPI Cards (Tổng số vụ, Tổng diện tích cháy, Tổng nhà phá hủy) + Kéo thả `Sheet_01` (TV1), `Sheet_02` (TV1), `Sheet_03` (TV2).
    - **Tương tác**: Bộ lọc năm dạng Slider gắn cho cả 3 sheet (**Apply to Worksheets $\to$ Selected Worksheets**).
-   - **Tích hợp Dự báo**: Thể hiện rõ đường Trend Line (kết quả mô hình hồi quy tuyến tính từ TV1) trên `Sheet_01`.
+   - **Tích hợp Dự báo**: Thể hiện rõ đường Trend Line Forward 10 năm (2026–2035) kèm dải tin cậy 95% trên `Sheet_01`.
    - **Hộp Insight**: Tóm tắt xu hướng 20 năm và xu hướng dự báo thiệt hại trong tương lai.
 
 2. **Dashboard D2: Điểm nóng & Phân cấp thiệt hại theo 58 Hạt** (Không gian & Nguyên lý 80/20)
