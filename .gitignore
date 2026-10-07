@@ -43,5 +43,6 @@ data/interim/*
 
 # Temporary and log files
 *.log
+*.docx
 scratch/
 tmp/
