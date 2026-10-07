@@ -22,10 +22,11 @@ def split_star_schema_tables() -> None:
     tables_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"[TODO - TV2] Bắt đầu tách master_clean.csv sang Star Schema tại: {tables_dir.resolve()}")
-    print("[TODO - TV2] 1. Tách dim_date (Surrogate key YYYYMMDD, mùa, mùa cháy).")
-    print("[TODO - TV2] 2. Tách dim_location (ISO3, tên nước, châu lục, tọa độ).")
-    print("[TODO - TV2] 3. Tách dim_disaster_type, dim_cause, dim_source.")
-    print("[TODO - TV2] 4. Tách fact_disaster_event và fact_wildfire_detail (giữ các cờ ML).")
+    print("[TODO - TV2] 1. Tách dim_date (Surrogate key YYYYMMDD, thứ bậc ngày/tháng/quý/năm, mùa cháy).")
+    print("[TODO - TV2] 2. Tách dim_county (58 Hạt California, mã FIPS, dân số, diện tích).")
+    print("[TODO - TV2] 3. Tách dim_cause (Mã CAL FIRE 1-19, Lightning, Human, Undetermined).")
+    print("[TODO - TV2] 4. Tách fact_fire_incident (7.342 vụ cháy FRAP, diện tích, thương vong, cờ ML).")
+    print("[TODO - TV2] 5. Tách fact_structure_damage (Hợp nhất DINS 2013-2025 và ICS-209 2006-2012).")
     # TODO (Giai đoạn 3): Viết logic phân tách bảng và lưu các file CSV.
 
 

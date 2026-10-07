@@ -19,11 +19,12 @@
 
 | Tên Cột | Số Dòng Thiếu (Missing Count) | Tỷ Lệ Thiếu (%) | Mức Độ Nghiêm Trọng | Hướng Xử Lý Dự Kiến |
 |---------|-------------------------------|-----------------|---------------------|----------------------|
-| `damage_usd` | *TODO* | *TODO* | Cao | Imputation bằng KNN/Iterative hoặc giữ NULL |
-| `burned_area_ha` | *TODO* | *TODO* | Cao | Đối soát từ diện tích thô / Imputation ML |
-| `deaths` | *TODO* | *TODO* | Thấp/TB | Kiểm tra 0 vs NULL / Điền giá trị |
-| `cause_name` | *TODO* | *TODO* | TB | Phân loại bằng Random Forest Classifier |
-| `latitude`/`longitude` | *TODO* | *TODO* | Thấp | Không điền tọa độ giả, chỉ giữ nếu hợp lệ |
+| `acres_burned` / `burned_area_ha` | *TODO* | *TODO* | TB | Khảo sát từ diện tích FRAP / Imputation ML |
+| `structures_destroyed` | *TODO* | *TODO* | Thấp | Hợp nhất từ ICS-209 (2006–2012) và DINS (2013–2025) |
+| `damage_property_usd` | *TODO* | *TODO* | Cao | Lấy từ NOAA NCEI / Imputation hoặc giữ nguyên |
+| `deaths_direct` / `injuries_direct` | *TODO* | *TODO* | Thấp | Đối soát từ NOAA Storm Events (mặc định 0 nếu không ghi nhận) |
+| `cause_name` / `cause_code` | *TODO* | *TODO* | TB | Chuẩn hóa mã CAL FIRE 1-19 / Dự đoán Random Forest |
+| `latitude`/`longitude` | *TODO* | *TODO* | Thấp | Kiểm tra Bounding Box California (32°N-42°N, -125°W đến -114°W) |
 
 *Biểu đồ trực quan ma trận thiếu (Missingno Matrix): Sẽ được đính kèm sau khi chạy EDA.*
 
@@ -31,13 +32,13 @@
 
 ## 3. Phân Tích Dữ Liệu Trùng Lặp (Duplicate Analysis)
 - Số dòng trùng lặp hoàn toàn (Exact Duplicates): *[TODO]*
-- Số dòng trùng lặp logic (Cùng vị trí, cùng ngày, cùng loại thảm họa nhưng khác ID): *[TODO]*
+- Số dòng trùng lặp logic (Cùng vụ cháy, cùng vị trí, trùng ngày nhưng khác mã hồ sơ): *[TODO]*
 - Tỷ lệ trùng lặp: *[TODO]* %
 
 ---
 
 ## 4. Phân Bố & Ngoại Lai Sơ Bộ (Distributions & Initial Outliers)
-- **Thiệt hại (USD)**: Phân phối lệch phải cực mạnh (Right-skewed). Đa số các vụ thiệt hại nhỏ, một số ít siêu thảm họa gây thiệt hại hàng tỷ USD. Cần biến đổi thang log (`log1p`).
-- **Diện tích cháy (ha)**: Phân phối lũy thừa (Power-law distribution). Cần áp dụng thang đo log để quan sát mật độ.
-- **Số người tử vong (deaths)**: Chủ yếu tập trung ở 0 hoặc rất nhỏ, ngoại trừ các sự kiện dị biệt.
-- **Tọa độ**: Kiểm tra các điểm có tọa độ (0, 0) ngoài khơi vịnh Guinea hoặc ngoài phạm vi địa lý của quốc gia tương ứng.
+- **Diện tích cháy (Acres / Ha)**: Phân phối lũy thừa cực đoan (Heavy-tailed / Power-law). Đa số các vụ cháy nhỏ, số ít siêu thảm họa (>100.000 mẫu) thiêu rụi hàng trăm ngàn mẫu. Cần biến đổi log scale (`log1p`).
+- **Nhà cửa bị phá hủy (structures_destroyed)**: Tuân theo quy luật Pareto 80/20, tập trung đột biến ở các siêu đám cháy (Camp Fire, Tubbs Fire, Palisades Fire...).
+- **Thiệt hại tài sản & Thương vong**: Phân phối lệch phải mạnh, kiểm tra ngoại lai qua Isolation Forest.
+- **Tọa độ địa lý**: Kiểm tra các điểm có tọa độ nằm ngoài hộp giới hạn Bounding Box của bang California (vĩ độ $32^{\circ}$–$42^{\circ}$N, kinh độ $-125^{\circ}$–$-114^{\circ}$W).

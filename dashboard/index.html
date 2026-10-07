@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bảng Điều Khiển Trực Quan Hóa Thảm Họa Thiên Nhiên & Cháy Rừng (2006–2025) • Tableau Story</title>
+  <title>Bảng Điều Khiển Trực Quan Hóa Cháy Rừng California (2006–2025) • Tableau Story</title>
   <link rel="stylesheet" href="css/style.css">
   <!-- Tableau Embedding API v3 -->
   <script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
@@ -13,8 +13,8 @@
   <header class="app-header">
     <div class="header-content">
       <div class="header-title">
-        <h1>Nghiên Cứu & Phân Tích Thảm Họa Thiên Nhiên & Cháy Rừng Toàn Cầu</h1>
-        <p class="subtitle">Dữ liệu 20 năm (2006–2025) • Tableau Story & 4 Dashboards • Môn Tương tác Dữ liệu Trực quan</p>
+        <h1>Nghiên Cứu & Phân Tích Cháy Rừng California (2006–2025)</h1>
+        <p class="subtitle">Dữ liệu 20 năm (2006–2025) • Tableau Story & 3 Dashboards • Môn Tương tác Dữ liệu Trực quan</p>
       </div>
       <div class="header-actions">
         <a href="https://github.com/tpdk0105/IDV_TTDL" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
@@ -29,10 +29,10 @@
     <div class="nav-container">
       <div class="nav-tabs">
         <button class="nav-tab active" data-target="tab-tableau-story">
-          📖 Tableau Story (4 Story Points)
+          📖 Tableau Story (3 Story Points)
         </button>
         <button class="nav-tab" data-target="tab-structure">
-          📊 Cấu Trúc 4 Dashboards & 12 Biểu Đồ
+          📊 Cấu Trúc 3 Dashboards & 10 Biểu Đồ
         </button>
         <button class="nav-tab" data-target="tab-download">
           💾 Tải File Workbook (.twbx)
@@ -48,16 +48,16 @@
       <div class="tableau-embed-card">
         <div class="tableau-card-header">
           <div class="story-badge">TABLEAU PUBLIC INTERACTIVE STORY</div>
-          <h2>Câu Chuyện Dữ Liệu: 20 Năm Biến Động Thiên Tai & Siêu Cháy Rừng Toàn Cầu</h2>
+          <h2>Câu Chuyện Dữ Liệu: 20 Năm Cháy Rừng & Tàn Phá Tại California (2006–2025)</h2>
           <p class="story-desc">
-            Bản trình chiếu tương tác gồm <strong>4 Story Points</strong> dẫn dắt người xem từ bức tranh vĩ mô 20 năm, phân bố không gian chịu tổn thất, trọng tâm mùa vụ cháy rừng, đến căn nguyên tác động con người.
+            Bản trình chiếu tương tác gồm <strong>3 Story Points</strong> dẫn dắt người xem từ bức tranh vĩ mô 20 năm (xu hướng & dự báo hồi quy), điểm nóng 58 Hạt và nguyên lý tổn thất 80/20, đến phân tích mùa vụ, căn nguyên tự nhiên vs con người và các siêu thảm họa (&ge; 100.000 Acres).
           </p>
         </div>
 
         <!-- Khung nhúng Tableau Web Component -->
         <div class="tableau-embed-container" id="tableau-container">
           <tableau-viz id="tableauViz" 
-            src="https://public.tableau.com/views/WorldDisastersWildfires2006-2025/StoryDisastersWildfires" 
+            src="https://public.tableau.com/views/CaliforniaWildfireDisasters2006-2025/StoryWildfiresCalifornia" 
             toolbar="bottom" 
             hide-tabs="false">
           </tableau-viz>
@@ -67,7 +67,7 @@
             <div class="fallback-content">
               <div class="fallback-icon">📊</div>
               <h3>Bản Trực Quan Hóa Tableau Desktop / Tableau Public</h3>
-              <p>Trực quan hóa được thiết kế trên <strong>Tableau Public</strong> gồm 12 Worksheets, 4 Dashboards và 4 Story Points.</p>
+              <p>Trực quan hóa được thiết kế trên <strong>Tableau Public</strong> gồm 10 Worksheets, 3 Dashboards và 3 Story Points.</p>
               <div class="fallback-actions">
                 <a href="../tableau/wildfire_disaster_analysis.twbx" download class="btn btn-primary">
                   📥 Mở file Workbook (.twbx)
@@ -82,23 +82,23 @@
       </div>
     </section>
 
-    <!-- TAB 2: CẤU TRÚC 4 DASHBOARDS -->
-    <section id="tab-structure" class="tab-pane" aria-label="Chi tiết cấu trúc 4 Dashboards">
+    <!-- TAB 2: CẤU TRÚC 3 DASHBOARDS -->
+    <section id="tab-structure" class="tab-pane" aria-label="Chi tiết cấu trúc 3 Dashboards">
       <div class="dashboards-overview-grid">
         <!-- D1 -->
         <div class="dashboard-card">
           <div class="dash-header">
             <span class="dash-tag">Dashboard D1</span>
-            <h3>Bức Tranh 20 Năm (2006–2025)</h3>
-            <p class="dash-question">"Thảm họa thiên nhiên có xảy ra nhiều hơn và thiệt hại lớn hơn qua các năm không?"</p>
+            <h3>Bức Tranh 20 Năm Cháy Rừng California</h3>
+            <p class="dash-question">"Tần suất và diện tích rừng bị thiêu rụi biến động thế nào qua 20 năm? Có xu hướng gia tăng và dự báo tương lai ra sao?"</p>
           </div>
           <ul class="dash-charts-list">
-            <li><strong>#1. Combo Dual-Axis:</strong> Cột số vụ + Đường thiệt hại USD theo năm (TV1)</li>
-            <li><strong>#2. Stacked Area:</strong> Tần suất theo loại thảm họa theo thời gian (TV1)</li>
-            <li><strong>#5. Diverging Bar:</strong> Biến động số vụ so với trung bình 20 năm (TV2)</li>
+            <li><strong>#1. Combo Dual-Axis Bar + Line:</strong> Cột số vụ cháy + Đường diện tích cháy Acres theo năm (TV1) <em>(Tích hợp đường Trend Line Linear Regression)</em></li>
+            <li><strong>#2. Stacked Area:</strong> Cơ cấu nguyên nhân cháy theo thời gian 2006–2025 (TV1)</li>
+            <li><strong>#3. Diverging Bar:</strong> Biến động số vụ so với trung bình chuẩn 20 năm (TV2)</li>
           </ul>
           <div class="dash-insight">
-            <strong>💡 Insight chính:</strong> Tần suất thảm họa gia tăng mạnh sau chu kỳ 2017, năm 2020 đạt đỉnh kỷ lục thiệt hại kinh tế.
+            <strong>💡 Insight chính:</strong> Tần suất thảm họa gia tăng mạnh sau chu kỳ 2017, năm 2020 đạt đỉnh kỷ lục hơn 4.3 triệu mẫu rừng bị thiêu rụi. Mô hình hồi quy tuyến tính cảnh báo xu thế thiệt hại tiếp tục leo thang.
           </div>
         </div>
 
@@ -106,16 +106,16 @@
         <div class="dashboard-card">
           <div class="dash-header">
             <span class="dash-tag">Dashboard D2</span>
-            <h3>Ở Đâu Chịu Thiệt Hại?</h3>
-            <p class="dash-question">"Quốc gia và khu vực nào trên thế giới chịu ảnh hưởng nặng nề nhất?"</p>
+            <h3>Điểm Nóng & Tổn Thất 58 Hạt (80/20)</h3>
+            <p class="dash-question">"Những Hạt nào chịu thiệt hại nhà cửa nặng nề nhất? Có tuân theo quy luật Pareto 80/20 không?"</p>
           </div>
           <ul class="dash-charts-list">
-            <li><strong>#3. Choropleth Map:</strong> Bản đồ thế giới phân vùng thiệt hại/số vụ (TV1)</li>
-            <li><strong>#6. Treemap:</strong> Phân cấp thiệt hại kinh tế Châu lục $\to$ Quốc gia (TV2)</li>
-            <li><strong>#9. Combo Pareto:</strong> Top 10 quốc gia tử vong + % Lũy kế 80/20 (TV3)</li>
+            <li><strong>#4. Treemap Chart:</strong> Phân cấp nhà cửa bị phá hủy từ Hạt &rarr; Loại công trình kiến trúc (TV2)</li>
+            <li><strong>#7. Combo Pareto Chart:</strong> Top 10 Hạt bị tàn phá nặng nhất + Đường % lũy kế 80/20 (TV3)</li>
+            <li><strong>#9. Choropleth Map:</strong> Bản đồ phân vùng mức độ thiệt hại theo 58 Hạt California (TV3)</li>
           </ul>
           <div class="dash-insight">
-            <strong>💡 Insight chính:</strong> Tuân theo nguyên lý 80/20, phần lớn thiệt hại sinh mạng và tài sản tập trung tại một số ít quốc gia Châu Á và Châu Mỹ.
+            <strong>💡 Insight chính:</strong> Tuân theo nguyên lý Pareto 80/20, dưới 20% số Hạt (như Butte, Sonoma, Shasta, Lake, Los Angeles) gánh chịu trên 80% tổng số nhà cửa bị thiêu rụi hoàn toàn (trong tổng số 77.596 nhà).
           </div>
         </div>
 
@@ -123,33 +123,17 @@
         <div class="dashboard-card">
           <div class="dash-header">
             <span class="dash-tag">Dashboard D3</span>
-            <h3>Cháy Rừng: Khi Nào & Lớn Cỡ Nào?</h3>
-            <p class="dash-question">"Cháy rừng tập trung vào mùa nào, quy mô ra sao, vụ lớn nằm ở đâu?"</p>
+            <h3>Mùa Vụ, Căn Nguyên & Siêu Đám Cháy</h3>
+            <p class="dash-question">"Cháy rừng bùng phát mạnh vào tháng nào, quy mô ra sao, căn nguyên do con người hay tự nhiên và siêu đám cháy ở đâu?"</p>
           </div>
           <ul class="dash-charts-list">
-            <li><strong>#4. Heatmap:</strong> Ma trận chu kỳ mùa cháy rừng Tháng $\times$ Năm (TV1)</li>
-            <li><strong>#8. Combo Histogram:</strong> Phân phối diện tích cháy theo logarit + Phân vị (TV2)</li>
-            <li><strong>#12. Proportional Symbol Map:</strong> Bản đồ điểm các đại vụ cháy lớn (TV3)</li>
+            <li><strong>#5. Bubble Scatter Log-Log:</strong> Tương quan Diện tích cháy vs Số nhà phá hủy vs Thương vong (TV2)</li>
+            <li><strong>#6. Combo Histogram:</strong> Phân phối diện tích cháy theo Bin logarit + Đường phân vị lũy kế (TV2)</li>
+            <li><strong>#8. Donut 2 Tầng:</strong> Cơ cấu nguyên nhân cháy Tự nhiên (Sét) vs Con người (Thiết bị, điện, đốt phá) (TV3)</li>
+            <li><strong>#10. Proportional Symbol Map:</strong> Bản đồ điểm phân bố không gian các đại vụ cháy lớn California (TV3)</li>
           </ul>
           <div class="dash-insight">
-            <strong>💡 Insight chính:</strong> Mùa cháy rừng bùng nổ từ tháng 6–9. Dù các vụ cháy $\ge 10.000$ ha hiếm gặp (< 5%), chúng gây hơn 70% tổng diện tích tàn phá.
-          </div>
-        </div>
-
-        <!-- D4 -->
-        <div class="dashboard-card">
-          <div class="dash-header">
-            <span class="dash-tag">Dashboard D4</span>
-            <h3>Vì Sao & Hệ Quả</h3>
-            <p class="dash-question">"Nguyên nhân chính là gì và quy mô diện tích liên hệ thế nào với thiệt hại?"</p>
-          </div>
-          <ul class="dash-charts-list">
-            <li><strong>#10. Donut / Sunburst:</strong> Cơ cấu nguyên nhân Tự nhiên vs Con người (TV3)</li>
-            <li><strong>#11. Sankey / Flow:</strong> Luồng Nguyên nhân $\to$ Thảm họa $\to$ Thiệt hại (TV3)</li>
-            <li><strong>#7. Bubble Scatter:</strong> Tương quan Diện tích vs Thiệt hại (Log-Log) (TV2)</li>
-          </ul>
-          <div class="dash-insight">
-            <strong>💡 Insight chính:</strong> Tác nhân con người chiếm đa số về số vụ; tương quan giữa diện tích cháy và thiệt hại kinh tế diễn ra theo hàm mũ phi tuyến.
+            <strong>💡 Insight chính:</strong> Mặc dù sét đánh tự nhiên gây ra các trận cháy diện tích lớn nhất (chu kỳ 2020), nhưng hoạt động của con người chiếm trên 85% số vụ gần khu dân cư. Các siêu đám cháy &ge; 100.000 mẫu chiếm tỷ trọng áp đảo diện tích tàn phá.
           </div>
         </div>
       </div>
@@ -159,14 +143,14 @@
     <section id="tab-download" class="tab-pane" aria-label="Tải file Workbook và tài liệu">
       <div class="download-container-card">
         <h2>Tài Nguyên Dự Án & Tệp Đóng Gói Tableau</h2>
-        <p>Tất cả tài nguyên đã được chuẩn bị sẵn sàng để chạy trên máy cá nhân hoặc kiểm tra trên lớp:</p>
+        <p>Tất cả tài nguyên đã được chuẩn bị sẵn sàng để mở trên Tableau Desktop / Tableau Public hoặc kiểm tra trên lớp:</p>
         
         <div class="resource-grid">
           <div class="resource-item">
             <div class="res-icon">📦</div>
             <div class="res-info">
               <h4>Tableau Packaged Workbook (.twbx)</h4>
-              <p>Chứa toàn bộ 12 Worksheets, 4 Dashboards, 4 Story Points và dữ liệu sạch nhúng sẵn.</p>
+              <p>Chứa toàn bộ 10 Worksheets, 3 Dashboards, 3 Story Points và dữ liệu sạch nhúng sẵn.</p>
               <code>tableau/wildfire_disaster_analysis.twbx</code>
             </div>
           </div>
@@ -175,7 +159,7 @@
             <div class="res-icon">📐</div>
             <div class="res-info">
               <h4>Danh Mục Công Thức Calculated Fields</h4>
-              <p>Hướng dẫn tạo các trường tính toán (CF1 $\to$ CF13) phục vụ biểu đồ trong Tableau.</p>
+              <p>Hướng dẫn tạo các trường tính toán (CF1 &rarr; CF13) phục vụ 10 biểu đồ trong Tableau.</p>
               <a href="../tableau/CALCULATED_FIELDS.md" class="res-link">Xem CALCULATED_FIELDS.md &rarr;</a>
             </div>
           </div>
@@ -183,7 +167,7 @@
           <div class="resource-item">
             <div class="res-icon">📋</div>
             <div class="res-info">
-              <h4>Đặc Tả Kỹ Thuật 12 Biểu Đồ (CHART SPEC)</h4>
+              <h4>Đặc Tả Kỹ Thuật 10 Biểu Đồ (CHART SPEC)</h4>
               <p>Chi tiết cách kéo thả Columns, Rows, Marks card, Color, Tooltip cho từng sheet.</p>
               <a href="../docs/CHART_SPEC.md" class="res-link">Xem CHART_SPEC.md &rarr;</a>
             </div>
