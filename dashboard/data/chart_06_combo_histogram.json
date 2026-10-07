@@ -1,0 +1,44 @@
+[
+  {
+    "acres_bin": "1. < 300 Acres",
+    "fire_count": 5646,
+    "fire_pct": 78.22,
+    "total_acres": 271071.3,
+    "acres_pct": 1.4
+  },
+  {
+    "acres_bin": "2. 300 - 1.000 Acres",
+    "fire_count": 666,
+    "fire_pct": 9.23,
+    "total_acres": 365750.3,
+    "acres_pct": 1.89
+  },
+  {
+    "acres_bin": "3. 1.000 - 5.000 Acres",
+    "fire_count": 492,
+    "fire_pct": 6.82,
+    "total_acres": 1119325.93,
+    "acres_pct": 5.77
+  },
+  {
+    "acres_bin": "4. 5.000 - 25.000 Acres",
+    "fire_count": 261,
+    "fire_pct": 3.62,
+    "total_acres": 2961921.31,
+    "acres_pct": 15.28
+  },
+  {
+    "acres_bin": "5. 25.000 - 100.000 Acres",
+    "fire_count": 120,
+    "fire_pct": 1.66,
+    "total_acres": 6028354.55,
+    "acres_pct": 31.1
+  },
+  {
+    "acres_bin": "6. ≥ 100.000 Acres (Siêu đám cháy)",
+    "fire_count": 33,
+    "fire_pct": 0.46,
+    "total_acres": 8640089.8,
+    "acres_pct": 44.57
+  }
+]

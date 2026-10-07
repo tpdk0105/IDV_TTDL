@@ -1,0 +1,2456 @@
+[
+  {
+    "county_name": "Butte",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 8387,
+    "damaged_count": 381
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 8192,
+    "damaged_count": 1013
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 4830,
+    "damaged_count": 465
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 4564,
+    "damaged_count": 175
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 3992,
+    "damaged_count": 815
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 2847,
+    "damaged_count": 216
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 2697,
+    "damaged_count": 40
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 2406,
+    "damaged_count": 144
+  },
+  {
+    "county_name": "San Diego",
+    "structure_type": "Unspecified",
+    "destroyed_count": 2191,
+    "damaged_count": 142
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 1882,
+    "damaged_count": 161
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 1698,
+    "damaged_count": 94
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 1112,
+    "damaged_count": 41
+  },
+  {
+    "county_name": "Shasta",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 926,
+    "damaged_count": 96
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 909,
+    "damaged_count": 6
+  },
+  {
+    "county_name": "Shasta",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 889,
+    "damaged_count": 188
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 866,
+    "damaged_count": 64
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Unspecified",
+    "destroyed_count": 759,
+    "damaged_count": 312
+  },
+  {
+    "county_name": "Napa",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 745,
+    "damaged_count": 98
+  },
+  {
+    "county_name": "Ventura",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 691,
+    "damaged_count": 160
+  },
+  {
+    "county_name": "San Bernardino",
+    "structure_type": "Unspecified",
+    "destroyed_count": 492,
+    "damaged_count": 73
+  },
+  {
+    "county_name": "El Dorado",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 460,
+    "damaged_count": 26
+  },
+  {
+    "county_name": "Napa",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 459,
+    "damaged_count": 65
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 447,
+    "damaged_count": 18
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 435,
+    "damaged_count": 74
+  },
+  {
+    "county_name": "Siskiyou",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 407,
+    "damaged_count": 23
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 397,
+    "damaged_count": 23
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 395,
+    "damaged_count": 29
+  },
+  {
+    "county_name": "Calaveras",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 374,
+    "damaged_count": 19
+  },
+  {
+    "county_name": "Napa",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 372,
+    "damaged_count": 92
+  },
+  {
+    "county_name": "Siskiyou",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 369,
+    "damaged_count": 40
+  },
+  {
+    "county_name": "Calaveras",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 347,
+    "damaged_count": 12
+  },
+  {
+    "county_name": "Napa",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 337,
+    "damaged_count": 28
+  },
+  {
+    "county_name": "Ventura",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 328,
+    "damaged_count": 73
+  },
+  {
+    "county_name": "El Dorado",
+    "structure_type": "Unspecified",
+    "destroyed_count": 309,
+    "damaged_count": 35
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Unspecified",
+    "destroyed_count": 306,
+    "damaged_count": 8
+  },
+  {
+    "county_name": "Mendocino",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 280,
+    "damaged_count": 21
+  },
+  {
+    "county_name": "Ventura",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 278,
+    "damaged_count": 191
+  },
+  {
+    "county_name": "El Dorado",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 264,
+    "damaged_count": 34
+  },
+  {
+    "county_name": "Fresno",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 257,
+    "damaged_count": 14
+  },
+  {
+    "county_name": "Kern",
+    "structure_type": "Unspecified",
+    "destroyed_count": 257,
+    "damaged_count": 17
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 234,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Fresno",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 228,
+    "damaged_count": 27
+  },
+  {
+    "county_name": "Mendocino",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 228,
+    "damaged_count": 14
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Multi Family Residence Single Story",
+    "destroyed_count": 225,
+    "damaged_count": 21
+  },
+  {
+    "county_name": "El Dorado",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 224,
+    "damaged_count": 21
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 223,
+    "damaged_count": 19
+  },
+  {
+    "county_name": "Fresno",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 215,
+    "damaged_count": 12
+  },
+  {
+    "county_name": "Kern",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 211,
+    "damaged_count": 26
+  },
+  {
+    "county_name": "Shasta",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 210,
+    "damaged_count": 41
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 208,
+    "damaged_count": 45
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Multi Family Residence Multi Story",
+    "destroyed_count": 188,
+    "damaged_count": 73
+  },
+  {
+    "county_name": "Kern",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 177,
+    "damaged_count": 5
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 175,
+    "damaged_count": 8
+  },
+  {
+    "county_name": "Santa Barbara",
+    "structure_type": "Unspecified",
+    "destroyed_count": 164,
+    "damaged_count": 17
+  },
+  {
+    "county_name": "Mariposa",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 158,
+    "damaged_count": 17
+  },
+  {
+    "county_name": "Unknown",
+    "structure_type": "Unspecified",
+    "destroyed_count": 158,
+    "damaged_count": 12
+  },
+  {
+    "county_name": "Tehama",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 157,
+    "damaged_count": 11
+  },
+  {
+    "county_name": "Santa Clara",
+    "structure_type": "Unspecified",
+    "destroyed_count": 156,
+    "damaged_count": 6
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Motor Home",
+    "destroyed_count": 153,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 151,
+    "damaged_count": 22
+  },
+  {
+    "county_name": "Shasta",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 143,
+    "damaged_count": 9
+  },
+  {
+    "county_name": "Tehama",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 143,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 138,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Kern",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 136,
+    "damaged_count": 17
+  },
+  {
+    "county_name": "Mariposa",
+    "structure_type": "Unspecified",
+    "destroyed_count": 130,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 128,
+    "damaged_count": 8
+  },
+  {
+    "county_name": "Yuba",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 127,
+    "damaged_count": 11
+  },
+  {
+    "county_name": "Shasta",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 123,
+    "damaged_count": 12
+  },
+  {
+    "county_name": "Calaveras",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 114,
+    "damaged_count": 6
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 114,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Riverside",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 113,
+    "damaged_count": 21
+  },
+  {
+    "county_name": "Placer",
+    "structure_type": "Unspecified",
+    "destroyed_count": 112,
+    "damaged_count": 37
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 110,
+    "damaged_count": 6
+  },
+  {
+    "county_name": "San Diego",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 108,
+    "damaged_count": 31
+  },
+  {
+    "county_name": "San Diego",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 105,
+    "damaged_count": 19
+  },
+  {
+    "county_name": "Mariposa",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 104,
+    "damaged_count": 12
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "School",
+    "destroyed_count": 102,
+    "damaged_count": 18
+  },
+  {
+    "county_name": "Kern",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 98,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Riverside",
+    "structure_type": "Unspecified",
+    "destroyed_count": 92,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "San Diego",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 91,
+    "damaged_count": 30
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 91,
+    "damaged_count": 18
+  },
+  {
+    "county_name": "Orange",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 84,
+    "damaged_count": 7
+  },
+  {
+    "county_name": "Riverside",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 84,
+    "damaged_count": 18
+  },
+  {
+    "county_name": "Siskiyou",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 81,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Riverside",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 78,
+    "damaged_count": 17
+  },
+  {
+    "county_name": "Trinity",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 77,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Yuba",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 77,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Lassen",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 73,
+    "damaged_count": 12
+  },
+  {
+    "county_name": "Ventura",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 67,
+    "damaged_count": 5
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 66,
+    "damaged_count": 9
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 66,
+    "damaged_count": 20
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Multi Family Residence Single Story",
+    "destroyed_count": 66,
+    "damaged_count": 11
+  },
+  {
+    "county_name": "Siskiyou",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 63,
+    "damaged_count": 10
+  },
+  {
+    "county_name": "Nevada",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 62,
+    "damaged_count": 8
+  },
+  {
+    "county_name": "Monterey",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 60,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Nevada",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 59,
+    "damaged_count": 5
+  },
+  {
+    "county_name": "Ventura",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 59,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Santa Barbara",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 57,
+    "damaged_count": 14
+  },
+  {
+    "county_name": "Calaveras",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 55,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Motor Home",
+    "destroyed_count": 54,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Siskiyou",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 53,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Commercial Building Multi Story",
+    "destroyed_count": 51,
+    "damaged_count": 11
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Multi Family Residence Multi Story",
+    "destroyed_count": 51,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Madera",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 51,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Multi Family Residence Multi Story",
+    "destroyed_count": 51,
+    "damaged_count": 12
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Multi Family Residence Single Story",
+    "destroyed_count": 49,
+    "damaged_count": 14
+  },
+  {
+    "county_name": "Mendocino",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 49,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Santa Barbara",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 49,
+    "damaged_count": 14
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 48,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Santa Cruz",
+    "structure_type": "Unspecified",
+    "destroyed_count": 47,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Kern",
+    "structure_type": "Motor Home",
+    "destroyed_count": 45,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Trinity",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 45,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Commercial Building Multi Story",
+    "destroyed_count": 43,
+    "damaged_count": 29
+  },
+  {
+    "county_name": "Mendocino",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 43,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "El Dorado",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 42,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Fresno",
+    "structure_type": "Mixed Commercial/Residential",
+    "destroyed_count": 42,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Unspecified",
+    "destroyed_count": 40,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Mariposa",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 38,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Mono",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 38,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "School",
+    "destroyed_count": 38,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 37,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Shasta",
+    "structure_type": "Motor Home",
+    "destroyed_count": 37,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Mendocino",
+    "structure_type": "Unspecified",
+    "destroyed_count": 36,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Orange",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 36,
+    "damaged_count": 29
+  },
+  {
+    "county_name": "San Luis Obispo",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 36,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Tehama",
+    "structure_type": "Motor Home",
+    "destroyed_count": 35,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Placer",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 34,
+    "damaged_count": 5
+  },
+  {
+    "county_name": "Mendocino",
+    "structure_type": "Motor Home",
+    "destroyed_count": 33,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Riverside",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 33,
+    "damaged_count": 5
+  },
+  {
+    "county_name": "San Luis Obispo",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 33,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Motor Home",
+    "destroyed_count": 32,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Motor Home",
+    "destroyed_count": 32,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Trinity",
+    "structure_type": "Unspecified",
+    "destroyed_count": 32,
+    "damaged_count": 13
+  },
+  {
+    "county_name": "Placer",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 31,
+    "damaged_count": 9
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "School",
+    "destroyed_count": 30,
+    "damaged_count": 15
+  },
+  {
+    "county_name": "Madera",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 30,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Tehama",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 30,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Lassen",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 29,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Siskiyou",
+    "structure_type": "Motor Home",
+    "destroyed_count": 29,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Yuba",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 29,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Napa",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 28,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Trinity",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 28,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Ventura",
+    "structure_type": "Unspecified",
+    "destroyed_count": 28,
+    "damaged_count": 15
+  },
+  {
+    "county_name": "Yuba",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 28,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Napa",
+    "structure_type": "Multi Family Residence Multi Story",
+    "destroyed_count": 26,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Mariposa",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 25,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Mendocino",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 25,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Napa",
+    "structure_type": "Commercial Building Multi Story",
+    "destroyed_count": 25,
+    "damaged_count": 14
+  },
+  {
+    "county_name": "Mariposa",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 24,
+    "damaged_count": 5
+  },
+  {
+    "county_name": "Mono",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 24,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Orange",
+    "structure_type": "Unspecified",
+    "destroyed_count": 24,
+    "damaged_count": 20
+  },
+  {
+    "county_name": "San Diego",
+    "structure_type": "Motor Home",
+    "destroyed_count": 23,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Orange",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 22,
+    "damaged_count": 7
+  },
+  {
+    "county_name": "Placer",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 22,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Fresno",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 21,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 21,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 21,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Motor Home",
+    "destroyed_count": 21,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Multi Family Residence Single Story",
+    "destroyed_count": 20,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Utility or Miscellaneous Structure > 120 sqft",
+    "destroyed_count": 20,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Madera",
+    "structure_type": "Mixed Commercial/Residential",
+    "destroyed_count": 20,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Church",
+    "destroyed_count": 19,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Calaveras",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 19,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Inyo",
+    "structure_type": "Unspecified",
+    "destroyed_count": 19,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Bernardino",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 19,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Santa Clara",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 19,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Commercial Building Multi Story",
+    "destroyed_count": 19,
+    "damaged_count": 8
+  },
+  {
+    "county_name": "El Dorado",
+    "structure_type": "Motor Home",
+    "destroyed_count": 18,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "El Dorado",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 17,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Kern",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 17,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Nevada",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 17,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 17,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Lassen",
+    "structure_type": "Unspecified",
+    "destroyed_count": 16,
+    "damaged_count": 6
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Church",
+    "destroyed_count": 16,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Mariposa",
+    "structure_type": "Motor Home",
+    "destroyed_count": 16,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Monterey",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 16,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Siskiyou",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 16,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Stanislaus",
+    "structure_type": "Unspecified",
+    "destroyed_count": 16,
+    "damaged_count": 6
+  },
+  {
+    "county_name": "Ventura",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 16,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Fresno",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 15,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Lassen",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 15,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Lassen",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 15,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Mono",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 15,
+    "damaged_count": 5
+  },
+  {
+    "county_name": "Napa",
+    "structure_type": "Multi Family Residence Single Story",
+    "destroyed_count": 15,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Riverside",
+    "structure_type": "Motor Home",
+    "destroyed_count": 15,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Diego",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 15,
+    "damaged_count": 11
+  },
+  {
+    "county_name": "Shasta",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 15,
+    "damaged_count": 7
+  },
+  {
+    "county_name": "Shasta",
+    "structure_type": "Unspecified",
+    "destroyed_count": 15,
+    "damaged_count": 5
+  },
+  {
+    "county_name": "Calaveras",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 14,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "El Dorado",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 14,
+    "damaged_count": 11
+  },
+  {
+    "county_name": "Riverside",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 14,
+    "damaged_count": 17
+  },
+  {
+    "county_name": "Ventura",
+    "structure_type": "Motor Home",
+    "destroyed_count": 14,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Yolo",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 14,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Kern",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 13,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Yolo",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 13,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Yuba",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 13,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Multi Family Residence Multi Story",
+    "destroyed_count": 12,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Mixed Commercial/Residential",
+    "destroyed_count": 12,
+    "damaged_count": 5
+  },
+  {
+    "county_name": "Nevada",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 12,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Siskiyou",
+    "structure_type": "Multi Family Residence Single Story",
+    "destroyed_count": 12,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 12,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Mixed Commercial/Residential",
+    "destroyed_count": 11,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Los Angeles",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 11,
+    "damaged_count": 27
+  },
+  {
+    "county_name": "Madera",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 11,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Modoc",
+    "structure_type": "Unspecified",
+    "destroyed_count": 11,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Shasta",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 11,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Tehama",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 11,
+    "damaged_count": 5
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 10,
+    "damaged_count": 6
+  },
+  {
+    "county_name": "Lassen",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 10,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Madera",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 10,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Madera",
+    "structure_type": "Motor Home",
+    "destroyed_count": 10,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Napa",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 10,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Napa",
+    "structure_type": "Motor Home",
+    "destroyed_count": 10,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Nevada",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 10,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "San Bernardino",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 10,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "San Luis Obispo",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 10,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Santa Barbara",
+    "structure_type": "Utility or Miscellaneous Structure > 120 sqft",
+    "destroyed_count": 10,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Trinity",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 10,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Tulare",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 10,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Inyo",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 9,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 9,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Monterey",
+    "structure_type": "Unspecified",
+    "destroyed_count": 9,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Santa Barbara",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 9,
+    "damaged_count": 13
+  },
+  {
+    "county_name": "Shasta",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 9,
+    "damaged_count": 15
+  },
+  {
+    "county_name": "Tehama",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 9,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Tulare",
+    "structure_type": "Unspecified",
+    "destroyed_count": 9,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Tulare",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 9,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Tuolumne",
+    "structure_type": "Unspecified",
+    "destroyed_count": 9,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Yuba",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 9,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "El Dorado",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 8,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Fresno",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 8,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Unspecified",
+    "destroyed_count": 8,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Mendocino",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 8,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Monterey",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 8,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Mixed Commercial/Residential",
+    "destroyed_count": 8,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Yuba",
+    "structure_type": "Unspecified",
+    "destroyed_count": 8,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Calaveras",
+    "structure_type": "Unspecified",
+    "destroyed_count": 7,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Fresno",
+    "structure_type": "Motor Home",
+    "destroyed_count": 7,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Mono",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 7,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Orange",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 7,
+    "damaged_count": 12
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 7,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "San Diego",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 7,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Santa Barbara",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 7,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Siskiyou",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 7,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Solano",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 7,
+    "damaged_count": 6
+  },
+  {
+    "county_name": "Tehama",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 7,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Tuolumne",
+    "structure_type": "Motor Home",
+    "destroyed_count": 7,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Unknown",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 7,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Commercial Building Multi Story",
+    "destroyed_count": 6,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Lassen",
+    "structure_type": "Motor Home",
+    "destroyed_count": 6,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Madera",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 6,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Napa",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 6,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Napa",
+    "structure_type": "Unspecified",
+    "destroyed_count": 6,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Multi Family Residence Single Story",
+    "destroyed_count": 6,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Santa Barbara",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 6,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Mixed Commercial/Residential",
+    "destroyed_count": 6,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Ventura",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 6,
+    "damaged_count": 6
+  },
+  {
+    "county_name": "Alpine",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 5,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Colusa",
+    "structure_type": "Unspecified",
+    "destroyed_count": 5,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Fresno",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 5,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Humboldt",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 5,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Mendocino",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 5,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Orange",
+    "structure_type": "Motor Home",
+    "destroyed_count": 5,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Placer",
+    "structure_type": "Motor Home",
+    "destroyed_count": 5,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Church",
+    "destroyed_count": 5,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Diego",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 5,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "San Diego",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 5,
+    "damaged_count": 7
+  },
+  {
+    "county_name": "San Luis Obispo",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 5,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Luis Obispo",
+    "structure_type": "Motor Home",
+    "destroyed_count": 5,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Santa Clara",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 5,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Siskiyou",
+    "structure_type": "Commercial Building Multi Story",
+    "destroyed_count": 5,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 5,
+    "damaged_count": 5
+  },
+  {
+    "county_name": "Unknown",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 5,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Ventura",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 5,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Alpine",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 4,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Calaveras",
+    "structure_type": "Multi Family Residence Single Story",
+    "destroyed_count": 4,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Madera",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 4,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Commercial Building Multi Story",
+    "destroyed_count": 4,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Riverside",
+    "structure_type": "Motor Home/Travel Trailer",
+    "destroyed_count": 4,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Luis Obispo",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 4,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Santa Barbara",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 4,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Santa Clara",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 4,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Santa Cruz",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 4,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Siskiyou",
+    "structure_type": "Unspecified",
+    "destroyed_count": 4,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Solano",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 4,
+    "damaged_count": 7
+  },
+  {
+    "county_name": "Trinity",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 4,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Tuolumne",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 4,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Yolo",
+    "structure_type": "Unspecified",
+    "destroyed_count": 4,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Calaveras",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 3,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "El Dorado",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 3,
+    "damaged_count": 6
+  },
+  {
+    "county_name": "Fresno",
+    "structure_type": "Multi Family Residence Single Story",
+    "destroyed_count": 3,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Inyo",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 3,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Mariposa",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 3,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Placer",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 3,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Placer",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 3,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Placer",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 3,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Riverside",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 3,
+    "damaged_count": 9
+  },
+  {
+    "county_name": "Riverside",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 3,
+    "damaged_count": 13
+  },
+  {
+    "county_name": "Sacramento",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 3,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "San Benito",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 3,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Joaquin",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 3,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Santa Barbara",
+    "structure_type": "Motor Home",
+    "destroyed_count": 3,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Santa Clara",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 3,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Solano",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 3,
+    "damaged_count": 5
+  },
+  {
+    "county_name": "Tuolumne",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 3,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Ventura",
+    "structure_type": "Multi Family Residence Multi Story",
+    "destroyed_count": 3,
+    "damaged_count": 9
+  },
+  {
+    "county_name": "Alpine",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Alpine",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 2,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Amador",
+    "structure_type": "Unspecified",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Amador",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Contra Costa",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "El Dorado",
+    "structure_type": "Church",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Fresno",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Humboldt",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Humboldt",
+    "structure_type": "Unspecified",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Kern",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 2,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Kern",
+    "structure_type": "Multi Family Residence Single Story",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Church",
+    "destroyed_count": 2,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "School",
+    "destroyed_count": 2,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Mariposa",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Mendocino",
+    "structure_type": "Multi Family Residence Single Story",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Mono",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 2,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Monterey",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Monterey",
+    "structure_type": "Motor Home",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Napa",
+    "structure_type": "Mixed Commercial/Residential",
+    "destroyed_count": 2,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Napa",
+    "structure_type": "School",
+    "destroyed_count": 2,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Nevada",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Nevada",
+    "structure_type": "Motor Home",
+    "destroyed_count": 2,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Orange",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "Multi Family Residence Multi Story",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Riverside",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 2,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "San Benito",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Diego",
+    "structure_type": "Motor Home/Travel Trailer",
+    "destroyed_count": 2,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "San Joaquin",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 2,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Shasta",
+    "structure_type": "Commercial Building Multi Story",
+    "destroyed_count": 2,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Shasta",
+    "structure_type": "Utility or Miscellaneous Structure > 120 sqft",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Siskiyou",
+    "structure_type": "Church",
+    "destroyed_count": 2,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Siskiyou",
+    "structure_type": "Utility or Miscellaneous Structure > 120 sqft",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Tehama",
+    "structure_type": "Agriculture",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Tehama",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 2,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Tehama",
+    "structure_type": "Motor Home/Travel Trailer",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Trinity",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Trinity",
+    "structure_type": "Motor Home",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Tulare",
+    "structure_type": "Motor Home",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Tulare",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Tuolumne",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Unknown",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Unknown",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Ventura",
+    "structure_type": "Commercial Building Multi Story",
+    "destroyed_count": 2,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Ventura",
+    "structure_type": "School",
+    "destroyed_count": 2,
+    "damaged_count": 8
+  },
+  {
+    "county_name": "Yuba",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 2,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Alpine",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Alpine",
+    "structure_type": "Motor Home",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Amador",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Butte",
+    "structure_type": "Motor Home/Travel Trailer",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Calaveras",
+    "structure_type": "Commercial Building Multi Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Calaveras",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Calaveras",
+    "structure_type": "Multi Family Residence Multi Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "El Dorado",
+    "structure_type": "Commercial Building Multi Story",
+    "destroyed_count": 1,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "El Dorado",
+    "structure_type": "School",
+    "destroyed_count": 1,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Fresno",
+    "structure_type": "Multi Family Residence Multi Story",
+    "destroyed_count": 1,
+    "damaged_count": 4
+  },
+  {
+    "county_name": "Fresno",
+    "structure_type": "School",
+    "destroyed_count": 1,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Inyo",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Inyo",
+    "structure_type": "Motor Home",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Kings",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Lake",
+    "structure_type": "Agriculture",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Lassen",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Madera",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 1,
+    "damaged_count": 3
+  },
+  {
+    "county_name": "Madera",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Madera",
+    "structure_type": "Multi Family Residence Single Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Mendocino",
+    "structure_type": "Commercial Building Multi Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Mono",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Mono",
+    "structure_type": "Utility or Miscellaneous Structure > 120 sqft",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Orange",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 1,
+    "damaged_count": 5
+  },
+  {
+    "county_name": "Orange",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Plumas",
+    "structure_type": "School",
+    "destroyed_count": 1,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Riverside",
+    "structure_type": "Mixed Commercial/Residential",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Benito",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Benito",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Bernardino",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 1,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "San Bernardino",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Bernardino",
+    "structure_type": "Motor Home/Travel Trailer",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Diego",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 1,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "San Joaquin",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Joaquin",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Joaquin",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "San Luis Obispo",
+    "structure_type": "Unspecified",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Santa Barbara",
+    "structure_type": "Infrastructure",
+    "destroyed_count": 1,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Santa Clara",
+    "structure_type": "Motor Home",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Santa Cruz",
+    "structure_type": "Single Family Residence Multi Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Santa Cruz",
+    "structure_type": "Single Family Residence Single Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Shasta",
+    "structure_type": "Mixed Commercial/Residential",
+    "destroyed_count": 1,
+    "damaged_count": 2
+  },
+  {
+    "county_name": "Siskiyou",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 1,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Solano",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Solano",
+    "structure_type": "Mobile Home Double Wide",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Church",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Hospital",
+    "destroyed_count": 1,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Sonoma",
+    "structure_type": "Utility or Miscellaneous Structure > 120 sqft",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Tehama",
+    "structure_type": "Commercial Building Multi Story",
+    "destroyed_count": 1,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Tehama",
+    "structure_type": "Mobile Home Triple Wide",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Trinity",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Tuolumne",
+    "structure_type": "Commercial Building Single Story",
+    "destroyed_count": 1,
+    "damaged_count": 1
+  },
+  {
+    "county_name": "Tuolumne",
+    "structure_type": "Mixed Commercial/Residential",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Tuolumne",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Unknown",
+    "structure_type": "Motor Home",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Unknown",
+    "structure_type": "Utility Misc Structure",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Ventura",
+    "structure_type": "Multi Family Residence Single Story",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Yolo",
+    "structure_type": "Mobile Home Single Wide",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  },
+  {
+    "county_name": "Yuba",
+    "structure_type": "Motor Home",
+    "destroyed_count": 1,
+    "damaged_count": 0
+  }
+]

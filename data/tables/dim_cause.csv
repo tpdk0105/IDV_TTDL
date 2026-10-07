@@ -1,0 +1,20 @@
+cause_id,cause_code,cause_name,cause_group
+1,1,Lightning,Natural
+2,2,Equipment Use,Human
+3,3,Smoking,Human
+4,4,Campfire,Human
+5,5,Debris,Human
+6,6,Railroad,Human
+7,7,Arson,Human
+8,8,Playing with Fire,Human
+9,9,Miscellaneous,Undetermined
+10,10,Vehicle,Human
+11,11,Powerline,Human
+12,12,Firefighter Training,Human
+13,13,Non-Firefighter Training,Human
+14,14,Unknown / Unidentified,Undetermined
+15,15,Structure,Human
+16,16,Aircraft,Human
+17,17,Volcanic,Natural
+18,18,Escaped Prescribed Burn,Human
+19,19,Illegal Alien Campfire,Human

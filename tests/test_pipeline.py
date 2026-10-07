@@ -1,9 +1,10 @@
 """
 Test suite for IDV_TTDL pipeline.
-Kiểm thử cấu trúc thư mục, quy chuẩn tập tin và tính sẵn sàng của pipeline.
+Kiểm thử cấu trúc thư mục, quy chuẩn tập tin, CSDL SQLite và tính sẵn sàng của pipeline.
 """
 
 from pathlib import Path
+import sqlite3
 import pytest
 
 
@@ -87,3 +88,67 @@ def test_src_pipeline_scripts_exist():
     ]
     for s in scripts:
         assert Path(s).is_file(), f"Mã nguồn pipeline {s} không tồn tại!"
+
+
+def test_star_schema_csv_files_exist():
+    """Kiểm tra 5 bảng CSV thuộc mô hình Star Schema trong data/tables/."""
+    required_tables = [
+        "data/tables/dim_date.csv",
+        "data/tables/dim_county.csv",
+        "data/tables/dim_cause.csv",
+        "data/tables/fact_fire_incident.csv",
+        "data/tables/fact_structure_damage.csv",
+    ]
+    for tbl in required_tables:
+        p = Path(tbl)
+        assert p.is_file(), f"Bảng {tbl} chưa được tạo!"
+        assert p.stat().st_size > 0, f"Bảng {tbl} rỗng (0 bytes)!"
+
+
+def test_sqlite_database_integrity_and_row_counts():
+    """Kiểm tra CSDL SQLite: tính toàn vẹn khóa ngoại (Zero Orphan FK) và fact >= 5.000 dòng."""
+    db_path = Path("data/tables/database.sqlite")
+    assert db_path.is_file(), "Tập tin data/tables/database.sqlite không tồn tại!"
+
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # 1. PRAGMA integrity_check
+    integrity = cursor.execute("PRAGMA integrity_check;").fetchall()
+    assert integrity == [("ok",)], f"SQLite integrity check thất bại: {integrity}"
+
+    # 2. PRAGMA foreign_key_check (Zero Orphan Foreign Keys)
+    fk_errors = cursor.execute("PRAGMA foreign_key_check;").fetchall()
+    assert len(fk_errors) == 0, f"Phát hiện lỗi khóa ngoại mồ côi: {fk_errors}"
+
+    # 3. Bảng fact trung tâm >= 5.000 dòng
+    cursor.execute("SELECT COUNT(*) FROM fact_fire_incident;")
+    fact_count = cursor.fetchone()[0]
+    assert fact_count >= 5000, f"fact_fire_incident chỉ có {fact_count} dòng (< 5.000)!"
+
+    # 4. Bảng fact mở rộng > 100.000 dòng
+    cursor.execute("SELECT COUNT(*) FROM fact_structure_damage;")
+    damage_count = cursor.fetchone()[0]
+    assert damage_count > 100000, f"fact_structure_damage quá ít dòng: {damage_count}!"
+
+    # 5. Đủ 58 hạt California (+ 1 unknown)
+    cursor.execute("SELECT COUNT(*) FROM dim_county;")
+    county_count = cursor.fetchone()[0]
+    assert county_count >= 58, f"dim_county thiếu hạt: {county_count}!"
+
+    conn.close()
+
+
+def test_tv2_dashboard_json_exports():
+    """Kiểm tra các tệp tin JSON phục vụ Dashboard và Biểu đồ TV2 (#3-#6)."""
+    expected_jsons = [
+        "dashboard/data/summary_kpis.json",
+        "dashboard/data/chart_03_diverging_bar.json",
+        "dashboard/data/chart_04_treemap_damage.json",
+        "dashboard/data/chart_05_bubble_scatter.json",
+        "dashboard/data/chart_06_combo_histogram.json",
+    ]
+    for jf in expected_jsons:
+        p = Path(jf)
+        assert p.is_file(), f"Tệp tin JSON {jf} chưa được xuất!"
+        assert p.stat().st_size > 0, f"Tệp tin JSON {jf} rỗng!"
