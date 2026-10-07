@@ -8,11 +8,16 @@
 ---
 
 ## 1. Mục Tiêu Chính
-1. Thu thập và làm sạch 4 bộ dữ liệu chuyên sâu về Cháy rừng California giai đoạn 2006–2025: **CAL FIRE FRAP** (Perimeters), **CAL FIRE DINS** (Damage Inspection), **California Demographics** (58 Hạt) và **NOAA NCEI** (Casualties).
-2. Tự động hóa tải dữ liệu vào `data/raw/calfire/` bằng script [src/01_download.py](../../src/01_download.py) kèm sinh mã băm SHA-256 trong `data/raw/MANIFEST.md`.
+1. Thu thập và làm sạch 5 bộ dữ liệu chuyên sâu về Cháy rừng California giai đoạn 2006–2025: **CAL FIRE FRAP** (Perimeters: 7.342 vụ), **CAL FIRE DINS** (Damage Inspection 2013–2025: 132.522 công trình), **USDA Forest Service / NIFC ICS-209-PLUS** (Damage 2006–2012: 1.127 vụ, 7.206 nhà phá hủy), **California Demographics** (58 Hạt) và **NOAA NCEI** (Casualties 2006–2025: 993 sự kiện, 255 chết, 887 bị thương).
+2. Tự động hóa tải dữ liệu vào `data/raw/calfire/` bằng script [src/01_download.py](../../src/01_download.py) kèm sinh mã băm SHA-256 trong `data/raw/MANIFEST.md` và `data/raw/manifest.json`.
 3. Thực hiện phân tích khám phá dữ liệu (EDA), phát hiện các khiếm khuyết và lập báo cáo chất lượng ban đầu [docs/DATA_QUALITY_REPORT.md](../../docs/DATA_QUALITY_REPORT.md).
 4. Triển khai quy trình làm sạch 2 giai đoạn:
-   - *Giai đoạn 1 (Rule-based)*: Chuẩn hóa tên vụ cháy (`fire_name`), tên Hạt (`county`), đơn vị diện tích (Acres và Hecta), sửa giá trị âm và loại trùng lặp $\to$ `data/interim/master_rules_cleaned.csv`.
+   - *Giai đoạn 1 (Rule-based)*:
+     - Hợp nhất chuỗi dữ liệu thiệt hại công trình/nhà cửa (`structures_destroyed`) thành chuỗi liên tục **đủ 20/20 năm (2006–2025)** bằng cách kết hợp ICS-209 (2006–2012) và DINS (2013–2025).
+     - Chuẩn hóa Khóa 1: Tên vụ cháy (`fire_name`: viết hoa, loại bỏ hậu tố `FIRE`, `INCIDENT`, `COMPLEX`).
+     - Chuẩn hóa Khóa 2: Năm vụ cháy (`year`: số nguyên [2006, 2025]).
+     - Chuẩn hóa Khóa 3: Đối soát không gian địa lý (`county` $\leftrightarrow$ `Unit ID`) để khử trùng lặp các đám cháy trùng tên cùng năm.
+     - Quy đổi đơn vị diện tích (Acres sang ha), sửa giá trị âm và loại trùng lặp $\to$ `data/interim/master_rules_cleaned.csv`.
    - *Giai đoạn 2 (Machine Learning)*: Áp dụng **Isolation Forest** (kết hợp LOF) để phát hiện và gắn cờ ngoại lai; áp dụng **KNN Imputer / Iterative Imputer (MICE)** để điền giá trị thiếu; áp dụng **Random Forest** phân loại nguyên nhân $\to$ `data/clean/master_clean.csv`.
 5. Đảm bảo tập dữ liệu làm sạch cuối cùng đạt tối thiểu **5.000 dòng** (có lệnh `assert len(df) >= 5000`).
 6. **Xây dựng Mô hình dự báo (Predictive Modeling - Barem 1.0 Điểm)**:
@@ -28,10 +33,10 @@
 | Hạng mục công việc | Trạng thái | Deadline | Ghi chú cá nhân |
 |--------------------|------------|----------|-----------------|
 | Thiết lập môi trường & nhánh `member-1-data` | Sẵn sàng | Tuần 1 | Giai đoạn 1 |
-| Đánh giá 4 nguồn California & viết `DATA_SOURCES.md` | Hoàn thành | Tuần 2 | CAL FIRE, DINS, Census, NOAA |
-| Viết script thu thập dữ liệu `01_download.py` | Hoàn thành | Tuần 2 | Lưu 4 file vào `data/raw/calfire/` |
+| Đánh giá 5 nguồn California & viết `DATA_SOURCES.md` | Hoàn thành | Tuần 2 | CAL FIRE, DINS, ICS-209, Census, NOAA |
+| Viết script thu thập dữ liệu `01_download.py` | Hoàn thành | Tuần 2 | Lưu 5 file vào `data/raw/calfire/` |
 | EDA & viết `DATA_QUALITY_REPORT.md` | Chưa bắt đầu | *[Điền]* | Kèm notebook EDA |
-| Làm sạch theo quy tắc `03_clean.py` | Chưa bắt đầu | *[Điền]* | Xuất interim |
+| Làm sạch theo quy tắc `03_clean.py` | Chưa bắt đầu | *[Điền]* | Xuất interim (Hợp nhất 20 năm thiệt hại) |
 | Làm sạch bằng Học máy `03b_ml_clean.py` | Chưa bắt đầu | *[Điền]* | $\ge 2$ mô hình ML |
 | Viết báo cáo ML `ML_CLEANING_REPORT.md` | Chưa bắt đầu | *[Điền]* | Báo cáo sai số MAE/RMSE |
 | Xây dựng Mô hình dự báo (Linear/Logistic) | Chưa bắt đầu | *[Điền]* | scikit-learn (Barem 1.0 đ) |
@@ -44,9 +49,9 @@
 ## 3. Danh Sách Checklist Chi Tiết
 
 ### A. Thu Thập Dữ Liệu
-- [x] Thu thập 4 bộ dữ liệu chuyên sâu về Cháy rừng California: CAL FIRE FRAP, CAL FIRE DINS, California Demographics, NOAA Casualties.
+- [x] Thu thập 5 bộ dữ liệu chuyên sâu về Cháy rừng California: CAL FIRE FRAP, CAL FIRE DINS, USDA ICS-209-PLUS, California Demographics, NOAA Casualties.
 - [x] Lập bảng so sánh chi tiết trong `docs/DATA_SOURCES.md`.
-- [x] Viết `src/01_download.py` tự động tải dữ liệu vào `data/raw/calfire/` và sinh checksum SHA-256.
+- [x] Viết `src/01_download.py` tự động tải 5 tệp dữ liệu vào `data/raw/calfire/` và sinh checksum SHA-256.
 
 ### B. Khám Phá Dữ Liệu (EDA) - Trọng số Barem: 0.75 Điểm
 - [ ] Viết `src/02_eda.py` và tạo Jupyter Notebook `notebooks/01_initial_eda.ipynb`.
@@ -61,9 +66,11 @@
 
 ### C. Làm Sạch Theo Quy Tắc (Rule-based Cleaning)
 - [ ] Viết `src/03_clean.py`:
-  - [ ] Lọc phạm vi thời gian 2006–2025.
-  - [ ] Chuẩn hóa tên vụ cháy (`fire_name`: viết hoa, chuẩn hóa `CMPLX` $\to$ `COMPLEX`) để khớp giữa FRAP và DINS.
-  - [ ] Chuẩn hóa tên Hạt (`county`) khớp với 58 Hạt California.
+  - [ ] Hợp nhất dữ liệu thiệt hại công trình từ ICS-209 (2006–2012) và DINS (2013–2025) để có chuỗi liên tục 20 năm.
+  - [ ] Lọc phạm vi thời gian đúng 20 năm: 2006–2025.
+  - [ ] Chuẩn hóa Khóa 1: Tên vụ cháy (`fire_name`: viết hoa, chuẩn hóa `CMPLX` $\to$ `COMPLEX`, gỡ bỏ `FIRE`, `INCIDENT`).
+  - [ ] Chuẩn hóa Khóa 2: Năm vụ cháy (`year`: số nguyên 2006–2025).
+  - [ ] Chuẩn hóa Khóa 3: Đối soát không gian địa lý qua Hạt (`county`) và Đơn vị quản lý (`Unit ID`).
   - [ ] Quy đổi diện tích mẫu Anh (Acres) sang Hecta (`burned_area_ha`).
   - [ ] Xử lý giá trị âm bất hợp lý, loại bỏ trùng lặp.
   - [ ] Xuất kết quả vào `data/interim/master_rules_cleaned.csv`.

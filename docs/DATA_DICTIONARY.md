@@ -7,14 +7,15 @@
 ---
 
 ## 1. Tổng Quan Cấu Trúc Tập Dữ Liệu `master_clean.csv`
-Tập dữ liệu sau làm sạch và tích hợp `data/clean/master_clean.csv` đóng vai trò là bảng nguồn tổng thể (Master Dataset), kết nối 4 nguồn dữ liệu thô:
-1. `California_Fire_Perimeters_all.csv` (CAL FIRE FRAP - 23.334 dòng lịch sử, 7.342 vụ 2006–2025).
-2. `CAL_FIRE_Damage_Inspection_DINS.csv` (CAL FIRE DINS - 132.522 dòng công trình kiểm kê thiệt hại tài sản).
-3. `California_Counties_Demographics.csv` (Cục Dân số / CDTFA - 58 Hạt của California).
-4. `NOAA_California_Wildfires_Casualties.csv` (NOAA NCEI - 139 sự kiện thương vong và thiệt hại USD).
+Tập dữ liệu sau làm sạch và tích hợp `data/clean/master_clean.csv` đóng vai trò là bảng nguồn tổng thể (Master Dataset), kết nối 5 nguồn dữ liệu thô uy tín:
+1. `California_Fire_Perimeters_all.csv` (CAL FIRE FRAP - 23.334 dòng lịch sử, **7.342 vụ trong 2006–2025**).
+2. `CAL_FIRE_Damage_Inspection_DINS.csv` (CAL FIRE DINS - 132.522 dòng công trình kiểm kê thiệt hại tài sản giai đoạn **2013–2025**, 70.390 nhà phá hủy hoàn toàn).
+3. `ICS209_California_Wildfires_2006_2012.csv` (USDA Forest Service / NIFC - 1.127 vụ cháy, 7.206 nhà bị phá hủy giai đoạn **2006–2012**).
+4. `NOAA_California_Wildfires_Casualties.csv` (NOAA NCEI - **993 sự kiện đủ 20/20 năm 2006–2025**, 255 người chết, 887 người bị thương và thiệt hại USD).
+5. `California_Counties_Demographics.csv` (Cục Dân số / CDTFA - **58 Hạt của California** kèm diện tích dặm vuông và dân số Census).
 
-- **Số dòng tối thiểu cam kết**: $\ge 5.000$ dòng (bảng thực thể công trình/vụ cháy tích hợp $\approx 10.000 - 130.000$ dòng tùy mức độ phân rã).
-- **Phạm vi thời gian**: 2006–2025.
+- **Số dòng tối thiểu cam kết**: $\ge 5.000$ dòng (Bảng vụ cháy sạch có 7.342 dòng; Bảng công trình kiểm kê chi tiết có 132.522 dòng $\implies$ **Vượt xa barem $\ge 5.000$ dòng**).
+- **Phạm vi thời gian**: **20/20 năm liên tục từ 2006 đến 2025**, không bị khuyết bất kỳ năm nào trên tất cả các thước đo.
 - **Quy tắc đặt tên cột**: Tiếng Anh, chữ thường, nối bằng dấu gạch dưới (`snake_case`).
 
 ---
@@ -24,28 +25,30 @@ Tập dữ liệu sau làm sạch và tích hợp `data/clean/master_clean.csv` 
 | Tên Cột | Kiểu Dữ Liệu | Đơn Vị / Miền Giá Trị | Cho Phép NULL | Mô Tả Ý Nghĩa | Nguồn & Quy Tắc Xử Lý |
 |---------|--------------|------------------------|---------------|---------------|------------------------|
 | `incident_id` | String | Mã chuỗi (vd: `CALFIRE-2020-00123`) | Không | Khóa định danh duy nhất của từng vụ cháy rừng | Chuẩn hóa từ FRAP `FIRE_NUM` / `GlobalID` |
-| `fire_name` | String | Tên chuẩn hóa (vd: `CAMP`, `AUGUST COMPLEX`) | Không | Tên chính thức của vụ cháy rừng | Chuẩn hóa Upper case, gỡ ký tự đặc biệt (`CMPLX` $\to$ `COMPLEX`) |
-| `year` | Integer | [2006, 2025] | Không | Năm bùng phát vụ cháy | Trích xuất từ FRAP `YEAR_` hoặc `alarm_date` |
-| `alarm_date` | Date | `YYYY-MM-DD` | Có | Ngày phát lệnh báo động cháy | Chuẩn hóa từ `ALARM_DATE` |
-| `cont_date` | Date | `YYYY-MM-DD` | Có | Ngày khống chế / dập tắt đám cháy | Chuẩn hóa từ `CONT_DATE` ($\ge$ `alarm_date`) |
+| `fire_name` | String | Tên chuẩn hóa (vd: `CAMP`, `AUGUST COMPLEX`) | Không | Tên chính thức của vụ cháy rừng | Chuẩn hóa Upper case, gỡ hậu tố (`FIRE`, `INCIDENT`, `CMPLX` $\to$ `COMPLEX`) |
+| `year` | Integer | [2006, 2025] | Không | Năm bùng phát vụ cháy | Trích xuất từ FRAP `Year` hoặc `alarm_date` |
+| `alarm_date` | Date | `YYYY-MM-DD` | Có | Ngày phát lệnh báo động cháy | Chuẩn hóa từ `Alarm Date` |
+| `cont_date` | Date | `YYYY-MM-DD` | Có | Ngày khống chế / dập tắt đám cháy | Chuẩn hóa từ `Containment Date` ($\ge$ `alarm_date`) |
 | `duration_days` | Float | $\ge 0.0$ ngày | Có | Thời gian đám cháy hoành hành | Hiệu số giữa `cont_date` và `alarm_date` |
-| `county` | String | Tên 58 Hạt (vd: `Butte`, `Sonoma`, `Shasta`...) | Không | Tên Hạt (County) tại California nơi xảy ra cháy | Chuẩn hóa từ DINS `County` hoặc FRAP |
+| `county` | String | Tên 58 Hạt (vd: `Butte`, `Sonoma`, `Shasta`...) | Không | Tên Hạt (County) tại California nơi xảy ra cháy | Chuẩn hóa từ DINS `County`, ICS-209 `POO_COUNTY` hoặc FRAP `Unit ID` |
 | `county_fips` | String | 5 chữ số (vd: `06007` cho Butte) | Có | Mã định danh địa lý FIPS chuẩn Hoa Kỳ | Tra cứu từ `California_Counties_Demographics` |
 | `county_population` | Integer | $\ge 0$ người | Có | Dân số của Hạt theo điều tra Census | Lấy từ `California_Counties_Demographics` |
 | `county_area_sqmi` | Float | $\ge 0.0$ dặm vuông | Có | Tổng diện tích tự nhiên của Hạt | Lấy từ `California_Counties_Demographics` |
-| `cause_code` | Integer | [1, 19] | Có | Mã nguyên nhân gốc CAL FIRE (1: Lightning, 2: Equipment...) | Lấy từ FRAP `CAUSE` |
+| `unit_id` | String | Mã đơn vị CAL FIRE / USFS (vd: `BTU`, `LNU`, `MVU`, `LAC`) | Có | Mã đơn vị tác chiến quản lý địa bàn đám cháy | Lấy từ FRAP `Unit ID` |
+| `cause_code` | Integer | [1, 19] | Có | Mã nguyên nhân gốc CAL FIRE (1: Lightning, 2: Equipment...) | Lấy từ FRAP `Cause` |
 | `cause_name` | String | `Lightning`, `Equipment Use`, `Arson`, `Powerline`... | Không | Tên nguyên nhân chi tiết | Tra cứu từ bảng mã CAL FIRE |
 | `cause_group` | String | `Natural`, `Human`, `Undetermined` | Không | Nhóm nguyên nhân phân loại lớn | Quy nạp: Lightning $\to$ Natural; Equipment, Powerline, Arson $\to$ Human |
-| `acres_burned` | Float | $\ge 0.0$ Acres (mẫu Anh) | Không | Diện tích rừng bị thiêu rụi (Acres) | Lấy từ FRAP `GIS_ACRES` |
+| `acres_burned` | Float | $\ge 0.0$ Acres (mẫu Anh) | Không | Diện tích rừng bị thiêu rụi (Acres) | Lấy từ FRAP `GIS Calculated Acres` |
 | `burned_area_ha` | Float | $\ge 0.0$ Hecta (ha) | Không | Diện tích quy đổi chuẩn quốc tế ($1 \text{ acre} \approx 0.404686 \text{ ha}$) | Tính toán từ `acres_burned` |
 | `burned_area_is_imputed` | Boolean | `True`, `False` | Không | Cờ xác định diện tích được điền bởi mô hình ML (KNN/Iterative) | Đánh dấu độ tin cậy dữ liệu |
 | `structure_id` | String | Định dạng `DINS-XXXXX` | Có | Mã định danh công trình tài sản kiểm kê | Lấy từ DINS `GlobalID` |
 | `structure_type` | String | `Single Family`, `Commercial`, `Outbuilding`... | Có | Loại công trình kiến trúc bị ảnh hưởng | Lấy từ DINS `StructureType` |
-| `damage_level` | String | `Destroyed (>50%)`, `Major (26-50%)`, `Minor`... | Có | Cấp độ hư hại của công trình | Lấy từ DINS `Damage` |
-| `structures_destroyed` | Integer | $\ge 0$ công trình | Có | Tổng số công trình bị phá hủy hoàn toàn (>50%) | Tổng hợp từ DINS theo từng vụ cháy |
-| `structures_damaged` | Integer | $\ge 0$ công trình | Có | Tổng số công trình bị hư hại một phần | Tổng hợp từ DINS theo từng vụ cháy |
-| `deaths_direct` | Integer | $\ge 0$ người | Có | Số người thiệt mạng trực tiếp | Đối soát từ NOAA Casualties |
-| `injuries_direct` | Integer | $\ge 0$ người | Có | Số người bị thương trực tiếp | Đối soát từ NOAA Casualties |
+| `damage_level` | String | `Destroyed (>50%)`, `Major (26-50%)`, `Minor`... | Có | Cấp độ hư hại của công trình | Lấy từ DINS `* Damage` |
+| `structures_destroyed` | Integer | $\ge 0$ công trình | Có | Tổng số công trình bị phá hủy hoàn toàn (>50%) | Hợp nhất 20 năm: ICS-209 (2006–2012) + DINS (2013–2025) |
+| `structures_damaged` | Integer | $\ge 0$ công trình | Có | Tổng số công trình bị hư hại một phần | Hợp nhất 20 năm: ICS-209 (2006–2012) + DINS (2013–2025) |
+| `damage_source` | String | `CAL_FIRE_DINS`, `USDA_ICS_209`, `NONE` | Không | Nguồn dữ liệu kiểm kê thiệt hại công trình | Ghi nhận xuất xứ dữ liệu thiệt hại |
+| `deaths_direct` | Integer | $\ge 0$ người | Có | Số người thiệt mạng trực tiếp | Đối soát từ NOAA Casualties (2006–2025: 255 người) |
+| `injuries_direct` | Integer | $\ge 0$ người | Có | Số người bị thương trực tiếp | Đối soát từ NOAA Casualties (2006–2025: 887 người) |
 | `damage_property_usd` | Float | $\ge 0.0$ USD | Có | Ước tính thiệt hại tài sản quy đổi ra USD | Đối soát từ NOAA Casualties |
 | `damage_property_is_imputed`| Boolean | `True`, `False` | Không | Cờ xác định thiệt hại USD được điền bởi ML | Đánh dấu độ tin cậy dữ liệu |
 | `latitude` | Float | [32.0, 42.0] | Có | Vĩ độ tọa độ tâm vụ cháy / công trình | Kiểm tra phạm vi Bang California |
@@ -58,15 +61,23 @@ Tập dữ liệu sau làm sạch và tích hợp `data/clean/master_clean.csv` 
 
 ## 3. Khóa Liên Kết Giữa Các Bảng Nguồn (Join Keys Specification)
 
-Mô hình dữ liệu liên kết 4 bảng dữ liệu thô thông qua các trường khóa chuẩn:
-1. **Liên kết $1 - N$ giữa Vụ cháy và Công trình hư hại**:
-   - `California_Fire_Perimeters_all.csv` (`FIRE_NAME` chuẩn hóa) $\longleftrightarrow$ `CAL_FIRE_Damage_Inspection_DINS.csv` (`* Incident Name` chuẩn hóa).
-   - **Tỷ lệ khớp thực tế**: Khớp thành công 301/398 vụ cháy lớn có thanh tra thiệt hại (chiếm 93.99% tổng số công trình ghi nhận trong lịch sử CAL FIRE DINS).
-2. **Liên kết $N - 1$ giữa Công trình/Vụ cháy và Địa phương**:
-   - `CAL_FIRE_Damage_Inspection_DINS.csv` (`County`) $\longleftrightarrow$ `California_Counties_Demographics.csv` (`CDTFA_COUNTY`).
-   - Khớp chính xác 52/52 Hạt có ghi nhận cháy rừng tại California.
-3. **Liên kết $N - 1$ đối soát Thương vong**:
-   - `California_Fire_Perimeters_all.csv` (`YEAR_`) $\longleftrightarrow$ `NOAA_California_Wildfires_Casualties.csv` (`YEAR`).
+Mô hình dữ liệu liên kết 5 bảng dữ liệu thô thông qua **3 Thuộc tính Khóa cốt lõi**:
+
+1. **Khóa 1 (Tên vụ cháy - Primary Link)**:
+   - `California_Fire_Perimeters_all.csv` (`Fire Name` chuẩn hóa) $\longleftrightarrow$ `CAL_FIRE_Damage_Inspection_DINS.csv` (`* Incident Name` chuẩn hóa) $\longleftrightarrow$ `ICS209_California_Wildfires_2006_2012.csv` (`INCIDENT_NAME` chuẩn hóa).
+   - *Chuẩn hóa*: Viết hoa toàn bộ (`UPPER`), cắt khoảng trắng (`TRIM`), loại bỏ các hậu tố dư thừa (`FIRE`, `INCIDENT`, `COMPLEX`).
+
+2. **Khóa 2 (Năm xảy ra vụ cháy - Temporal Check)**:
+   - `FRAP` (`Year`) $\longleftrightarrow$ `DINS` (Năm trích xuất từ `Incident Start Date`) $\longleftrightarrow$ `ICS-209` (`START_YEAR`).
+   - *Tác dụng*: Đối soát tránh ghép nhầm các vụ cháy có cùng tên xảy ra ở các năm khác nhau.
+
+3. **Khóa 3 (Không gian địa lý & Đơn vị tác chiến - Spatial Disambiguation)**:
+   - `FRAP` (`Unit ID`) $\longleftrightarrow$ `DINS` (`County`) $\longleftrightarrow$ `ICS-209` (`POO_COUNTY`).
+   - *Tác dụng*: Khử trùng lặp và phân biệt chính xác các vụ cháy trùng tên cùng xảy ra trong 1 năm (ví dụ phân biệt Camp Fire 2018 tại Butte (`BTU`) với vụ cháy nhỏ cùng tên tại San Luis Obispo (`SLU`)).
+   - **Tỷ lệ khớp thực tế**: Khớp thành công **940 vụ cháy** có thiệt hại, bắt trọn **72.196 / 77.596 nhà bị phá hủy (đạt 93,04% toàn bang)**.
+
+4. **Liên kết Dimension Không gian**:
+   - `County` $\longleftrightarrow$ `California_Counties_Demographics.csv` (`CDTFA_COUNTY`). Khớp chính xác 100% (52/52 Hạt có ghi nhận cháy rừng).
 
 ---
 

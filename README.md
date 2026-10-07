@@ -16,11 +16,12 @@
 ---
 
 ## 1. Giới Thiệu Đề Tài & Trọng Tâm Nghiên Cứu
-Dự án tập trung nghiên cứu, làm sạch, mô hình hóa và trực quan hóa tương tác đa chiều về **tần suất và thiệt hại của các trận cháy rừng tại Bang California trong 20 năm qua (2006–2025)**. Dữ liệu được tích hợp từ 4 nguồn chính thống của chính quyền bang và liên bang Hoa Kỳ:
-1. **CAL FIRE FRAP**: 23.334 dòng lịch sử, 7.342 vụ cháy trong 2006–2025 với diện tích (Acres), nguyên nhân (Cause), thời gian.
-2. **CAL FIRE DINS**: 132.522 dòng công trình kiểm kê thiệt hại tài sản (70.390 công trình bị phá hủy hoàn toàn >50%). Khóa liên kết `Incident Name` khớp 94% với `Fire Name`.
-3. **California Counties Demographics**: 58 Hạt của California kèm diện tích và dân số Census. Khớp 100% (52/52 Hạt xảy ra cháy).
-4. **NOAA NCEI**: 139 sự kiện bão lửa ghi nhận thương vong trực tiếp và thiệt hại tài sản USD.
+Dự án tập trung nghiên cứu, làm sạch, mô hình hóa và trực quan hóa tương tác đa chiều về **tần suất và thiệt hại của các trận cháy rừng tại Bang California trong 20 năm qua (2006–2025)**. Dữ liệu được tích hợp từ 5 nguồn chính thống uy tín của chính quyền bang và liên bang Hoa Kỳ:
+1. **CAL FIRE FRAP**: 23.334 dòng lịch sử, **7.342 vụ cháy trong 2006–2025** với diện tích (Acres), nguyên nhân (Cause), thời gian, tọa độ chu vi.
+2. **CAL FIRE DINS (2013–2025)**: 132.522 dòng công trình kiểm kê thiệt hại tài sản (70.390 công trình bị phá hủy hoàn toàn >50%). Khóa liên kết `Incident Name` và `Year` khớp trên 93% với `Fire Name` của FRAP.
+3. **USDA Forest Service & NIFC (ICS-209-PLUS 2006–2012)**: 1.127 vụ cháy lớn với 7.206 công trình bị phá hủy hoàn toàn, lấp đầy hoàn hảo khoảng trống 7 năm đầu để chỉ số thiệt hại nhà cửa đạt **đủ 20/20 năm liên tục (2006–2025)**.
+4. **NOAA NCEI Storm Events (2006–2025)**: 993 sự kiện thiên tai cháy rừng cấp bang phủ kín **đủ 20/20 năm**, ghi nhận 255 người thiệt mạng, 887 người bị thương và thiệt hại tài sản quy đổi USD.
+5. **California Counties Demographics**: 58 Hạt của California kèm diện tích dặm vuông và dân số điều tra Census, phục vụ phân tích theo không gian và chuẩn hóa tỷ lệ thiệt hại trên đầu người.
 
 ### Điểm nổi bật về kỹ thuật:
 - **Kỹ thuật dữ liệu vững chắc (Python Pipeline)**: Tự động tải từ các nguồn dữ liệu uy tín $\to$ làm sạch quy tắc $\to$ làm sạch thông minh bằng **Học máy (Isolation Forest, LOF, MICE/KNN)** $\to$ cam kết tập dữ liệu sạch đạt $\ge 5.000$ dòng.
@@ -39,7 +40,7 @@ Dự án tập trung nghiên cứu, làm sạch, mô hình hóa và trực quan 
 
 | Thành viên | Phụ trách chính | Nhánh Git | Phạm vi công việc tuần tự | Biểu đồ đảm nhiệm |
 |---|---|---|---|---|
-| **Thành viên 1** | Kỹ sư Dữ liệu & Học máy (ML Engineer) | `member-1-data` | Thu thập 4 nguồn California, EDA với **3–5 biểu đồ tĩnh** (Matplotlib/Seaborn), Làm sạch dữ liệu, **Huấn luyện Mô hình dự báo (Linear/Logistic Regression)** trên Python, bàn giao `master_clean.csv` và `forecast_results.csv` | **#1, #2** (2 Tableau Sheets) |
+| **Thành viên 1** | Kỹ sư Dữ liệu & Học máy (ML Engineer) | `member-1-data` | Thu thập 5 nguồn California, EDA với **3–5 biểu đồ tĩnh** (Matplotlib/Seaborn), Làm sạch dữ liệu, **Huấn luyện Mô hình dự báo (Linear/Logistic Regression)** trên Python, bàn giao `master_clean.csv` và `forecast_results.csv` | **#1, #2** (2 Tableau Sheets) |
 | **Thành viên 2** | Kỹ sư Mô hình Dữ liệu (Data Modeling) | `member-2-model` | Star Schema $\ge 3$ bảng 3NF, CSDL SQLite (PK, FK, CHECK), Kiểm thử toàn vẹn tự động (pytest), Tách bảng tự động, Viết truy vấn SQL, bàn giao `database.sqlite` | **#3, #4, #5, #6** (4 Tableau Sheets) |
 | **Thành viên 3** | Kỹ sư Dashboard & Triển khai (DevOps) | `member-3-dashboard` | Thiết kế 3 Dashboards, **Trực quan hóa kết quả dự báo của TV1**, Xây dựng Tableau Story (3 Story Points), Xuất bản Tableau Public, Nhúng Web, **Video Demo & Backup**, Báo cáo IEEE ($\ge 40$ trang) | **#7, #8, #9, #10** (4 Tableau Sheets) |
 
@@ -76,7 +77,7 @@ IDV_TTDL/
 │   ├── CALCULATED_FIELDS.md   # Toàn bộ công thức tính toán trong Tableau
 │   └── wildfire_disaster_analysis.twbx # File Workbook đóng gói của đồ án
 ├── data/                      # Dữ liệu qua các công đoạn (không commit file > 90MB)
-│   ├── raw/calfire/           # Dữ liệu gốc 4 bảng chính thức + MANIFEST.md
+│   ├── raw/calfire/           # Dữ liệu gốc 5 bảng chính thức (đủ 20 năm) + MANIFEST.md
 │   ├── interim/               # master_rules_cleaned.csv (sau làm sạch quy tắc)
 │   ├── clean/                 # master_clean.csv (sau làm sạch ML, >= 5.000 dòng) + forecast_results.csv
 │   └── tables/                # Các bảng Star Schema CSV + database.sqlite
@@ -98,7 +99,7 @@ IDV_TTDL/
 ├── tests/                     # Bộ kiểm thử pytest
 │   └── test_pipeline.py
 ├── docs/                      # Hồ sơ tài liệu kỹ thuật hoàn chỉnh
-│   ├── DATA_SOURCES.md        # Đánh giá & so sánh 4 nguồn dữ liệu California
+│   ├── DATA_SOURCES.md        # Đánh giá & so sánh 5 nguồn dữ liệu California đủ 20 năm
 │   ├── DATA_DICTIONARY.md     # Từ điển dữ liệu và ý nghĩa các cờ ML & khóa liên kết
 │   ├── DATA_QUALITY_REPORT.md # Báo cáo EDA chất lượng ban đầu
 │   ├── CLEANING_LOG.md        # Nhật ký các bước làm sạch và quyết định ngoại lai

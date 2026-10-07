@@ -8,8 +8,8 @@
 
 ## 1. Thiết Kế Mô Hình Dạng Sao (Star Schema Architecture)
 Mô hình dữ liệu được thiết kế nhằm phục vụ truy vấn phân tích đa chiều (OLAP) và trực quan hóa hiệu năng cao cho 10 biểu đồ tương tác, liên kết chặt chẽ giữa các vụ cháy rừng và các công trình bị tàn phá:
-- **Bảng Fact Trung Tâm 1**: `fact_fire_incident` (lưu vết 7.342 vụ cháy rừng lịch sử California 2006–2025 từ CAL FIRE FRAP: diện tích Acres/ha, thời gian kéo dài, tọa độ, nguyên nhân).
-- **Bảng Fact Mở Rộng 2**: `fact_structure_damage` (lưu vết chi tiết hơn 130.000 công trình nhà ở, thương mại bị thiêu hại từ CAL FIRE DINS, liên kết $N - 1$ với `fact_fire_incident` qua tên vụ cháy và Hạt).
+- **Bảng Fact Trung Tâm 1**: `fact_fire_incident` (lưu vết **7.342 vụ cháy rừng lịch sử California 2006–2025** từ CAL FIRE FRAP: diện tích Acres/ha, thời gian kéo dài, tọa độ, nguyên nhân, số nhà bị phá hủy liên tục 20 năm, thương vong NOAA).
+- **Bảng Fact Mở Rộng 2**: `fact_structure_damage` (lưu vết chi tiết hơn 133.000 bản ghi kiểm kê công trình nhà ở, thương mại bị thiêu hại được **hợp nhất liên tục 20 năm: Giai đoạn 2006–2012 từ USDA Forest Service ICS-209 và Giai đoạn 2013–2025 từ CAL FIRE DINS**, liên kết $N - 1$ với `fact_fire_incident` qua `incident_id`).
 - **Các Bảng Dimension**: `dim_county` (58 Hạt California kèm dân số, diện tích), `dim_cause` (bảng mã nguyên nhân CAL FIRE), `dim_date` (thứ bậc thời gian: ngày, tháng, quý, năm, mùa cao điểm cháy rừng).
 - **Cột cờ kiểm soát chất lượng**: Các cờ ML (`is_outlier_ml`, `burned_area_is_imputed`, `cause_is_predicted`, `damage_property_is_imputed`) được bảo toàn trực tiếp trong bảng fact để hỗ trợ tính năng lọc dữ liệu gốc/ước lượng trên Dashboard.
 
@@ -77,11 +77,14 @@ erDiagram
 
     fact_structure_damage {
         integer record_id PK "Surrogate Key Auto-inc"
-        text global_id "Mã định danh DINS GlobalID"
+        text global_id "Mã định danh DINS GlobalID / ICS Incident ID"
         integer incident_id FK "REFERENCES fact_fire_incident(incident_id)"
         integer county_id FK "REFERENCES dim_county(county_id)"
-        text structure_type "Single Family, Commercial, Outbuilding..."
+        text damage_source "CAL_FIRE_DINS, USDA_ICS_209"
+        text structure_type "Single Family, Commercial, Outbuilding, Unspecified"
         text damage_category "Destroyed (>50%), Major, Minor, Affected"
+        integer structures_destroyed "Số lượng công trình bị phá hủy"
+        integer structures_damaged "Số lượng công trình bị hư hại"
         real latitude "CHECK (latitude BETWEEN 32.0 AND 42.0)"
         real longitude "CHECK (longitude BETWEEN -125.0 AND -114.0)"
     }

@@ -12,8 +12,9 @@
 Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu cùng các đợt hạn hán kéo dài và gió mùa khô hạn (Santa Ana, Diablo) đã biến **Bang California (Hoa Kỳ)** thành tâm điểm cháy rừng khốc liệt nhất Bắc Mỹ. Những trận cháy rừng thảm khốc như *Camp Fire (2018)*, *August Complex (2020)*, *Dixie Fire (2021)* hay *Tubbs Fire (2017)* không chỉ thiêu rụi hàng triệu mẫu rừng (Acres) mà còn phá hủy hàng chục nghìn công trình nhà cửa, gây thiệt hại hàng chục tỷ USD và cướp đi sinh mạng của nhiều người dân.
 
 ### 1.2. Mục tiêu nghiên cứu
-- Thu thập, làm sạch và tích hợp dữ liệu cháy rừng chuyên sâu California giai đoạn 2006–2025 từ các cơ quan quản lý và khoa học hàng đầu: **CAL FIRE FRAP** (California Department of Forestry and Fire Protection), **CAL FIRE DINS** (Damage Inspection Database), **Cục Điều tra Dân số / CDTFA** (California Counties Demographics) và **NOAA NCEI** (National Oceanic and Atmospheric Administration).
-- Đảm bảo tập dữ liệu kết nối đa bảng ($\ge 3$ bảng thực thể) với quy mô lớn ($> 150.000$ dòng thô, $\ge 5.000$ dòng sau làm sạch và tích hợp).
+- Thu thập, làm sạch và tích hợp dữ liệu cháy rừng chuyên sâu California giai đoạn 2006–2025 từ 5 cơ quan quản lý và khoa học hàng đầu: **CAL FIRE FRAP** (California Department of Forestry and Fire Protection), **CAL FIRE DINS** (Damage Inspection Database), **USDA Forest Service & NIFC** (ICS-209-PLUS Incident Reports), **Cục Điều tra Dân số / CDTFA** (California Counties Demographics) và **NOAA NCEI** (National Oceanic and Atmospheric Administration).
+- Đảm bảo tập dữ liệu kết nối đa bảng ($\ge 3$ bảng thực thể) với quy mô lớn ($> 157.000$ dòng thô, $\ge 5.000$ dòng sau làm sạch và tích hợp).
+- Đảm bảo chuỗi dữ liệu phủ **đầy đủ 20/20 năm liên tục (2006–2025)** trên tất cả các chiều phân tích cốt lõi: Tần suất vụ cháy, Diện tích thiêu rụi (Acres/ha), Thiệt hại công trình/nhà cửa (`structures_destroyed`), và Thương vong sinh mạng (`deaths`, `injuries`).
 - Áp dụng các kỹ thuật Kỹ thuật Dữ liệu (Data Engineering) hiện đại kết hợp Học máy (Machine Learning) để chuẩn hóa, phát hiện ngoại lai bất thường (Isolation Forest/LOF) và xử lý giá trị khuyết thiếu (KNN/Iterative Imputer).
 - Thiết kế mô hình dữ liệu chuẩn hình sao (Star Schema) tối ưu hóa trên SQLite với hệ thống ràng buộc toàn vẹn nghiêm ngặt (PK, FK, CHECK, UNIQUE, NOT NULL).
 - Xây dựng hệ thống bảng điều khiển và câu chuyện dữ liệu trực quan tương tác (**Interactive Dashboard & Tableau Story**) bằng **Tableau Desktop / Tableau Public** với 10 biểu đồ trực quan chuyên sâu (thuộc 9 loại biểu đồ khác nhau), phân thành 3 Dashboard (D1 $\to$ D3) và 1 Tableau Story (với 3 Story Points dẫn dắt câu chuyện phân tích), đồng thời nhúng trực tiếp vào giao diện web GitHub Pages.
@@ -42,8 +43,8 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu cùng cá
 | Mã | Giai đoạn & Hạng mục công việc | Người phụ trách | Trạng thái | Deadline | Ghi chú |
 |----|--------------------------------|-----------------|------------|----------|---------|
 | **G1** | Khởi tạo repo, cấu trúc thư mục, môi trường, tài liệu phân công | Cả nhóm | **Hoàn thành** | Tuần 1 | Giai đoạn 1 |
-| **G2.1** | Tìm, đánh giá 4 nguồn dữ liệu California, viết `DATA_SOURCES.md` | Thành viên 1 | **Hoàn thành** | Tuần 2 | CAL FIRE FRAP, DINS, Census, NOAA |
-| **G2.2** | Viết script tải dữ liệu thô `01_download.py` | Thành viên 1 | **Hoàn thành** | Tuần 2 | Lưu 4 file vào `data/raw/calfire/` |
+| **G2.1** | Tìm, đánh giá 5 nguồn dữ liệu California đủ 20 năm, viết `DATA_SOURCES.md` | Thành viên 1 | **Hoàn thành** | Tuần 2 | CAL FIRE FRAP, DINS, ICS-209, NOAA, Census |
+| **G2.2** | Viết script tải dữ liệu thô `01_download.py` và sinh manifest | Thành viên 1 | **Hoàn thành** | Tuần 2 | Lưu 5 file vào `data/raw/calfire/` |
 | **G2.3** | Phân tích EDA `02_eda.py` (3-5 biểu đồ Matplotlib/Seaborn) + `DATA_QUALITY_REPORT.md` | Thành viên 1 | Chưa bắt đầu | *[Điền]* | Lưu vào `reports/figures/` |
 | **G2.4** | Làm sạch theo quy tắc `03_clean.py` $\to$ `master_rules_cleaned.csv` | Thành viên 1 | Chưa bắt đầu | *[Điền]* | Chuẩn Hạt (County), Acres, ha, USD |
 | **G2.5** | Làm sạch bằng Học máy `03b_ml_clean.py` (Isolation Forest, MICE/KNN) | Thành viên 1 | Chưa bắt đầu | *[Điền]* | $\ge 2$ mô hình ML |
@@ -108,12 +109,17 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu cùng cá
 ## 6. Phân Công Chi Tiết & Nhiệm Vụ 3 Thành Viên
 
 ### Thành viên 1 – DỮ LIỆU (Thu thập $\to$ Làm sạch bằng Quy tắc & Học máy $\to$ Mô hình Dự báo)
-- [x] Tìm và thu thập 4 bộ dữ liệu chuyên sâu về Cháy rừng California (CAL FIRE FRAP, CAL FIRE DINS, California Demographics, NOAA Casualties); lập bảng so sánh trong `docs/DATA_SOURCES.md`.
-- [x] Tải dữ liệu vào `data/raw/calfire/` bằng script tự động `src/01_download.py`.
+- [x] Tìm và thu thập 5 bộ dữ liệu chuyên sâu về Cháy rừng California (CAL FIRE FRAP, CAL FIRE DINS, USDA ICS-209-PLUS, California Demographics, NOAA Casualties); lập bảng so sánh trong `docs/DATA_SOURCES.md`.
+- [x] Tải và kiểm kê toàn bộ 5 tệp dữ liệu vào `data/raw/calfire/` bằng script tự động `src/01_download.py` kèm sinh mã băm SHA-256 trong `data/raw/MANIFEST.md` và `data/raw/manifest.json`.
 - [ ] Phân tích khám phá dữ liệu (EDA) qua `src/02_eda.py` và notebook `notebooks/01_initial_eda.ipynb`:
   - Dùng **Matplotlib** và **Seaborn** vẽ tối thiểu **3 – 5 biểu đồ tĩnh** (phân phối diện tích cháy log, boxplot công trình bị phá hủy, tương quan diện tích vs công trình, ma trận khuyết thiếu, xu hướng số vụ theo năm).
   - Lưu vào `reports/figures/` và xuất báo cáo chất lượng ban đầu `docs/DATA_QUALITY_REPORT.md`.
-- [ ] **Làm sạch bước 1 theo quy tắc (`src/03_clean.py`)**: Chuẩn hóa tên vụ cháy (`fire_name`), chuẩn hóa tên Hạt (`county`), quy đổi đơn vị (acres sang ha), xử lý giá trị âm, khử trùng lặp và xuất `data/interim/master_rules_cleaned.csv`.
+- [ ] **Làm sạch bước 1 theo quy tắc (`src/03_clean.py`)**:
+  - Hợp nhất chuỗi dữ liệu thiệt hại nhà cửa liên tục 20 năm: Giai đoạn 2006–2012 từ ICS-209 và giai đoạn 2013–2025 từ DINS.
+  - Chuẩn hóa Khóa 1: Tên vụ cháy (`fire_name`: viết hoa, cắt khoảng trắng, loại bỏ hậu tố `FIRE`, `INCIDENT`, `COMPLEX`).
+  - Chuẩn hóa Khóa 2: Năm vụ cháy (`year`: số nguyên [2006, 2025]).
+  - Chuẩn hóa Khóa 3: Đối soát không gian địa lý (`county` $\leftrightarrow$ `Unit ID`) để khử trùng lặp các đám cháy trùng tên cùng năm.
+  - Quy đổi đơn vị diện tích (Acres sang ha), xử lý giá trị âm, khử trùng lặp và xuất `data/interim/master_rules_cleaned.csv`.
 - [ ] **Làm sạch bước 2 bằng Học máy (`src/03b_ml_clean.py`) với TỐI THIỂU 2 MÔ HÌNH**:
   1. *Isolation Forest & LOF*: Phát hiện bất thường trên biến đổi log1p (`acres_burned`, `structures_destroyed`); chỉ gắn cờ `is_outlier_ml` và tính `outlier_score`, đối soát thủ công top 20 mẫu bất thường, ghi lý do trong `docs/CLEANING_LOG.md`.
   2. *KNN Imputer hoặc Iterative Imputer (MICE)*: Điền giá trị thiếu cho biến số (không điền cột thiếu $> 60\%$), gắn cờ `<col>_is_imputed`. Đánh giá bằng che ngẫu nhiên 10–20% đối chiếu MAE/RMSE so với Median Baseline.

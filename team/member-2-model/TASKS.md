@@ -48,7 +48,7 @@
 - [ ] Viết `src/04_split_tables.py`:
   - [ ] Tạo khóa thay thế (surrogate keys) tự tăng hoặc định dạng số nguyên có quy tắc.
   - [ ] Tách các bảng chiều: `dim_county.csv` (58 Hạt), `dim_cause.csv`, `dim_date.csv`.
-  - [ ] Tách các bảng sự kiện: `fact_fire_incident.csv` (7.342 vụ) và `fact_structure_damage.csv` (>130.000 công trình).
+  - [ ] Tách các bảng sự kiện: `fact_fire_incident.csv` (7.342 vụ cháy 2006–2025) và `fact_structure_damage.csv` (>133.000 bản ghi thiệt hại công trình hợp nhất 20 năm từ ICS-209 và DINS).
   - [ ] Đảm bảo chuẩn hóa tối thiểu 3NF.
 
 ### B. Thiết Lập CSDL & Ràng Buộc Toàn Vẹn
