@@ -2,7 +2,7 @@
 # ==============================================================================
 # Pipeline Execution Script for Linux / macOS Bash
 # Project: Global Wildfire & Natural Disasters (2006-2025)
-# Sequence: 01_download -> 02_eda -> 03_clean -> 03b_ml_clean ->
+# Sequence: 01_download -> 02_eda -> 03_clean -> 03b_ml_clean -> 08_predictive_model ->
 #           04_split_tables -> 05_build_db -> 06_export_json -> 07_validate
 # ==============================================================================
 
@@ -23,6 +23,9 @@ python src/03_clean.py
 
 echo -e "\n>>> Running Step 3b: Machine Learning Cleaning..."
 python src/03b_ml_clean.py
+
+echo -e "\n>>> Running Step 8: Linear Regression Forecast 2026-2035..."
+python src/08_predictive_model.py
 
 echo -e "\n>>> Running Step 4: Star Schema Table Splitting..."
 python src/04_split_tables.py
