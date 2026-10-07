@@ -22,38 +22,41 @@ Theo thống nhất chuyên môn, tập dữ liệu tập trung toàn diện và
 
 ## 2. Bảng So Sánh Chi Tiết Các Nguồn Dữ Liệu Thực Tế
 
-| Tiêu chí | 1. CAL FIRE Fire Perimeters (FRAP) | 2. CAL FIRE Damage Inspection (DINS) | 3. CA Counties Boundaries & Demographics | 4. NOAA Storm Events (California) |
-|---|---|---|---|---|
-| **Cơ quan phát hành** | CAL FIRE FRAP / California Natural Resources Agency | CAL FIRE / State of California Open Data | California Dept of Technology / US Census | NOAA NCEI (U.S. Federal Government) |
-| **URL chính thức** | [gis.data.cnra.ca.gov](https://gis.data.cnra.ca.gov/datasets/CALFIRE-Forestry::california-fire-perimeters-all) | [gis.data.cnra.ca.gov](https://gis.data.cnra.ca.gov/datasets/CALFIRE-Forestry::cal-fire-damage-inspection-dins-data) | [gis.data.ca.gov](https://gis.data.ca.gov/datasets/CDB::california-county-boundaries-and-identifiers) | [ncei.noaa.gov](https://www.ncei.noaa.gov/pub/data/swdi/stormevents/) |
-| **Khoảng thời gian** | 1878–2025 (Chuỗi 20 năm 2006–2025 có 7.646 vụ) | 2013–2025 (Hơn 132.500 bản ghi chi tiết) | Dữ liệu hành chính chuẩn hóa hiện tại | 2006–2025 (Sự kiện thiên tai cấp bang) |
-| **Phạm vi địa lý** | Toàn bộ bang California (58 Hạt) | Toàn bộ bang California (vùng cháy SRA) | 58 Hạt (Counties) thuộc California | Toàn bộ bang California |
-| **Số dòng quan sát** | **23.334 dòng** (vượt xa yêu cầu 5.000 dòng) | **132.522 dòng** (kiểm kê từng công trình) | **58 dòng** (danh mục 58 hạt chuẩn) | **139+ sự kiện** có thương vong/USD |
-| **Giấy phép** | Public Domain / California Open Data | Public Domain / California Open Data | Public Domain / State Geoportal | U.S. Federal Government (Public Domain) |
-| **Các trường thông tin chính** | `Fire Name`, `Year`, `Alarm Date`, `Containment Date`, `Cause`, `GIS Calculated Acres`, `Unit ID` | `* Incident Name`, `* Damage`, `* Structure Type`, `County`, `Latitude`, `Longitude`, `Assessed Improved Value` | `CDTFA_COUNTY`, `CENSUS_POPULATION`, `AREA_SQMI`, `GNIS_ID`, `CDT_COUNTY_ABBR` | `EVENT_ID`, `CZ_NAME`, `DAMAGE_PROPERTY`, `DAMAGE_CROPS`, `DEATHS_DIRECT`, `INJURIES_DIRECT` |
-| **Mục đích sử dụng** | **Bảng Fact chính**: Đo lường tần suất theo năm/tháng, diện tích tàn phá, căn nguyên đám cháy | **Bảng Fact phụ / Chi tiết**: Phân tích mức độ phá hủy nhà cửa, công trình, loại hình kiến trúc | **Bảng Dimension Địa lý**: Join phân cấp từ Hạt $\to$ Khu vực, tính tỷ lệ thiệt hại trên dân số | **Bảng Đối soát Thiệt hại**: Bổ sung số liệu thương vong sinh mạng và giá trị USD quy đổi |
+| Tiêu chí | 1. CAL FIRE Fire Perimeters (FRAP) | 2. CAL FIRE Damage Inspection (DINS) | 3. USDA / NIFC (ICS-209-PLUS) | 4. NOAA Storm Events (California) | 5. CA Counties Boundaries |
+|---|---|---|---|---|---|
+| **Cơ quan phát hành** | CAL FIRE FRAP / California CNRA | CAL FIRE / California Open Data | USDA Forest Service / NIFC | NOAA NCEI (U.S. Federal Government) | California Dept of Technology / US Census |
+| **URL chính thức** | [gis.data.cnra.ca.gov](https://gis.data.cnra.ca.gov/datasets/CALFIRE-Forestry::california-fire-perimeters-all) | [gis.data.cnra.ca.gov](https://gis.data.cnra.ca.gov/datasets/CALFIRE-Forestry::cal-fire-damage-inspection-dins-data) | [figshare.com (DOI: 10.6084/m9.figshare.19858927)](https://figshare.com/articles/dataset/19858927) | [ncei.noaa.gov](https://www.ncei.noaa.gov/pub/data/swdi/stormevents/) | [gis.data.ca.gov](https://gis.data.ca.gov/datasets/CDB::california-county-boundaries-and-identifiers) |
+| **Khoảng thời gian** | 1878–2025 (Chuỗi 20 năm 2006–2025 có **7.342 vụ**) | **2013–2025** (Hơn 132.500 bản ghi chi tiết công trình) | **2006–2012** (Phủ kín khoảng trống 7 năm đầu) | **2006–2025** (Đủ 20/20 năm thiên tai cấp bang) | Chuẩn hóa hành chính hiện hành |
+| **Phạm vi địa lý** | Toàn bộ bang California (58 Hạt) | Toàn bộ bang California (vùng cháy SRA) | Toàn bộ bang California (vùng trách nhiệm liên bang & bang) | Toàn bộ bang California | 58 Hạt (Counties) thuộc California |
+| **Số dòng quan sát** | **23.334 dòng** (vượt xa yêu cầu 5.000 dòng) | **132.522 dòng** (kiểm kê từng công trình) | **1.127 sự kiện cháy lớn** | **993 sự kiện** có thương vong/USD | **58 dòng** (danh mục 58 hạt chuẩn) |
+| **Giấy phép** | Public Domain / California Open Data | Public Domain / California Open Data | U.S. Federal Government Open Research Data | U.S. Federal Government (Public Domain) | Public Domain / State Geoportal |
+| **Các trường thông tin chính** | `Fire Name`, `Year`, `Alarm Date`, `Containment Date`, `Cause`, `GIS Calculated Acres`, `Unit ID` | `* Incident Name`, `* Damage`, `* Structure Type`, `County`, `Latitude`, `Longitude` | `INCIDENT_NAME`, `START_YEAR`, `POO_COUNTY`, `STR_DESTROYED_TOTAL`, `STR_DAMAGED_TOTAL` | `EVENT_ID`, `YEAR`, `CZ_NAME`, `DAMAGE_PROPERTY`, `DEATHS_DIRECT`, `INJURIES_DIRECT` | `CDTFA_COUNTY`, `CENSUS_POPULATION`, `AREA_SQMI`, `GNIS_ID`, `CDT_COUNTY_ABBR` |
+| **Mục đích sử dụng** | **Bảng Fact chính**: Đo lường tần suất theo năm/tháng, diện tích tàn phá, căn nguyên đám cháy | **Bảng Fact Thiệt hại (2013–2025)**: Phân tích chi tiết từng loại nhà, mức độ phá hủy | **Bảng Bổ sung Thiệt hại (2006–2012)**: Lấp đầy dữ liệu số nhà bị phá hủy giai đoạn đầu $\implies$ Đủ 20 năm! | **Bảng Fact Thương vong (2006–2025)**: Bổ sung số người chết, bị thương và giá trị USD quy đổi | **Bảng Dimension Địa lý**: Join phân cấp từ Hạt $\to$ Khu vực, tính tỷ lệ thiệt hại trên dân số |
 
 ---
 
 ## 3. Bản Kê Chi Tiết Dữ Liệu Thô Đã Tải (`data/raw/calfire/`)
 
-Toàn bộ các tệp dữ liệu đã được tải về lưu trữ tại `data/raw/calfire/`, tự động sinh mã băm kiểm tra tính toàn vẹn (SHA-256):
+Toàn bộ 5 tệp dữ liệu đã được tải về và xác thực tính toàn vẹn tại `data/raw/calfire/`, tự động sinh mã băm SHA-256:
 
-1. **`California_Fire_Perimeters_all.csv`** (Dung lượng: ~4.18 MB, **23.334 dòng**):
-   - Chứa toàn bộ chu vi, diện tích mẫu Anh (Acres) và mã nguyên nhân của các vụ cháy rừng tại California từ cơ quan lâm nghiệp CAL FIRE.
-2. **`CAL_FIRE_Damage_Inspection_DINS.csv`** (Dung lượng: ~60.59 MB, **132.522 dòng**):
-   - Chứa cơ sở dữ liệu kiểm kê thiệt hại tài sản thực tế: 70.390 công trình bị phá hủy hoàn toàn (>50%), 7.127 công trình bị hư hại, phân loại rõ nhà ở dân cư, xe cộ, nhà phụ trợ, kèm tọa độ GPS và tên hạt.
-3. **`California_Counties_Demographics.csv`** (Dung lượng: ~8.7 KB, **58 dòng**):
-   - Danh mục 58 hạt của bang California kèm diện tích dặm vuông (`AREA_SQMI`) và dân số điều tra Census (`CENSUS_POPULATION`).
-4. **`NOAA_California_Wildfires_Casualties.csv`** (Dung lượng: ~178 KB):
-   - Các vụ cháy rừng nghiêm trọng tại California được NOAA ghi nhận thương vong trực tiếp và thiệt hại tài sản quy đổi.
+1. **`California_Fire_Perimeters_all.csv`** (Dung lượng: ~3.97 MB, **23.334 dòng**):
+   - Chứa toàn bộ chu vi, diện tích mẫu Anh (Acres) và mã nguyên nhân của các vụ cháy rừng tại California từ CAL FIRE FRAP (giai đoạn 2006–2025 có **7.342 vụ cháy** với **19.386.513 mẫu Anh** bị thiêu rụi).
+2. **`CAL_FIRE_Damage_Inspection_DINS.csv`** (Dung lượng: ~57.66 MB, **132.522 dòng**):
+   - Cơ sở dữ liệu kiểm kê thiệt hại tài sản chi tiết giai đoạn 2013–2025: **70.390 công trình bị phá hủy hoàn toàn (>50%)**, **7.127 công trình bị hư hại**, phân loại rõ loại hình nhà ở dân cư, thương mại, nhà phụ trợ, kèm tọa độ GPS và hạt.
+3. **`ICS209_California_Wildfires_2006_2012.csv`** (Dung lượng: ~0.96 MB, **1.127 dòng**):
+   - Dữ liệu báo cáo sự cố ICS-209 từ USDA Forest Service & NIFC giai đoạn 2006–2012: ghi nhận **7.206 công trình bị phá hủy hoàn toàn** và **990 công trình bị hư hại**, lấp đầy hoàn hảo khoảng trống 7 năm đầu để chuỗi thiệt hại công trình đạt **đủ 20/20 năm liên tục (2006–2025)**.
+4. **`NOAA_California_Wildfires_Casualties.csv`** (Dung lượng: ~0.86 MB, **993 dòng**):
+   - Toàn bộ sự kiện cháy rừng tại California từ NOAA NCEI Storm Events phủ kín **đủ 20/20 năm (2006–2025)**: ghi nhận **255 người thiệt mạng trực tiếp**, **887 người bị thương**, và thiệt hại tài sản quy đổi USD.
+5. **`California_Counties_Demographics.csv`** (Dung lượng: ~8.7 KB, **58 dòng**):
+   - Danh mục chuẩn 58 hạt của bang California kèm diện tích dặm vuông (`AREA_SQMI`) và dân số điều tra Census (`CENSUS_POPULATION`).
 
 ---
 
 ## 4. Cam Kết Đáp Ứng Chuẩn Barem Môn Học (File PDF)
 
-- **Quy mô dữ liệu**: Đạt **23.334 dòng** trong bảng Perimeters và **132.522 dòng** trong bảng DINS (Yêu cầu đề bài $\ge 5.000$ dòng $\implies$ **VƯỢT XA YÊU CẦU**).
-- **Cấu trúc đa bảng**: Có 4 bảng độc lập với các khóa liên kết rõ ràng (`Fire Name`, `Incident Name`, `County`, `Year`) để thực hiện thao tác **Join/Merge** xây dựng mô hình Star Schema.
+- **Quy mô dữ liệu**: Đạt **23.334 dòng** trong bảng Perimeters, **132.522 dòng** trong bảng DINS, **1.127 dòng** trong bảng ICS-209, **993 dòng** trong NOAA (Tổng cộng hơn **157.000 dòng**, vượt xa chỉ tiêu $\ge 5.000$ dòng).
+- **Chuỗi thời gian hoàn chỉnh**: Cả 4 trụ cột phân tích (Tần suất, Diện tích, Thiệt hại công trình, Thương vong con người) đều **phủ đủ 20/20 năm liên tục từ 2006 đến 2025**, không để trống bất kỳ năm nào!
+- **Cấu trúc đa bảng**: Có 5 bảng độc lập với các khóa liên kết chuẩn mực (`Fire Name`, `Incident Name`, `County`, `Year`) để thực hiện thao tác **Join/Merge/Union** xây dựng mô hình Star Schema.
 - **Tính khả thi của Dashboard & Storytelling**:
   - Dễ dàng dựng **Map chuyên đề California theo 58 Hạt** (Choropleth Map diện tích cháy theo hạt, Proportional Symbol Map các điểm cháy lớn).
-  - Đầy đủ các chiều phân tích: Bar Chart (số vụ), Line/Dual Axis (diện tích vs công trình phá hủy theo năm), Pareto 80/20 (top các hạt chịu thiệt hại nặng nhất), Donut Chart (cơ cấu nguyên nhân), Scatter Plot (diện tích vs số nhà bị phá hủy).
+  - Đầy đủ các chiều phân tích: Bar Chart (số vụ theo năm/tháng), Line/Dual Axis (diện tích vs công trình phá hủy theo năm), Pareto 80/20 (top các hạt chịu thiệt hại nặng nhất), Donut Chart (cơ cấu nguyên nhân Tự nhiên vs Nhân tạo), Scatter Plot (diện tích vs số nhà bị phá hủy).

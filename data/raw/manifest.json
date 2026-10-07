@@ -9,14 +9,19 @@
     "size_bytes": 60463219,
     "size_mb": 57.66
   },
+  "ICS209_California_Wildfires_2006_2012.csv": {
+    "sha256": "ab6e70abaf21e66e7959d4be881eb0f106837f516344fe519c5a4553a4c8e1fa",
+    "size_bytes": 1011077,
+    "size_mb": 0.96
+  },
+  "NOAA_California_Wildfires_Casualties.csv": {
+    "sha256": "5c5aeaa4a9a6de3e340e53c4c2c31668ca404fbb2c60b7e81c331401dc92517c",
+    "size_bytes": 901392,
+    "size_mb": 0.86
+  },
   "California_Counties_Demographics.csv": {
     "sha256": "62dd563a81cd8b83f84ff746f7620eaddc05c3f505cd4b95351d4ed1daa46dd6",
     "size_bytes": 8664,
     "size_mb": 0.01
-  },
-  "NOAA_California_Wildfires_Casualties.csv": {
-    "sha256": "77dee7957bab18b8f0ff51a24d4c4c04e183f8c24d527d6d7e7002046fbd55b7",
-    "size_bytes": 902386,
-    "size_mb": 0.86
   }
 }
