@@ -154,7 +154,6 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
   - ✅ `src/03b_ml_clean.py`
   - ✅ `src/04_split_tables.py`
   - ✅ `src/05_build_db.py`
-  - ✅ `src/06_export_json.py`
   - ✅ `src/07_validate.py`
   - ✅ `src/08_predictive_model.py`
 

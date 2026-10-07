@@ -93,7 +93,6 @@ IDV_TTDL/
 │   ├── 03b_ml_clean.py        # Làm sạch bằng học máy Isolation Forest & MICE (TV1)
 │   ├── 04_split_tables.py     # Tách bảng Star Schema chuẩn 3NF (TV2)
 │   ├── 05_build_db.py         # Nạp CSDL database.sqlite kích hoạt FK (TV2)
-│   ├── 06_export_json.py      # Xuất dữ liệu hỗ trợ (TV2/TV3)
 │   ├── 07_validate.py         # Kiểm thử tự động toàn vẹn tham chiếu và CHECK (TV2)
 │   └── 08_predictive_model.py # Huấn luyện mô hình Linear Regression trên Python (TV1)
 ├── tests/                     # Bộ kiểm thử pytest

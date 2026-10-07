@@ -132,14 +132,14 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu cùng cá
 - [ ] Đảm bảo cơ chế tự động tương thích: Khi refresh dữ liệu trong Tableau là biểu đồ tự cập nhật.
 
 ### Thành viên 2 – MÔ HÌNH DỮ LIỆU (Tách bảng $\ge 3$ bảng $\to$ CSDL SQLite $\to$ Star Schema 3NF)
-- [ ] Thiết kế Star Schema $\ge 3$ bảng từ `master_clean.csv`: `dim_county`, `dim_cause`, `dim_date`, `fact_fire_incident`, `fact_structure_damage`. Mỗi bảng đạt tối thiểu 3NF, có surrogate key. Bảo toàn các cột cờ ML trong bảng fact (`is_outlier_ml`, `*_is_imputed`, `cause_is_predicted`).
-- [ ] Viết `src/04_split_tables.py` tách bảng thành các file CSV lưu tại `data/tables/`.
-- [ ] Viết DDL `sql/schema.sql` với đầy đủ: PRIMARY KEY, FOREIGN KEY (`ON DELETE RESTRICT ON UPDATE CASCADE`), NOT NULL, UNIQUE, CHECK constraints (`acres_burned >= 0`, `structures_destroyed >= 0`, `year BETWEEN 2006 AND 2025`, `latitude BETWEEN 32 AND 42`, `longitude BETWEEN -125 AND -114`), DEFAULT hợp lý, và INDEX tối ưu truy vấn JOIN/WHERE.
-- [ ] Viết script `src/05_build_db.py` tạo `database.sqlite`, kích hoạt `PRAGMA foreign_keys = ON;`, nạp dữ liệu và kiểm tra vi phạm ràng buộc.
-- [ ] Vẽ sơ đồ thực thể liên kết `docs/ERD.md` bằng Mermaid `erDiagram` với đầy đủ bản số quan hệ (Cardinality 1–N).
-- [ ] Viết `src/07_validate.py` và bộ kiểm thử `tests/`: kiểm tra toàn vẹn tham chiếu (không có FK mồ côi), không trùng khóa chính, fact $\ge 5.000$ dòng, toàn bộ ràng buộc CHECK đạt chuẩn, cột cờ nhận 0/1.
-- [ ] Viết script `src/06_export_json.py` (xuất JSON vào `dashboard/data/`) và các truy vấn SQL cho biểu đồ của mình trong `sql/queries_for_charts.sql`.
-- [ ] Chịu trách nhiệm thực hiện trọn vẹn 4 biểu đồ: **#3 (`Sheet_03_Diverging_Bar`), #4 (`Sheet_04_Treemap_Damage`), #5 (`Sheet_05_Bubble_Scatter`), #6 (`Sheet_06_Combo_Histogram`)**.
+- [x] Thiết kế Star Schema $\ge 3$ bảng từ `master_clean.csv`: `dim_county`, `dim_cause`, `dim_date`, `fact_fire_incident`, `fact_structure_damage`. Mỗi bảng đạt tối thiểu 3NF, có surrogate key. Bảo toàn các cột cờ ML trong bảng fact (`is_outlier_ml`, `*_is_imputed`, `cause_is_predicted`).
+- [x] Viết `src/04_split_tables.py` tách bảng thành các file CSV lưu tại `data/tables/`.
+- [x] Viết DDL `sql/schema.sql` với đầy đủ: PRIMARY KEY, FOREIGN KEY (`ON DELETE RESTRICT ON UPDATE CASCADE`), NOT NULL, UNIQUE, CHECK constraints (`acres_burned >= 0`, `structures_destroyed >= 0`, `year BETWEEN 2006 AND 2025`, `latitude BETWEEN 32 AND 42`, `longitude BETWEEN -125 AND -114`), DEFAULT hợp lý, và INDEX tối ưu truy vấn JOIN/WHERE.
+- [x] Viết script `src/05_build_db.py` tạo `database.sqlite`, kích hoạt `PRAGMA foreign_keys = ON;`, nạp dữ liệu và kiểm tra vi phạm ràng buộc (Zero Orphan FK).
+- [x] Vẽ sơ đồ thực thể liên kết `docs/ERD.md` bằng Mermaid `erDiagram` với đầy đủ bản số quan hệ (Cardinality 1–N).
+- [x] Viết `src/07_validate.py` và bộ kiểm thử `tests/`: kiểm tra toàn vẹn tham chiếu (không có FK mồ côi), không trùng khóa chính, fact $\ge 5.000$ dòng, toàn bộ ràng buộc CHECK đạt chuẩn, cột cờ nhận 0/1.
+- [x] Viết các truy vấn SQL cho biểu đồ của mình trong `sql/queries_for_charts.sql` và hướng dẫn Calculated Fields trong `tableau/CALCULATED_FIELDS.md`.
+- [x] Chịu trách nhiệm thực hiện trọn vẹn 4 biểu đồ trên Tableau: **#3 (`Sheet_03_Diverging_Bar`), #4 (`Sheet_04_Treemap_Damage`), #5 (`Sheet_05_Bubble_Scatter`), #6 (`Sheet_06_Combo_Histogram`)**.
 
 ### Thành viên 3 – DASHBOARD & TRIỂN KHAI (Tableau Public $\to$ Trực quan hóa Dự báo $\to$ Storytelling $\to$ DevOps)
 - [ ] Thiết lập môi trường Tableau Desktop / Tableau Public, kết nối nguồn dữ liệu sạch từ `data/clean/master_clean.csv`.

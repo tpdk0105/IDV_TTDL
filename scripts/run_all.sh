@@ -30,10 +30,7 @@ python src/04_split_tables.py
 echo -e "\n>>> Running Step 5: Database Build & Integrity Checks..."
 python src/05_build_db.py
 
-echo -e "\n>>> Running Step 6: Export Dashboard JSON Data..."
-python src/06_export_json.py
-
-echo -e "\n>>> Running Step 7: Automated Validation & Assertions..."
+echo -e "\n>>> Running Step 6: Automated Validation & Assertions..."
 python src/07_validate.py
 
 echo "=========================================================="

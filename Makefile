@@ -21,7 +21,6 @@ pipeline:
 	python src/03b_ml_clean.py
 	python src/04_split_tables.py
 	python src/05_build_db.py
-	python src/06_export_json.py
 	python src/07_validate.py
 
 download:
@@ -41,9 +40,6 @@ split:
 
 db:
 	python src/05_build_db.py
-
-export:
-	python src/06_export_json.py
 
 validate:
 	python src/07_validate.py
