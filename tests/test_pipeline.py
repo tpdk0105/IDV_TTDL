@@ -3,9 +3,8 @@ Test suite for IDV_TTDL pipeline.
 Kiểm thử cấu trúc thư mục, quy chuẩn tập tin, CSDL SQLite và tính sẵn sàng của pipeline.
 """
 
-from pathlib import Path
 import sqlite3
-import pytest
+from pathlib import Path
 
 
 def test_directory_structure():

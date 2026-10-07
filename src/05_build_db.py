@@ -15,9 +15,10 @@ Mục đích:
     - Kiểm tra tính toàn vẹn khóa ngoại (Zero Orphan Foreign Keys) và ràng buộc toàn vẹn.
 """
 
-from pathlib import Path
 import sqlite3
 import sys
+from pathlib import Path
+
 import pandas as pd
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -37,8 +38,8 @@ def build_sqlite_database() -> None:
     if db_path.exists():
         try:
             db_path.unlink()
-        except Exception:
-            pass
+        except OSError as e:
+            print(f"[TV2 - BUILD DB] Cảnh báo không thể xóa file cũ: {e}")
 
     print(f"[TV2 - BUILD DB] Khởi tạo CSDL SQLite tại: {db_path.resolve()}")
     conn = sqlite3.connect(db_path)

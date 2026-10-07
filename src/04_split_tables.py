@@ -14,11 +14,11 @@ Mục đích:
     - Xuất các tệp tin CSV tương ứng vào thư mục `data/tables/`.
 """
 
-from datetime import date, timedelta
-from pathlib import Path
 import re
 import sys
-import numpy as np
+from datetime import date, timedelta
+from pathlib import Path
+
 import pandas as pd
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -402,12 +402,18 @@ def split_star_schema_tables() -> None:
 
     df_fact_damage = pd.DataFrame(fact_damage)
 
-    # 5. Xuất các bảng ra thư mục data/tables/
-    dim_date.to_csv(tables_dir / "dim_date.csv", index=False, encoding="utf-8")
-    dim_county.to_csv(tables_dir / "dim_county.csv", index=False, encoding="utf-8")
-    dim_cause.to_csv(tables_dir / "dim_cause.csv", index=False, encoding="utf-8")
-    df_fact_fires.to_csv(tables_dir / "fact_fire_incident.csv", index=False, encoding="utf-8")
-    df_fact_damage.to_csv(tables_dir / "fact_structure_damage.csv", index=False, encoding="utf-8")
+    # 5. Xuất các bảng ra thư mục data/tables/ (an toàn khi tệp đang mở xem)
+    def safe_to_csv(df: pd.DataFrame, target_path: Path):
+        try:
+            df.to_csv(target_path, index=False, encoding="utf-8")
+        except PermissionError:
+            print(f"  [CẢNH BÁO] Không thể ghi đè {target_path.name} do tệp đang được mở trong ứng dụng khác. Giữ nguyên tệp hiện có.")
+
+    safe_to_csv(dim_date, tables_dir / "dim_date.csv")
+    safe_to_csv(dim_county, tables_dir / "dim_county.csv")
+    safe_to_csv(dim_cause, tables_dir / "dim_cause.csv")
+    safe_to_csv(df_fact_fires, tables_dir / "fact_fire_incident.csv")
+    safe_to_csv(df_fact_damage, tables_dir / "fact_structure_damage.csv")
 
     print(f"[TV2 - MODEL] Xuất thành công 5 bảng Star Schema vào: {tables_dir.resolve()}")
     print(f"  - dim_date: {len(dim_date):,} dòng")

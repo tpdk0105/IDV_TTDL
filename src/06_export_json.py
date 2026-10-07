@@ -14,9 +14,9 @@ Mục đích:
 """
 
 import json
-from pathlib import Path
 import sqlite3
 import sys
+from pathlib import Path
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")

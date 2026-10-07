@@ -21,9 +21,9 @@ Mục đích:
         - 1: Phát hiện vi phạm toàn vẹn dữ liệu.
 """
 
+import sqlite3
 import sys
 from pathlib import Path
-import sqlite3
 
 # Cấu hình UTF-8 cho console Windows
 if hasattr(sys.stdout, "reconfigure"):
@@ -41,7 +41,7 @@ def run_check(title: str, check_func) -> bool:
         else:
             print(f"  [FAIL] {msg}")
             return False
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"  [ERROR] Ngoại lệ khi kiểm tra: {e}")
         return False
 
