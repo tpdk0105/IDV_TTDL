@@ -10,7 +10,7 @@ Màu sắc trong trực quan hóa dữ liệu không chỉ mang tính thẩm m�
 1. **Tuân thủ ngữ nghĩa dữ liệu**: Lựa chọn bảng màu chuẩn xác theo kiểu dữ liệu (Sequential, Diverging, Categorical).
 2. **Khả năng tiếp cận (Accessibility - WCAG 2.1 AA)**: Độ tương phản giữa chữ và nền đạt tối thiểu 4.5:1. Tuyệt đối không chỉ dựa vào màu sắc đơn thuần để phân biệt các lớp thông tin (kết hợp tooltip, ký hiệu hình dạng, nhãn trực tiếp).
 3. **Thân thiện với người mù màu (Colorblind-Safe)**: Loại bỏ triệt để dải màu cầu vồng (Rainbow/Jet) và không sử dụng cặp Đỏ – Xanh lá cây (Red-Green) làm kênh phân biệt nhị phân duy nhất.
-4. **Nhất quán toàn hệ thống**: Mỗi loại thảm họa, mỗi châu lục, mỗi nhóm nguyên nhân phải được gán một mã màu cố định, không thay đổi xuyên suốt 12 biểu đồ.
+4. **Nhất quán toàn hệ thống**: Mỗi nhóm nguyên nhân, mỗi loại công trình kiến trúc, mỗi vùng địa lý California phải được gán một mã màu cố định, không thay đổi xuyên suốt 10 biểu đồ.
 
 ---
 
@@ -45,27 +45,23 @@ Màu sắc trong trực quan hóa dữ liệu không chỉ mang tính thẩm m�
 ### 2.3. Bảng Màu Phân Loại Nhất Quán (Categorical Palette - Okabe & Ito Safe Palette)
 Áp dụng cho các biến định danh. Tối đa 7–8 màu/biểu đồ, phần còn lại gom vào nhóm "Khác" (`#9E9E9E`).
 
-#### A. Ánh xạ cố định theo Loại Thảm Họa (`disaster_type`):
-- **Wildfire (Cháy rừng - Trọng tâm)**: `#D55E00` (Đỏ cam cháy - Vermilion)
-- **Flood (Lũ lụt)**: `#0072B2` (Xanh dương đậm)
-- **Storm (Bão nhiệt đới/lốc)**: `#56B4E9` (Xanh da trời)
-- **Drought (Hạn hán)**: `#E69F00` (Vàng cam đất)
-- **Earthquake (Động đất)**: `#CC79A7` (Hồng tím sẫm)
-- **Volcanic activity (Núi lửa)**: `#F0E442` (Vàng chanh)
-- **Extreme temperature (Nhiệt độ cực đoan)**: `#882255` (Đỏ rượu)
-- **Khác (Others)**: `#7F7F7F` (Xám trung tính)
+#### A. Ánh xạ cố định theo Nhóm & Chi Tiết Nguyên Nhân Cháy (`cause_group` / `cause_name`):
+- **Tự nhiên (Natural - Sét đánh / Lightning)**: `#009E73` (Xanh lục sinh thái)
+- **Con người (Human - Thiết bị, Đường dây điện, Đốt phá, Phương tiện, Lửa trại, Bất cẩn)**: `#D55E00` (Đỏ cam lửa)
+- **Không rõ / Chưa xác định (Undetermined / Misc)**: `#7F7F7F` (Xám trung tính)
 
-#### B. Ánh xạ cố định theo Châu Lục (`continent`):
-- **Americas (Châu Mỹ)**: `#E69F00` (Cam)
-- **Asia (Châu Á)**: `#56B4E9` (Xanh da trời)
-- **Europe (Châu Âu)**: `#009E73` (Xanh lục biển)
-- **Africa (Châu Phi)**: `#F0E442` (Vàng)
-- **Oceania (Châu Đại Dương)**: `#0072B2` (Xanh biển)
+#### B. Ánh xạ theo Loại Công Trình Bị Thiệt Hại (`structure_type` - DINS & ICS-209):
+- **Single Family Residence (Nhà ở riêng lẻ)**: `#D55E00` (Đỏ cam cháy)
+- **Commercial (Công trình thương mại)**: `#0072B2` (Xanh dương đậm)
+- **Minor Outbuilding (Công trình phụ / Kho bãi)**: `#E69F00` (Vàng đất)
+- **Multi Family Residence (Khu nhà nhiều hộ)**: `#CC79A7` (Hồng tím)
+- **Infrastructure / Other (Hạ tầng kỹ thuật & Khác)**: `#999999` (Xám)
 
-#### C. Ánh xạ theo Nhóm Nguyên Nhân Cháy (`cause_group`):
-- **Tự nhiên (Natural - Sét đánh, hạn nhiệt)**: `#56B4E9` (Xanh trời mát)
-- **Con người (Human - Bất cẩn, đốt nương, phá hoại)**: `#D55E00` (Đỏ cam lửa)
-- **Không rõ / Chưa xác định (Unknown)**: `#999999` (Xám)
+#### C. Ánh xạ theo Phân Vùng Địa Lý California (`california_region`):
+- **Northern California (Vùng Bắc rừng rậm)**: `#0072B2` (Xanh biển)
+- **Sierra Nevada / Central (Sườn núi & Miền Trung)**: `#E69F00` (Cam đất)
+- **Southern California (Vùng Nam khí hậu khô)**: `#D55E00` (Đỏ cam)
+- **Bay Area & Coast (Vùng Vịnh & Duyên hải)**: `#009E73` (Xanh lục)
 
 ---
 

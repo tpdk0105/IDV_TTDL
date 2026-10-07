@@ -6,16 +6,16 @@
 ---
 
 ## 1. Mục Đích & Nguyên Tắc Áp Dụng Học Máy
-Trong bài toán phân tích thảm họa thiên nhiên và cháy rừng giai đoạn 2006–2025, dữ liệu thu thập từ các nguồn quốc tế thường gặp hai vấn đề lớn:
-1. **Giá trị ngoại lai cực đoan (Extreme Outliers)**: Các thảm họa có quy mô lớn bất thường, lỗi nhập thừa chữ số (sai lệch bậc độ lớn $10^3, 10^6$), hoặc lỗi đơn vị đo.
-2. **Giá trị khuyết thiếu (Missing Data)**: Nhiều sự kiện thảm họa chỉ ghi nhận thiệt hại người (`deaths`, `affected`) nhưng thiếu diện tích cháy (`burned_area_ha`) hoặc thiếu thiệt hại kinh tế (`damage_usd`).
+Trong bài toán phân tích tần suất và thiệt hại cháy rừng California giai đoạn 2006–2025, dữ liệu thu thập từ các cơ quan kiểm lâm và khí tượng thường gặp hai vấn đề lớn:
+1. **Giá trị ngoại lai cực đoan (Extreme Outliers)**: Các thảm họa có quy mô lớn bất thường (Megafires như August Complex, Dixie Fire, Camp Fire), lỗi nhập thừa chữ số hoặc bất thường tọa độ.
+2. **Giá trị khuyết thiếu (Missing Data)**: Một số vụ cháy chỉ ghi nhận diện tích nhưng thiếu thông tin chi tiết về thiệt hại tài sản hoặc nguyên nhân khởi phát (`cause_name`).
 
 ### Nguyên tắc bắt buộc:
 - **Tối thiểu 2 mô hình học máy độc lập**:
   1. *Phát hiện ngoại lai đa biến*: **Isolation Forest** kết hợp đối soát **Local Outlier Factor (LOF)**.
   2. *Điền giá trị thiếu đa biến*: **KNN Imputer** hoặc **Iterative Imputer (MICE)**.
   3. *(Mở rộng)*: **Random Forest Classifier** dự đoán nhóm nguyên nhân (`cause_group`) khi xác suất dự đoán $P \ge 0.7$.
-- **Không tự động xóa hàng loạt**: Mô hình ngoại lai chỉ GẮN CỜ (`is_outlier_ml`) và tính điểm bất thường (`outlier_score`). Quyết định loại bỏ chỉ áp dụng sau khi đối soát thủ công có căn cứ rõ ràng.
+- **Không tự động xóa hàng loạt**: Mô hình ngoại lai chỉ GẮN CỜ (`is_outlier_ml`) và tính điểm bất thường (`outlier_score`). Quyết định loại bỏ chỉ áp dụng sau khi đối soát thủ công có căn cứ rõ ràng (không xóa các siêu thảm họa có thật như Camp Fire hay August Complex).
 - **Minh bạch hóa**: Mỗi giá trị được điền phải đi kèm cờ `<cột>_is_imputed = True`. Cột thiếu $> 60\%$ tuyệt đối không điền.
 - **Đánh giá nghiêm ngặt, không rò rỉ dữ liệu (Data Leakage)**: Sử dụng kỹ thuật che ngẫu nhiên (masking 10–20%) và so sánh với phương pháp nền tảng (Median Imputation) bằng MAE / RMSE.
 
@@ -24,8 +24,8 @@ Trong bài toán phân tích thảm họa thiên nhiên và cháy rừng giai đ
 ## 2. Mô Hình 1 – Phát Hiện Ngoại Lai (Isolation Forest & LOF)
 
 ### 2.1. Lựa chọn đặc trưng & tiền xử lý
-- **Tập đặc trưng đầu vào**: `deaths`, `affected`, `damage_usd`, `burned_area_ha`.
-- **Biến đổi phân phối**: Áp dụng $\log_{1p}(x) = \ln(1 + x)$ do các chỉ số thảm họa có phân phối lệch phải cực nặng.
+- **Tập đặc trưng đầu vào**: `acres_burned`, `structures_destroyed`, `deaths_direct`, `injuries_direct`, `damage_property_usd`.
+- **Biến đổi phân phối**: Áp dụng $\log_{1p}(x) = \ln(1 + x)$ do các chỉ số diện tích và phá hủy có phân phối lệch phải cực nặng.
 - **Chuẩn hóa**: `RobustScaler` (sử dụng Median và Interquartile Range) nhằm tránh bị ảnh hưởng bởi chính các giá trị ngoại lai cực đại.
 
 ### 2.2. Siêu tham số (Hyperparameters)
@@ -51,18 +51,19 @@ Trong bài toán phân tích thảm họa thiên nhiên và cháy rừng giai đ
 
 ### 3.2. Thiết lập thực nghiệm đánh giá chéo (Cross-Validation Evaluation)
 - Lấy tập con gồm các bản ghi đã có đầy đủ giá trị quan sát (Complete Cases).
-- Che ngẫu nhiên (Masking) $15\%$ giá trị của biến mục tiêu (`damage_usd`, `burned_area_ha`).
+- Che ngẫu nhiên (Masking) $15\%$ giá trị của biến mục tiêu (`acres_burned`, `damage_property_usd`).
 - So sánh sai số dự báo của mô hình đề xuất với phương pháp chuẩn cơ sở (Baseline: Điền trung vị - Median Imputation).
 
 ### 3.3. Bảng Kết Quả Đánh Giá Sai Số (Error Metrics Table)
 
 | Biến mục tiêu | Mô hình | MAE (Log Scale) | RMSE (Log Scale) | MAPE (%) | So với Median Baseline |
 |---------------|---------|-----------------|------------------|----------|------------------------|
-| `damage_usd` | Baseline (Median) | *TODO* | *TODO* | *TODO* | Chuẩn đối chiếu |
-| `damage_usd` | KNN Imputer ($k=5$) | *TODO* | *TODO* | *TODO* | *TODO* |
-| `damage_usd` | Iterative Imputer (MICE) | *TODO* | *TODO* | *TODO* | *TODO* |
-| `burned_area_ha` | Baseline (Median) | *TODO* | *TODO* | *TODO* | Chuẩn đối chiếu |
-| `burned_area_ha` | KNN Imputer ($k=5$) | *TODO* | *TODO* | *TODO* | *TODO* |
+| `acres_burned` | Baseline (Median) | *TODO* | *TODO* | *TODO* | Chuẩn đối chiếu |
+| `acres_burned` | KNN Imputer ($k=5$) | *TODO* | *TODO* | *TODO* | *TODO* |
+| `acres_burned` | Iterative Imputer (MICE) | *TODO* | *TODO* | *TODO* | *TODO* |
+| `damage_property_usd` | Baseline (Median) | *TODO* | *TODO* | *TODO* | Chuẩn đối chiếu |
+| `damage_property_usd` | KNN Imputer ($k=5$) | *TODO* | *TODO* | *TODO* | *TODO* |
+| `damage_property_usd` | Iterative Imputer (MICE) | *TODO* | *TODO* | *TODO* | *TODO* |
 | `burned_area_ha` | Iterative Imputer (MICE) | *TODO* | *TODO* | *TODO* | *TODO* |
 
 ---
