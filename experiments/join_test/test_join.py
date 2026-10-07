@@ -77,7 +77,7 @@ def run_join_experiment():
     dins_path = RAW_DIR / "CAL_FIRE_Damage_Inspection_DINS.csv"
     print(f"\n[2] Nạp bảng DINS từ: {dins_path.name}...")
     dins = pd.read_csv(dins_path, low_memory=False)
-    dins["Incident Start Date"] = pd.to_datetime(dins["Incident Start Date"], errors="coerce")
+    dins["Incident Start Date"] = pd.to_datetime(dins["Incident Start Date"], format="mixed", errors="coerce")
     dins["year_int"] = dins["Incident Start Date"].dt.year
     dins = dins.dropna(subset=["year_int"]).copy()
     dins["year_int"] = dins["year_int"].astype(int)
@@ -196,9 +196,30 @@ def run_join_experiment():
         "spatial_validation": "Spatial_Match_Status"
     })
 
+    def safe_save_csv(df: pd.DataFrame, file_path: Path):
+        try:
+            df.to_csv(file_path, index=False, encoding="utf-8-sig")
+            print(f"  -> Đã lưu thành công vào: {file_path.name}")
+        except PermissionError:
+            alt_path = file_path.with_name(f"{file_path.stem}_latest.csv")
+            df.to_csv(alt_path, index=False, encoding="utf-8-sig")
+            print(f"  [LƯU Ý] Tệp {file_path.name} đang được mở trong Excel (bị khóa ghi)!")
+            print(f"  -> Đã tự động lưu dự phòng sang: {alt_path.name}")
+
+    def safe_save_json(data: dict, file_path: Path):
+        try:
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            print(f"  -> Đã lưu chỉ số tóm tắt vào: {file_path.name}")
+        except PermissionError:
+            alt_path = file_path.with_name(f"{file_path.stem}_latest.json")
+            with open(alt_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            print(f"  [LƯU Ý] Tệp {file_path.name} đang bị khóa, đã lưu vào: {alt_path.name}")
+
     top_csv_file = BASE_DIR / "top_30_destructive_fires.csv"
-    top_destructive_export.to_csv(top_csv_file, index=False, encoding="utf-8-sig")
-    print(f"\n[6] Đã lưu Top 30 vụ cháy tàn khốc nhất vào: {top_csv_file.name}")
+    print("\n[6] Xuất các tệp kết quả kiểm thử:")
+    safe_save_csv(top_destructive_export, top_csv_file)
 
     # Xuất mẫu đại diện 50 vụ cháy trải dài cả 20 năm
     sample_50 = joined.sort_values(by=["year_int", "structures_destroyed"], ascending=[True, False]).groupby("year_int").head(3)
@@ -216,8 +237,7 @@ def run_join_experiment():
         "spatial_validation": "Spatial_Match_Status"
     })
     sample_csv_file = BASE_DIR / "sample_joined_2006_2025.csv"
-    sample_export.to_csv(sample_csv_file, index=False, encoding="utf-8-sig")
-    print(f"  -> Đã lưu mẫu vụ cháy 20 năm vào: {sample_csv_file.name}")
+    safe_save_csv(sample_export, sample_csv_file)
 
     # Ghi file JSON chỉ số tóm tắt
     metrics_summary = {
@@ -234,9 +254,7 @@ def run_join_experiment():
         "years_covered_list": [int(y) for y in sorted(joined["year_int"].unique())]
     }
     metrics_json_file = BASE_DIR / "join_metrics_summary.json"
-    with open(metrics_json_file, "w", encoding="utf-8") as f:
-        json.dump(metrics_summary, f, indent=2, ensure_ascii=False)
-    print(f"  -> Đã lưu chỉ số tóm tắt vào: {metrics_json_file.name}")
+    safe_save_json(metrics_summary, metrics_json_file)
 
     # In ra console Top 15 vụ tiêu biểu cho người dùng xem
     print("\n" + "=" * 80)
