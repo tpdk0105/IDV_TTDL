@@ -16,8 +16,8 @@
 6. Xây dựng CSDL `database.sqlite` qua [src/05_build_db.py](../../src/05_build_db.py), kích hoạt `PRAGMA foreign_keys = ON;`.
 7. Vẽ sơ đồ quan hệ thực thể [docs/ERD.md](../../docs/ERD.md) bằng Mermaid ERD kèm bản số (Cardinality).
 8. Viết script kiểm thử tự động [src/07_validate.py](../../src/07_validate.py) và bộ kiểm thử [tests/test_pipeline.py](../../tests/test_pipeline.py).
-9. Viết truy vấn SQL trong [sql/queries_for_charts.sql](../../sql/queries_for_charts.sql) và script [src/06_export_json.py](../../src/06_export_json.py) cho 4 biểu đồ của mình (#3–#6).
-10. Hoàn thành 4 biểu đồ được giao (**#3 `Sheet_03_Diverging_Bar`**, **#4 `Sheet_04_Treemap_Damage`**, **#5 `Sheet_05_Bubble_Scatter`**, **#6 `Sheet_06_Combo_Histogram`**) trên Tableau và Web Dashboard.
+9. Viết truy vấn SQL trong [sql/queries_for_charts.sql](../../sql/queries_for_charts.sql) tổng hợp số liệu cho 4 biểu đồ của mình (#3–#6).
+10. Hoàn thành 4 biểu đồ được giao (**#3 `Sheet_03_Diverging_Bar`**, **#4 `Sheet_04_Treemap_Damage`**, **#5 `Sheet_05_Bubble_Scatter`**, **#6 `Sheet_06_Combo_Histogram`**) trên Tableau.
 
 ---
 
@@ -30,13 +30,12 @@
 | Viết script tách bảng `04_split_tables.py` | Hoàn thành | Tuần 2 | 5 bảng CSV chuẩn trong `data/tables/` |
 | Viết DDL CSDL `sql/schema.sql` | Hoàn thành | Tuần 2 | Đầy đủ PK/FK/CHECK/INDEX |
 | Viết script tạo CSDL `05_build_db.py` | Hoàn thành | Tuần 2 | Nạp `database.sqlite` (Zero Orphan FK) |
-| Viết script kiểm thử `07_validate.py` & tests | Hoàn thành | Tuần 2 | PASS 7/7 test toàn vẹn & Pytest 8/8 |
+| Viết script kiểm thử `07_validate.py` & tests | Hoàn thành | Tuần 2 | PASS 7/7 test toàn vẹn & Pytest 7/7 |
 | Viết SQL cho biểu đồ #3–#6 trong `queries_for_charts.sql` | Hoàn thành | Tuần 2 | Đầy đủ khối truy vấn cho 4 biểu đồ |
-| Viết script xuất JSON `06_export_json.py` (biểu đồ TV2) | Hoàn thành | Tuần 2 | Xuất 5 file JSON trong `dashboard/data/` |
-| Biểu đồ #3: `Sheet_03_Diverging_Bar` | Sẵn sàng data | Tuần 3 | File JSON & SQL đã sẵn sàng cho Tableau/Web |
-| Biểu đồ #4: `Sheet_04_Treemap_Damage` | Sẵn sàng data | Tuần 3 | File JSON & SQL đã sẵn sàng cho Tableau/Web |
-| Biểu đồ #5: `Sheet_05_Bubble_Scatter` | Sẵn sàng data | Tuần 3 | File JSON & SQL đã sẵn sàng cho Tableau/Web |
-| Biểu đồ #6: `Sheet_06_Combo_Histogram` | Sẵn sàng data | Tuần 3 | File JSON & SQL đã sẵn sàng cho Tableau/Web |
+| Biểu đồ #3: `Sheet_03_Diverging_Bar` | Sẵn sàng vẽ | Tuần 3 | Công thức Calculated Fields đã sẵn sàng cho Tableau |
+| Biểu đồ #4: `Sheet_04_Treemap_Damage` | Sẵn sàng vẽ | Tuần 3 | Cấu trúc dữ liệu đã sẵn sàng cho Tableau |
+| Biểu đồ #5: `Sheet_05_Bubble_Scatter` | Sẵn sàng vẽ | Tuần 3 | Thang đo Logarit đã sẵn sàng cho Tableau |
+| Biểu đồ #6: `Sheet_06_Combo_Histogram` | Sẵn sàng vẽ | Tuần 3 | Công thức Phân nhóm Logarit sẵn sàng cho Tableau |
 
 ---
 
@@ -76,19 +75,16 @@
   - [x] Kiểm tra bảng fact đạt $\ge 5.000$ dòng (fact_fire_incident: 7.235 dòng, fact_structure_damage: 114.726 dòng).
   - [x] Kiểm tra 100% các điều kiện CHECK constraints đều thỏa mãn.
   - [x] Kiểm tra các cột cờ nhị phân chỉ nhận giá trị 0 hoặc 1.
-- [x] Viết bộ kiểm thử tự động `tests/test_pipeline.py` (chạy bằng `pytest`, đạt 8/8 tests PASSED).
-
-### D. Truy Vấn & Xuất Dữ Liệu JSON
+### D. Truy Vấn SQL Cho Biểu Đồ
 - [x] Viết các câu truy vấn SQL tối ưu hóa cho biểu đồ #3–#6 trong `sql/queries_for_charts.sql`.
-- [x] Phát triển mô-đun xuất JSON trong `src/06_export_json.py` cho các biểu đồ của mình (#3, #4, #5, #6) và KPI tổng thể.
+- [x] Soạn thảo hướng dẫn công thức Calculated Fields tương ứng trong `tableau/CALCULATED_FIELDS.md`.
 
 ---
 
-## 4. Các Biểu Đồ Phụ Trách (4 Worksheets: #3, #4, #5, #6 trên Tableau & Web)
+## 4. Các Biểu Đồ Phụ Trách (4 Worksheets: #3, #4, #5, #6 trên Tableau)
 
 ### Worksheet #3: `Sheet_03_Diverging_Bar` (Biến động số vụ so với trung bình 20 năm)
 - [x] Truy vấn SQL trong `sql/queries_for_charts.sql` tính chênh lệch so với TB 20 năm (Tâm = 0).
-- [x] Xuất dữ liệu `dashboard/data/chart_03_diverging_bar.json`.
 - [ ] Xây dựng trên Tableau:
   - (a) Tạo Calculated Fields `[Diff from 20Yr Avg]` và `[Divergence Flag]`.
   - (b) Kéo `[Diff from 20Yr Avg]` vào Columns, `[year]` vào Rows; Marks: Bar.
@@ -96,21 +92,18 @@
 
 ### Worksheet #4: `Sheet_04_Treemap_Damage` (Cơ cấu công trình bị phá hủy: Hạt $\to$ Loại công trình)
 - [x] Truy vấn SQL phân cấp Hạt $\to$ Loại công trình kiến trúc.
-- [x] Xuất dữ liệu `dashboard/data/chart_04_treemap_damage.json`.
 - [ ] Xây dựng trên Tableau:
   - (a) Kéo `[county]` vào Color, `[structure_type]` vào Detail.
   - (b) Kéo `CNT([record_id])` hoặc `SUM([structures_destroyed])` vào Size; Marks: Square (Treemap).
 
 ### Worksheet #5: `Sheet_05_Bubble_Scatter` (Tương quan Diện tích cháy vs Nhà phá hủy)
 - [x] Truy vấn SQL trích xuất tương quan diện tích, số nhà và thương vong.
-- [x] Xuất dữ liệu `dashboard/data/chart_05_bubble_scatter.json`.
 - [ ] Xây dựng trên Tableau:
   - (a) Trục X: `[acres_burned]` (Logarithmic scale); Trục Y: `[structures_destroyed]` (Logarithmic scale).
   - (b) Size: `[acres_burned]`; Color: `[cause_group]`; Detail: `[fire_name]`; Marks: Circle.
 
 ### Worksheet #6: `Sheet_06_Combo_Histogram` (Phân phối diện tích cháy rừng)
 - [x] Truy vấn SQL phân chia các bin logarit diện tích cháy rừng.
-- [x] Xuất dữ liệu `dashboard/data/chart_06_combo_histogram.json`.
 - [ ] Xây dựng trên Tableau:
   - (a) Columns: `[Acres Bin Log]`.
   - (b) Trục 1: `CNT([incident_id])` (Marks: Bar); Trục 2: `% Lũy kế Running Sum` (Marks: Line, Dual Axis).

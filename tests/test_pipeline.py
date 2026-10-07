@@ -74,7 +74,7 @@ def test_sql_files_exist():
 
 
 def test_src_pipeline_scripts_exist():
-    """Kiểm tra các script thực thi pipeline trong src/."""
+    """Kiểm tra các script thực thi pipeline cốt lõi trong src/."""
     scripts = [
         "src/01_download.py",
         "src/02_eda.py",
@@ -82,7 +82,6 @@ def test_src_pipeline_scripts_exist():
         "src/03b_ml_clean.py",
         "src/04_split_tables.py",
         "src/05_build_db.py",
-        "src/06_export_json.py",
         "src/07_validate.py",
     ]
     for s in scripts:
@@ -136,18 +135,3 @@ def test_sqlite_database_integrity_and_row_counts():
     assert county_count >= 58, f"dim_county thiếu hạt: {county_count}!"
 
     conn.close()
-
-
-def test_tv2_dashboard_json_exports():
-    """Kiểm tra các tệp tin JSON phục vụ Dashboard và Biểu đồ TV2 (#3-#6)."""
-    expected_jsons = [
-        "dashboard/data/summary_kpis.json",
-        "dashboard/data/chart_03_diverging_bar.json",
-        "dashboard/data/chart_04_treemap_damage.json",
-        "dashboard/data/chart_05_bubble_scatter.json",
-        "dashboard/data/chart_06_combo_histogram.json",
-    ]
-    for jf in expected_jsons:
-        p = Path(jf)
-        assert p.is_file(), f"Tệp tin JSON {jf} chưa được xuất!"
-        assert p.stat().st_size > 0, f"Tệp tin JSON {jf} rỗng!"
