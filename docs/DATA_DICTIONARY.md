@@ -11,7 +11,7 @@ Tập dữ liệu sau làm sạch và tích hợp `data/clean/master_clean.csv` 
 1. `California_Fire_Perimeters_all.csv` (CAL FIRE FRAP - 23.334 dòng lịch sử, **7.342 vụ trong 2006–2025**).
 2. `CAL_FIRE_Damage_Inspection_DINS.csv` (CAL FIRE DINS - 132.522 dòng công trình kiểm kê thiệt hại tài sản giai đoạn **2013–2025**, 70.390 nhà phá hủy hoàn toàn).
 3. `ICS209_California_Wildfires_2006_2012.csv` (USDA Forest Service / NIFC - 1.127 vụ cháy, 7.206 nhà bị phá hủy giai đoạn **2006–2012**).
-4. `NOAA_California_Wildfires_Casualties.csv` (NOAA NCEI - **993 sự kiện đủ 20/20 năm 2006–2025**, 255 người chết, 887 người bị thương và thiệt hại USD).
+4. `NOAA_California_Wildfires_Casualties.csv` (NOAA NCEI - **993 sự kiện đủ 20/20 năm 2006–2025**, chỉ dùng cho thương vong: 255 người chết, 887 người bị thương trong dữ liệu thô (**207 / 792** sau khi gộp các dòng trùng giữa vùng dự báo)).
 5. `California_Counties_Demographics.csv` (Cục Dân số / CDTFA - **58 Hạt của California** kèm diện tích dặm vuông và dân số Census).
 
 - **Số dòng tối thiểu cam kết**: $\ge 5.000$ dòng (Bảng vụ cháy sạch `data/interim/master_rules_cleaned.csv` có **7.235 vụ** sau khi gộp polygon từ 7.342 dòng FRAP; Bảng công trình kiểm kê chi tiết có 132.522 dòng $\implies$ **Vượt xa barem $\ge 5.000$ dòng**).
@@ -59,6 +59,37 @@ Tập dữ liệu sau làm sạch và tích hợp `data/clean/master_clean.csv` 
 | `is_outlier_ml` | Boolean | `True`, `False` | Không | Cờ phát hiện bất thường bởi Isolation Forest & LOF | Phân tích ngoại lai ML trên log diện tích |
 | `outlier_score` | Float | Số thực (Điểm bất thường) | Có | Điểm số ngoại lai do Isolation Forest tính | Điểm càng âm mức bất thường càng cao |
 | `cause_is_predicted` | Boolean | `True`, `False` | Không | Cờ xác định nguyên nhân được dự đoán bởi Random Forest | Gán True khi xác suất $\ge 0.7$ |
+
+### 2.1. Bảng thương vong NOAA `data/tables/fact_casualty_event.csv`
+1 dòng = 1 vụ cháy theo NOAA (897 dòng), đã gộp các dòng của cùng 1 vụ bị ghi lặp ở nhiều vùng dự báo. Hiện chỉ có ở dạng CSV, chưa nạp vào `database.sqlite`.
+
+| Tên trường | Kiểu dữ liệu | Miền giá trị / Đơn vị | Cho phép NULL | Mô tả | Ghi chú |
+|---|---|---|---|---|---|
+| `casualty_id` | Integer | Khóa chính | Không | Khóa đại diện | Tăng dần theo ngày bắt đầu |
+| `noaa_event_id` | Integer | NOAA `EVENT_ID` | Không | `EVENT_ID` nhỏ nhất trong nhóm đã gộp | Tra lại được dòng gốc NOAA |
+| `episode_id` | Integer | NOAA `EPISODE_ID` | Không | Đợt thời tiết chứa sự kiện | Khóa gộp cùng `fire_name` |
+| `date_id` | Integer | `YYYYMMDD` | Không | Ngày bắt đầu sự kiện | Khóa ngoại tới `dim_date` |
+| `incident_id` | Integer | Khóa của `fact_fire_incident` | Có | Vụ cháy FRAP khớp được | Khớp theo (năm, tên vụ cháy), vụ lớn nhất nếu trùng tên; NULL nếu không khớp |
+| `fire_name` | String | vd `CAMP`, `WOOLSEY` | Có | Tên vụ cháy tách từ narrative NOAA | NULL khi narrative không nêu tên |
+| `zone_names` | String | Tên vùng dự báo NWS, ngăn cách `; ` | Không | Các vùng dự báo đã gộp | |
+| `n_zones` | Integer | $\ge 1$ | Không | Số vùng dự báo đã gộp | > 1 nghĩa là dữ liệu thô đã đếm trùng |
+| `deaths_direct` / `deaths_indirect` | Integer | $\ge 0$ người | Không | Số người chết trực tiếp / gián tiếp | Tổng 2006–2025: 207 / 10 |
+| `injuries_direct` / `injuries_indirect` | Integer | $\ge 0$ người | Không | Số người bị thương trực tiếp / gián tiếp | Tổng 2006–2025: 792 / 261 |
+
+### 2.2. Thương vong theo năm `data/clean/casualties_by_year.csv`
+20 dòng (2006–2025), tổng hợp từ `fact_casualty_event`; năm không có sự kiện ghi 0. Mã hóa UTF-8 có BOM để Excel đọc đúng tiếng Việt.
+
+| Tên trường | Kiểu dữ liệu | Mô tả |
+|---|---|---|
+| `year` | Integer | Năm |
+| `noaa_fire_events` | Integer | Số vụ cháy NOAA ghi nhận (sau khi gộp trùng) |
+| `deaths_direct` / `deaths_indirect` / `deaths_total` | Integer | Người chết trực tiếp / gián tiếp / tổng |
+| `injuries_direct` / `injuries_indirect` / `injuries_total` | Integer | Người bị thương trực tiếp / gián tiếp / tổng |
+| `deadliest_fire` | String | Vụ cháy làm chết nhiều người nhất trong năm; `(không rõ tên) <vùng dự báo>` khi NOAA không nêu tên; trống nếu năm đó không có người chết |
+| `deadliest_fire_deaths` | Integer | Số người chết trực tiếp của vụ đó |
+| `deaths_share_of_period` | Float | Tỷ lệ người chết trực tiếp của năm trên tổng 2006–2025 (0–1) |
+
+> ⚠️ NOAA ghi thiếu một số vụ (vd đợt cháy Wine Country 10/2017 ở Sonoma / Napa), nên số năm 2017 thấp hơn số chính thức.
 
 ---
 

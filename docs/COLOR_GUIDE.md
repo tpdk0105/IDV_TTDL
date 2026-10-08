@@ -17,7 +17,7 @@ Màu sắc trong trực quan hóa dữ liệu không chỉ mang tính thẩm m�
 ## 2. Các Bảng Màu Tiêu Chuẩn
 
 ### 2.1. Bảng Màu Tuần Tự (Sequential Palette)
-- **Áp dụng**: Dữ liệu định lượng có thứ tự từ thấp đến cao (Số lượng vụ cháy, Tổng thiệt hại USD, Diện tích cháy rừng hecta, Mật độ không gian).
+- **Áp dụng**: Dữ liệu định lượng có thứ tự từ thấp đến cao (Số lượng vụ cháy, Số công trình bị phá hủy, Diện tích cháy rừng hecta, Mật độ không gian).
 - **Quy tắc**: Giá trị thấp $\to$ Màu sáng/nhạt; Giá trị cao $\to$ Màu đậm/bão hòa cao.
 - **Dải màu chính (Fire/Heat Sequential - OrRd / YlOrRd)**:
   - Cấp 1 (Rất thấp): `#FFF5EB`

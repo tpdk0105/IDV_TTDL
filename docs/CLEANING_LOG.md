@@ -7,7 +7,7 @@
 
 ## 1. Nguyên Tắc & Quy Chuẩn Làm Sạch
 - **Không chỉnh sửa thủ công**: Mọi thao tác biến đổi dữ liệu phải thông qua mã nguồn Python có khả năng tái lập (`src/03_clean.py` và `src/03b_ml_clean.py`).
-- **Bảo toàn dữ liệu gốc**: Giữ lại các cột thô ban đầu song song với cột chuẩn hóa (vd: `damage_usd_raw` song song `damage_usd`).
+- **Bảo toàn dữ liệu gốc**: Giữ lại các cột thô ban đầu song song với cột chuẩn hóa (vd: `fire_name_raw` song song `fire_name`).
 - **Gắn cờ kiểm soát**: Mọi giá trị được điền (imputed), dự đoán (predicted), hoặc nghi ngờ ngoại lai (outlier) đều có cột cờ nhị phân riêng.
 - **Cam kết số lượng mẫu**: Sau toàn bộ quy trình làm sạch, tập dữ liệu `master_clean.csv` phải đạt tối thiểu **5.000 dòng**.
 
@@ -29,6 +29,8 @@
 | 7 | Hợp nhất thiệt hại 20 năm | ICS-209 (2006-2012) + DINS (2013-2025), ghép vào vụ FRAP theo 3 khóa, rồi theo (`year`, `fire_name`) | 682 bản ghi thiệt hại | 476 khớp | 206 không khớp | Khớp **73.818 / 77.503** công trình bị phá hủy (**95,2%**), vào 447 vụ cháy. Xem cách khớp (`damage_match`) và 10 vụ chưa khớp ở mục 2.1 |
 | 8a | Thời gian dập lửa bất hợp lý | `cont_date < alarm_date` hoặc > 365 ngày → `NULL` | 7.235 | 7.235 | 0 | 2 vụ bị đặt `NULL` (không xóa dòng). Tổng 109 vụ thiếu `duration_days` |
 | 8b | Xử lý giá trị âm bất hợp lý | `acres_burned`, `burned_area_ha`, `structures_destroyed`, `structures_damaged` ≥ 0 | 7.235 | 7.235 | 0 | Không có ô âm nào. Quy tắc vẫn giữ trong code để bảo vệ khi cập nhật dữ liệu |
+| 9a | Chọn cột thương vong (NOAA) | Giữ `DEATHS_*`, `INJURIES_*`; tách tên vụ cháy từ narrative ("The Camp Fire" → `CAMP`) | 993 | 993 | 0 | Bỏ `DAMAGE_PROPERTY` / `DAMAGE_CROPS` (thiệt hại tài sản lấy từ DINS + ICS-209) và 21 cột trống. Tách được tên ở 634 dòng |
+| 9b | Gộp trùng vùng dự báo (NOAA) | Gộp theo (`EPISODE_ID`, tên vụ cháy), lấy giá trị lớn nhất; dòng không tách được tên giữ riêng | 993 | 897 | 96 | 1 vụ cháy lan qua nhiều vùng dự báo bị ghi lặp (vd Woolsey 2018: 5 dòng × 3 người). Người chết trực tiếp **255 → 207**, bị thương **887 → 792**. Xuất `data/interim/noaa_casualties_cleaned.csv` |
 | **Tổng kết** | **Xuất `data/interim/master_rules_cleaned.csv`** | `assert len(df) >= 5000`, `incident_id` duy nhất, `year` ∈ [2006, 2025] | | **7.235 vụ × 24 cột** | | Đạt điều kiện tiền xử lý cho ML |
 
 ### 2.1. Chi tiết hợp nhất thiệt hại (Bước 7)

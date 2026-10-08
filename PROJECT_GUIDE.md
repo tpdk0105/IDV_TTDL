@@ -46,7 +46,7 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu cùng cá
 | **G2.1** | Tìm, đánh giá 5 nguồn dữ liệu California đủ 20 năm, viết `DATA_SOURCES.md` | Thành viên 1 | **Hoàn thành** | Tuần 2 | CAL FIRE FRAP, DINS, ICS-209, NOAA, Census |
 | **G2.2** | Viết script tải dữ liệu thô `01_download.py` và sinh manifest | Thành viên 1 | **Hoàn thành** | Tuần 2 | Lưu 5 file vào `data/raw/calfire/` |
 | **G2.3** | Phân tích EDA `02_eda.py` (3-5 biểu đồ Matplotlib/Seaborn) + `DATA_QUALITY_REPORT.md` | Thành viên 1 | Chưa bắt đầu | *[Điền]* | Lưu vào `reports/figures/` |
-| **G2.4** | Làm sạch theo quy tắc `03_clean.py` $\to$ `master_rules_cleaned.csv` | Thành viên 1 | Chưa bắt đầu | *[Điền]* | Chuẩn Hạt (County), Acres, ha, USD |
+| **G2.4** | Làm sạch theo quy tắc `03_clean.py` $\to$ `master_rules_cleaned.csv` | Thành viên 1 | Chưa bắt đầu | *[Điền]* | Chuẩn Hạt (County), Acres, ha; NOAA chỉ lấy thương vong |
 | **G2.5** | Làm sạch bằng Học máy `03b_ml_clean.py` (Isolation Forest, MICE/KNN) | Thành viên 1 | Chưa bắt đầu | *[Điền]* | $\ge 2$ mô hình ML |
 | **G2.6** | Đánh giá mô hình ML, viết `ML_CLEANING_REPORT.md`, `CLEANING_LOG.md` | Thành viên 1 | Chưa bắt đầu | *[Điền]* | Cam kết $\ge 5.000$ dòng |
 | **G2.7** | Hoàn thiện từ điển dữ liệu `DATA_DICTIONARY.md` | Thành viên 1 | Chưa bắt đầu | *[Điền]* | Mô tả các cột cờ ML & khóa liên kết |
@@ -191,7 +191,7 @@ Bố cục mỗi dashboard: dải tiêu đề (tên + câu hỏi chính) → 2�
 ### QUY TRÌNH 4 BƯỚC CHO MỖI THÀNH VIÊN KHI LÀM BIỂU ĐỒ TRÊN TABLEAU
 1. **Mở Tableau và tạo Worksheet**: Kéo thả Dimensions và Measures theo đúng đặc tả tại [docs/CHART_SPEC.md](docs/CHART_SPEC.md).
 2. **Tạo Calculated Fields cần thiết**: Sử dụng công thức chuẩn trong [tableau/CALCULATED_FIELDS.md](tableau/CALCULATED_FIELDS.md).
-3. **Định dạng hiển thị chuẩn**: Tooltip tiếng Việt rõ ràng, có đơn vị đo lường (Acres, công trình phá hủy, người, USD), màu sắc đúng quy chuẩn.
+3. **Định dạng hiển thị chuẩn**: Tooltip tiếng Việt rõ ràng, có đơn vị đo lường (Acres, công trình phá hủy, người), màu sắc đúng quy chuẩn.
 4. **Ghi vào `CHART_SPEC.md`**: Ghi lại 1 phát hiện quan trọng (Insight) rút ra từ dữ liệu thật để đưa vào Story Point.
 
 ---

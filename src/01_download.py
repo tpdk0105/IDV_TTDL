@@ -7,7 +7,7 @@ Mục đích:
         1. CAL FIRE FRAP: Chu vi và lịch sử các vụ cháy rừng California (23.334 vụ, diện tích cháy acres, nguyên nhân).
         2. CAL FIRE DINS: Cơ sở dữ liệu kiểm kê chi tiết thiệt hại công trình & nhà cửa giai đoạn 2013–2025 (132.522 công trình).
         3. USDA Forest Service & NIFC (ICS-209-PLUS): Dữ liệu sự cố cháy rừng và số nhà bị phá hủy giai đoạn 2006–2012 (1.127 vụ cháy, 7.206 nhà bị phá hủy).
-        4. NOAA NCEI Storm Events: Dữ liệu thương vong sinh mạng (255 tử vong, 887 bị thương) và thiệt hại tài sản quy đổi USD đủ 20/20 năm (2006–2025).
+        4. NOAA NCEI Storm Events: Dữ liệu thương vong sinh mạng đủ 20/20 năm (2006–2025): 255 tử vong, 887 bị thương trong dữ liệu thô (207 / 792 sau khi gộp trùng vùng dự báo ở 03_clean.py).
         5. California State Geoportal: Thông tin địa lý hành chính và dân số 58 hạt của California (US Census).
     - Tự động đồng bộ và sinh `data/raw/MANIFEST.md` cùng `data/raw/manifest.json`.
 """
@@ -118,7 +118,7 @@ def download_ics209() -> None:
 
 
 def download_noaa_casualties() -> None:
-    """Tải dữ liệu thương vong & thiệt hại bão/cháy từ NOAA NCEI Storm Events đủ 20 năm (2006–2025)."""
+    """Tải dữ liệu thương vong cháy rừng từ NOAA NCEI Storm Events đủ 20 năm (2006–2025)."""
     out_file = CALFIRE_DIR / "NOAA_California_Wildfires_Casualties.csv"
     print("\n>>> [4/5] Kiểm tra / Thu thập NOAA Storm Events Casualties (Thương vong 2006–2025)...")
     if out_file.exists() and out_file.stat().st_size > 0:
@@ -189,7 +189,7 @@ def generate_manifest() -> None:
         },
         "NOAA_California_Wildfires_Casualties.csv": {
             "source": "NOAA NCEI Storm Events",
-            "desc": "**993 sự kiện (Đủ 20/20 năm: 2006–2025)**, 255 người chết, 887 người bị thương"
+            "desc": "**993 sự kiện (Đủ 20/20 năm: 2006–2025)**, 255 người chết, 887 người bị thương trong dữ liệu thô (**207 / 792** sau khi gộp các dòng trùng giữa vùng dự báo)"
         },
         "California_Counties_Demographics.csv": {
             "source": "Cục Dân số / CDTFA",
@@ -261,7 +261,7 @@ def main() -> None:
     print(" 1. Tần suất cháy rừng & Mùa vụ: FRAP (2006–2025: 7.342 vụ cháy)")
     print(" 2. Thiệt hại diện tích: FRAP (2006–2025: 19.386.513 mẫu Anh)")
     print(" 3. Thiệt hại công trình: Kết hợp ICS-209 (2006–2012) + DINS (2013–2025) -> ĐỦ 20 NĂM")
-    print(" 4. Thiệt hại sinh mạng & Thương vong: NOAA Storm Events (2006–2025: 255 chết, 887 bị thương)")
+    print(" 4. Thiệt hại sinh mạng & Thương vong: NOAA Storm Events (2006–2025: 207 chết, 792 bị thương sau khi gộp trùng)")
     print(" 5. Địa lý & Nhân khẩu học: 58 Hạt California (US Census / CDTFA)")
     print("=" * 70)
 

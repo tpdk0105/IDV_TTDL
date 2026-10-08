@@ -20,7 +20,7 @@ Dự án tập trung nghiên cứu, làm sạch, mô hình hóa và trực quan 
 1. **CAL FIRE FRAP**: 23.334 dòng lịch sử, **7.342 vụ cháy trong 2006–2025** với diện tích (Acres), nguyên nhân (Cause), thời gian, tọa độ chu vi.
 2. **CAL FIRE DINS (2013–2025)**: 132.522 dòng công trình kiểm kê thiệt hại tài sản (70.390 công trình bị phá hủy hoàn toàn >50%). Khóa liên kết `Incident Name` và `Year` khớp trên 93% với `Fire Name` của FRAP.
 3. **USDA Forest Service & NIFC (ICS-209-PLUS 2006–2012)**: 1.127 vụ cháy lớn với 7.206 công trình bị phá hủy hoàn toàn, lấp đầy hoàn hảo khoảng trống 7 năm đầu để chỉ số thiệt hại nhà cửa đạt **đủ 20/20 năm liên tục (2006–2025)**.
-4. **NOAA NCEI Storm Events (2006–2025)**: 993 sự kiện thiên tai cháy rừng cấp bang phủ kín **đủ 20/20 năm**, ghi nhận 255 người thiệt mạng, 887 người bị thương và thiệt hại tài sản quy đổi USD.
+4. **NOAA NCEI Storm Events (2006–2025)**: 993 dòng sự kiện cháy rừng cấp bang phủ kín **đủ 20/20 năm**, chỉ dùng cho thiệt hại về người: **207 người chết trực tiếp, 792 người bị thương** sau khi gộp các dòng trùng giữa vùng dự báo (dữ liệu thô ghi 255 / 887). Thiệt hại tài sản lấy từ DINS + ICS-209.
 5. **California Counties Demographics**: 58 Hạt của California kèm diện tích dặm vuông và dân số điều tra Census, phục vụ phân tích theo không gian và chuẩn hóa tỷ lệ thiệt hại trên đầu người.
 
 ### Điểm nổi bật về kỹ thuật:
@@ -79,7 +79,7 @@ IDV_TTDL/
 ├── data/                      # Dữ liệu qua các công đoạn (không commit file > 90MB)
 │   ├── raw/calfire/           # Dữ liệu gốc 5 bảng chính thức (đủ 20 năm) + MANIFEST.md
 │   ├── interim/               # master_rules_cleaned.csv (sau làm sạch quy tắc)
-│   ├── clean/                 # master_clean.csv (sau làm sạch ML, >= 5.000 dòng) + forecast_results.csv
+│   ├── clean/                 # master_clean.csv (sau làm sạch ML, >= 5.000 dòng) + forecast_results.csv + casualties_by_year.csv
 │   └── tables/                # Các bảng Star Schema CSV + database.sqlite
 ├── notebooks/                 # Jupyter Notebooks thực hiện EDA và kiểm thử ML
 ├── sql/                       # Mã nguồn CSDL SQLite
