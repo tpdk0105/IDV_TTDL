@@ -21,6 +21,7 @@ Cách chạy (từ thư mục gốc dự án, sau src/03_clean.py):
     python src/08_predictive_model.py
 """
 
+import importlib.util
 import sys
 from pathlib import Path
 
@@ -34,6 +35,11 @@ from scipy import stats
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, r2_score, root_mean_squared_error
 
+# Dung lai ham dinh dang so kieu Viet Nam tu 02_eda.py (ten file bat dau bang so nen khong import thuong duoc)
+_spec = importlib.util.spec_from_file_location("eda", Path(__file__).parent / "02_eda.py")
+eda = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(eda)
+
 INPUT_PATH = Path("data/interim/master_rules_cleaned.csv")
 FORECAST_PATH = Path("data/clean/forecast_results.csv")
 METRICS_PATH = Path("data/clean/forecast_metrics.csv")
@@ -46,9 +52,9 @@ CONFIDENCE = 0.95
 
 # (ten cot, co huan luyen tren log1p khong, nhan hien thi)
 FORECAST_TARGETS = [
-    ("n_fires", False, "So vu chay"),
-    ("area_ha", True, "Tong dien tich chay (ha)"),
-    ("destroyed", True, "Cong trinh bi pha huy"),
+    ("n_fires", False, "Số vụ cháy"),
+    ("area_ha", True, "Tổng diện tích cháy (ha)"),
+    ("destroyed", True, "Công trình bị phá hủy"),
 ]
 
 # Mau theo docs/COLOR_GUIDE.md
@@ -56,6 +62,9 @@ COLOR_ACTUAL = "#D94801"
 COLOR_FIT = "#7F7F7F"
 COLOR_FORECAST = "#2171B5"
 COLOR_BAND = "#9ECAE1"
+
+# Don vi trend_unit trong forecast_metrics.csv -> nhan hien thi tren bieu do
+TREND_UNIT_LABELS = {"%/nam": "%/năm", "don vi/nam": "vụ/năm"}
 
 
 def load_data(path: Path = INPUT_PATH) -> pd.DataFrame:
@@ -164,26 +173,28 @@ def plot_forecasts(forecast: pd.DataFrame, output_path: Path = FIGURE_PATH) -> p
         hist, future = data[~data["is_forecast"]], data[data["is_forecast"]]
 
         ax.fill_between(data["year"], data["lower_95"], data["upper_95"], color=COLOR_BAND, alpha=0.35,
-                        label=f"Khoang du bao {CONFIDENCE:.0%}")
-        ax.plot(hist["year"], hist["predicted"], color=COLOR_FIT, linewidth=1.5, label="Duong xu huong")
+                        label=f"Khoảng dự báo {CONFIDENCE:.0%}")
+        ax.plot(hist["year"], hist["predicted"], color=COLOR_FIT, linewidth=1.5, label="Đường xu hướng")
         ax.plot(future["year"], future["predicted"], color=COLOR_FORECAST, linewidth=2.2, marker="o", markersize=4,
-                label=f"Du bao {future['year'].min()}-{future['year'].max()}")
-        ax.scatter(hist["year"], hist["actual"], color=COLOR_ACTUAL, zorder=3, s=25, label="Thuc te")
+                label=f"Dự báo {future['year'].min()}–{future['year'].max()}")
+        ax.scatter(hist["year"], hist["actual"], color=COLOR_ACTUAL, zorder=3, s=25, label="Thực tế")
         ax.axvline(last_year + 0.5, color=COLOR_FIT, linestyle=":", linewidth=1)
 
         end = future.iloc[-1]
-        ax.annotate(f"{end['predicted']:,.0f}\n[{end['lower_95']:,.0f} - {end['upper_95']:,.0f}]",
+        ax.annotate(f"{eda.vn_number(end['predicted'])}\n[{eda.vn_number(end['lower_95'])} – {eda.vn_number(end['upper_95'])}]",
                     xy=(end["year"], end["predicted"]), xytext=(8, 0), textcoords="offset points",
                     va="center", fontsize=8, color=COLOR_FORECAST)
         if use_log:
             ax.set_yscale("log")  # khoang du bao lech manh, truc log de doc ca 2 dau
+        else:
+            ax.yaxis.set_major_formatter(eda.VN_TICK_FORMATTER)
         ax.set_ylabel(label + (" (log)" if use_log else ""))
         ax.spines[["top", "right"]].set_visible(False)
 
     axes[0].legend(frameon=False, loc="upper left", fontsize=8, ncol=4)
     axes[-1].set_xticks(range(int(forecast["year"].min()), int(forecast["year"].max()) + 1, 2))
-    fig.suptitle(f"Du bao Linear Regression {min(FORECAST_YEARS)}-{max(FORECAST_YEARS)} "
-                 f"(vung xanh = khoang du bao {CONFIDENCE:.0%})", fontsize=13, x=0.01, ha="left")
+    fig.suptitle(f"Dự báo hồi quy tuyến tính {min(FORECAST_YEARS)}–{max(FORECAST_YEARS)} "
+                 f"(vùng xanh = khoảng dự báo {CONFIDENCE:.0%})", fontsize=13, x=0.01, ha="left")
     fig.tight_layout()
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -197,9 +208,9 @@ def plot_model_metrics(metrics: pd.DataFrame, output_path: Path = METRICS_FIGURE
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
 
     labels_map = {
-        "n_fires": "So vu chay\n(n_fires)",
-        "area_ha": "Tong dien tich\n(area_ha)",
-        "destroyed": "Cong trinh pha huy\n(destroyed)",
+        "n_fires": "Số vụ cháy\n(n_fires)",
+        "area_ha": "Tổng diện tích\n(area_ha)",
+        "destroyed": "Công trình phá hủy\n(destroyed)",
     }
     y_labels = [labels_map.get(m, m) for m in metrics["metric"]]
 
@@ -210,27 +221,29 @@ def plot_model_metrics(metrics: pd.DataFrame, output_path: Path = METRICS_FIGURE
     max_trend = float(metrics["trend_per_year"].max())
     for bar, (_, row) in zip(bars, metrics.iterrows()):
         val = row["trend_per_year"]
-        unit = row["trend_unit"]
+        unit = TREND_UNIT_LABELS.get(row["trend_unit"], row["trend_unit"])
         ax.text(val + (max_trend * 0.03), bar.get_y() + bar.get_height() / 2,
-                f"+{val:.2f} {unit}", va="center", ha="left", fontsize=9, fontweight="bold", color="#084594")
-    ax.set_title("1. Toc do thay doi hang nam (Trend)", fontsize=11, fontweight="bold", loc="left")
-    ax.set_xlabel("Gia tri thay doi moi nam")
+                f"{'+' if val >= 0 else '-'}{eda.vn_number(abs(val), 2)} {unit}", va="center", ha="left", fontsize=9, fontweight="bold", color="#084594")
+    ax.set_title("1. Tốc độ thay đổi hằng năm (xu hướng)", fontsize=11, fontweight="bold", loc="left")
+    ax.set_xlabel("Giá trị thay đổi mỗi năm")
     ax.set_xlim(0, max_trend * 1.5)
+    ax.xaxis.set_major_formatter(eda.VN_TICK_FORMATTER)
     ax.spines[["top", "right"]].set_visible(False)
 
     # 2. Muc y nghia thong ke (p-value) & R2
     ax = axes[1]
     p_colors = [COLOR_ACTUAL if p < 0.05 else (COLOR_BAND if p < 0.1 else COLOR_FIT) for p in metrics["p_value"]]
     bars = ax.bar(y_labels, metrics["p_value"], color=p_colors, alpha=0.85, width=0.5)
-    ax.axhline(0.05, color="#B2182B", linestyle=":", linewidth=1.5, label="Nguong p = 0.05 (95% CI)")
+    ax.axhline(0.05, color="#B2182B", linestyle=":", linewidth=1.5, label="Ngưỡng p = 0,05 (độ tin cậy 95%)")
     max_p = float(metrics["p_value"].max())
     for bar, (_, row) in zip(bars, metrics.iterrows()):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
-                f"p={row['p_value']:.3f}\nR²={row['r2_fit_all_years']:.1%}",
+                f"p = {eda.vn_number(row['p_value'], 3)}\nR² = {eda.vn_number(row['r2_fit_all_years'] * 100, 1)}%",
                 ha="center", va="bottom", fontsize=8.5)
-    ax.set_title("2. Kiem dinh y nghia thong ke (p-value)", fontsize=11, fontweight="bold", loc="left")
-    ax.set_ylabel("Gia tri p-value")
+    ax.set_title("2. Kiểm định ý nghĩa thống kê (p-value)", fontsize=11, fontweight="bold", loc="left")
+    ax.set_ylabel("Giá trị p-value")
     ax.set_ylim(0, max_p * 1.35)
+    ax.yaxis.set_major_formatter(eda.VN_TICK_FORMATTER)
     ax.legend(frameon=False, loc="upper right", fontsize=8.5)
     ax.spines[["top", "right"]].set_visible(False)
 
@@ -238,19 +251,20 @@ def plot_model_metrics(metrics: pd.DataFrame, output_path: Path = METRICS_FIGURE
     ax = axes[2]
     rel_mae = (metrics["mae"] / metrics["mae_naive_mean"]) * 100
     bars = ax.bar(y_labels, rel_mae, color=["#6BAED6", "#9ECAE1", "#4292C6"], alpha=0.9, width=0.5)
-    ax.axhline(100, color="#7F7F7F", linestyle="--", linewidth=1.2, label="Moc Baseline Naive (100%)")
+    ax.axhline(100, color="#7F7F7F", linestyle="--", linewidth=1.2, label="Mốc so sánh: đoán bằng trung bình (100%)")
     max_rel = float(rel_mae.max())
     for bar, (_, row), r in zip(bars, metrics.iterrows(), rel_mae):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 1.5,
-                f"{r:.1f}%\n(MAE: {row['mae']:,.0f})",
+                f"{eda.vn_number(r, 1)}%\n(MAE: {eda.vn_number(row['mae'])})",
                 ha="center", va="bottom", fontsize=8)
-    ax.set_title("3. So sanh MAE mo hinh vs Naive Baseline", fontsize=11, fontweight="bold", loc="left")
-    ax.set_ylabel("Ty le MAE / Naive MAE (%)")
+    ax.set_title("3. So sánh MAE mô hình với mốc trung bình", fontsize=11, fontweight="bold", loc="left")
+    ax.set_ylabel("Tỷ lệ MAE mô hình / MAE mốc (%)")
     ax.set_ylim(0, max_rel * 1.25)
+    ax.yaxis.set_major_formatter(eda.VN_TICK_FORMATTER)
     ax.legend(frameon=False, loc="upper right", fontsize=8.5)
     ax.spines[["top", "right"]].set_visible(False)
 
-    fig.suptitle("Tong hop cac thong so danh gia mo hinh hoi quy (Linear Regression 2006-2025)",
+    fig.suptitle("Tổng hợp các thông số đánh giá mô hình hồi quy tuyến tính (2006–2025)",
                  fontsize=12, fontweight="bold", x=0.01, ha="left")
     fig.tight_layout()
 
