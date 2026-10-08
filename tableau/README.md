@@ -19,7 +19,7 @@
    - `latitude`: Kiểu **Geographic Role $\to$ Latitude**.
    - `longitude`: Kiểu **Geographic Role $\to$ Longitude**.
    - `county`: Kiểu **Geographic Role $\to$ County** (thiết lập State: California).
-   - `acres_burned`, `burned_area_ha`, `structures_destroyed`, `damage_property_usd`, `deaths_direct`: Kiểu **Number (decimal / whole)**.
+   - `acres_burned`, `burned_area_ha`, `structures_destroyed`, `deaths_direct`: Kiểu **Number (decimal / whole)**.
 4. Mở file [tableau/CALCULATED_FIELDS.md](CALCULATED_FIELDS.md) và tạo đầy đủ các trường tính toán cần thiết.
 
 ---

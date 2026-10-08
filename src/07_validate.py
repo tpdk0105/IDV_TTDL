@@ -135,8 +135,7 @@ def validate_database_integrity(db_path: Path = Path("data/tables/database.sqlit
             WHERE total_structures_destroyed < 0 
                OR total_structures_damaged < 0 
                OR deaths_direct < 0 
-               OR injuries_direct < 0 
-               OR damage_property_usd < 0;
+               OR injuries_direct < 0;
         """)
         invalid_dmg = cursor.fetchone()[0]
         if invalid_dmg > 0:

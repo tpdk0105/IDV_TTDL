@@ -64,7 +64,6 @@ CREATE TABLE IF NOT EXISTS fact_fire_incident (
   total_structures_damaged INTEGER DEFAULT 0 CHECK (total_structures_damaged >= 0),
   deaths_direct INTEGER DEFAULT 0 CHECK (deaths_direct >= 0),
   injuries_direct INTEGER DEFAULT 0 CHECK (injuries_direct >= 0),
-  damage_property_usd REAL DEFAULT 0.0 CHECK (damage_property_usd >= 0.0),
   is_outlier_ml INTEGER NOT NULL DEFAULT 0 CHECK (is_outlier_ml IN (0, 1)),
   outlier_score REAL,
   burned_area_is_imputed INTEGER NOT NULL DEFAULT 0 CHECK (burned_area_is_imputed IN (0, 1)),

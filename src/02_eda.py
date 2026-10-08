@@ -4,18 +4,20 @@ Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy r�
 Người phụ trách: Thành viên 1 - Kỹ sư Dữ liệu (Data Engineer)
 Mục đích:
     - Thực hiện phân tích khám phá dữ liệu ban đầu (EDA) trên 5 tập dữ liệu thô trong `data/raw/calfire/`.
-    - Sử dụng các thư viện biểu đồ tĩnh (Matplotlib, Seaborn) vẽ 5 biểu đồ tĩnh theo đúng barem IDV:
+    - Sử dụng các thư viện biểu đồ tĩnh (Matplotlib, Seaborn) vẽ 6 biểu đồ tĩnh theo đúng barem IDV:
         1. Tỷ lệ dữ liệu khuyết thiếu theo cột của cả 5 tập (Missing values bar).
-        2. Phân phối biến định lượng trên thang log (Histogram + KDE: burned_area_ha, damage_usd).
+        2. Phân phối diện tích cháy trên thang log (Histogram + KDE: burned_area_ha).
         3. Biểu đồ hộp phát hiện ngoại lai sơ bộ (Boxplot: structures_destroyed, ICS-209 + DINS).
         4. Bản đồ nhiệt tương quan (Pearson trên log1p / Spearman): năm, diện tích cháy, số ngày dập lửa, công trình bị phá hủy.
         5. Xu hướng theo năm: số vụ cháy, tổng diện tích cháy, công trình bị phá hủy (chuỗi 20/20 năm ICS-209 + DINS).
+        6. Thiệt hại về người theo năm (NOAA): người chết / bị thương trực tiếp, tách phần bị đếm trùng giữa các vùng dự báo.
+    - NOAA chỉ dùng cho thiệt hại về người; thiệt hại tài sản lấy từ DINS + ICS-209.
     - Xuất các biểu đồ tĩnh sang thư mục `reports/figures/` và lập báo cáo `docs/DATA_QUALITY_REPORT.md`.
 
 Cách chạy (từ thư mục gốc dự án):
     python src/02_eda.py
 
-Trạng thái: Đã hoàn thành đủ 5 biểu đồ.
+Trạng thái: Đã hoàn thành đủ 6 biểu đồ.
 """
 
 import math
@@ -48,6 +50,8 @@ DATE_FORMAT = "%m/%d/%Y %I:%M:%S %p"  # dinh dang ngay cua FRAP va DINS, vd "8/1
 MAX_CONTAINMENT_DAYS = 365  # thoi gian dap lua < 0 hoac > 1 nam coi la loi nhap lieu
 ACRE_TO_HA = 0.404686
 MEGAFIRE_HA = 100_000 * ACRE_TO_HA  # sieu dam chay >= 100.000 acres (theo docs/DEMO_SCRIPT.md)
+# Ten vu chay trong narrative NOAA: "The Camp Fire", "the August Complex" -> CAMP, AUGUST
+NOAA_FIRE_NAME_PATTERN = r"\b(?:The )?([A-Z][\w'-]*(?: [A-Z][\w'-]*)?) (?:Fire|Complex)\b"
 
 # Bang mau theo docs/COLOR_GUIDE.md (muc 2.1 Fire Sequential + mau trung tinh)
 COLOR_NEUTRAL = "#7F7F7F"
@@ -69,29 +73,12 @@ def load_raw_data(raw_dir: Path = RAW_DIR) -> dict:
     }
 
 
-def parse_noaa_damage(value) -> float:
-    """Doi chuoi thiet hai NOAA ('1.50K', '2.00M', '0') sang so USD."""
-    multipliers = {"K": 1e3, "M": 1e6, "B": 1e9}
-    if pd.isna(value):
-        return np.nan
-    s = str(value).strip().upper()
-    if s[-1] in multipliers:
-        return float(s[:-1]) * multipliers[s[-1]]
-    return float(s)
-
-
 def add_derived_columns(raw: dict) -> dict:
     """Tra ve ban sao co them cot phai sinh dung cho bieu do; giu nguyen dict tho de phan tich khuyet thieu."""
     data = dict(raw)
     perimeters = raw["perimeters"].copy()
     perimeters["burned_area_ha"] = perimeters["GIS Calculated Acres"] * ACRE_TO_HA
-
-    noaa = raw["noaa"].copy()
-    noaa["damage_usd"] = noaa["DAMAGE_PROPERTY"].apply(parse_noaa_damage)
-    noaa["deaths"] = noaa["DEATHS_DIRECT"] + noaa["DEATHS_INDIRECT"]
-    noaa["injuries"] = noaa["INJURIES_DIRECT"] + noaa["INJURIES_INDIRECT"]
-
-    data.update(perimeters=perimeters, noaa=noaa)
+    data.update(perimeters=perimeters)
     return data
 
 
@@ -103,6 +90,18 @@ def normalize_fire_name(names: pd.Series) -> pd.Series:
         .str.replace(r"[\s-]+(FIRE|INCIDENT|COMPLEX)$", "", regex=True)
         .str.replace(r"\s+", " ", regex=True)
     )
+
+
+def extract_noaa_fire_name(noaa: pd.DataFrame) -> pd.Series:
+    """Tach ten vu chay tu EVENT_NARRATIVE (uu tien) hoac EPISODE_NARRATIVE, chuan hoa theo Khoa 1."""
+    name = noaa["EVENT_NARRATIVE"].str.extract(NOAA_FIRE_NAME_PATTERN, expand=False)
+    name = name.fillna(noaa["EPISODE_NARRATIVE"].str.extract(NOAA_FIRE_NAME_PATTERN, expand=False))
+    return normalize_fire_name(name)
+
+
+def noaa_fire_key(noaa: pd.DataFrame) -> pd.Series:
+    """Khoa gop dong NOAA cua cung 1 vu chay (dung kem EPISODE_ID); dong khong tach duoc ten giu rieng."""
+    return extract_noaa_fire_name(noaa).fillna("_EVENT_" + noaa["EVENT_ID"].astype(str))
 
 
 def build_structures_destroyed(data: dict) -> pd.DataFrame:
@@ -237,22 +236,16 @@ def plot_missing_values(df=None, output_path: Path = FIGURES_DIR / "eda_01_missi
 
 
 def plot_distributions(df=None, output_path: Path = FIGURES_DIR / "eda_02_distributions.png") -> plt.Figure:
-    """Ve bieu do phan phoi Histogram/KDE cho cac bien lien tuc (dien tich chay, thiet hai USD)."""
+    """Ve bieu do phan phoi Histogram/KDE cua dien tich chay tren thang log."""
     # df: dict tu add_derived_columns(); None -> tu doc
     data = df if df is not None else add_derived_columns(load_raw_data())
-    perimeters, noaa = data["perimeters"], data["noaa"]
+    perimeters = data["perimeters"]
 
     # Chi lay giai doan nghien cuu 2006-2025; thang log khong nhan gia tri <= 0
     area = perimeters.loc[perimeters["Year"].between(*STUDY_YEARS), "burned_area_ha"]
     area = area[area > 0]
-    damage = noaa["damage_usd"]
-    n_damage_na, n_damage_zero = int(damage.isna().sum()), int((damage == 0).sum())
-    damage = damage[damage > 0]
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-
-    # Trai: dien tich chay
-    ax = axes[0]
+    fig, ax = plt.subplots(figsize=(10, 5))
     sns.histplot(area, log_scale=True, bins=40, kde=True, color=COLOR_FIRE_MID, edgecolor="white", ax=ax)
     ax.axvline(area.median(), color=COLOR_NEUTRAL, linestyle="--", linewidth=1)
     ax.text(area.median(), 0.97, f" trung vi {area.median():,.0f} ha", transform=ax.get_xaxis_transform(), va="top", fontsize=8)
@@ -262,19 +255,7 @@ def plot_distributions(df=None, output_path: Path = FIGURES_DIR / "eda_02_distri
     ax.set_title(f"Dien tich chay (FRAP {STUDY_YEARS[0]}-{STUDY_YEARS[1]}, n = {len(area):,} vu)", loc="left", fontsize=11)
     ax.set_xlabel("burned_area_ha (thang log)")
     ax.set_ylabel("So vu chay")
-
-    # Phai: thiet hai tai san NOAA
-    ax = axes[1]
-    sns.histplot(damage, log_scale=True, bins=30, kde=True, color=COLOR_FIRE_HIGH, edgecolor="white", ax=ax)
-    ax.axvline(damage.median(), color=COLOR_NEUTRAL, linestyle="--", linewidth=1)
-    ax.text(damage.median(), 0.97, f" trung vi ${damage.median():,.0f}", transform=ax.get_xaxis_transform(), va="top", fontsize=8)
-    ax.set_title(f"Thiet hai tai san (NOAA, n = {len(damage):,} su kien > $0)\n"
-                 f"da loai {n_damage_zero} dong = $0 va {n_damage_na} dong trong", loc="left", fontsize=11)
-    ax.set_xlabel("damage_usd (thang log)")
-    ax.set_ylabel("So su kien")
-
-    for ax in axes:
-        ax.spines[["top", "right"]].set_visible(False)
+    ax.spines[["top", "right"]].set_visible(False)
     fig.suptitle("Phan phoi lech phai manh -> can bien doi log1p truoc khi lam sach / mo hinh", fontsize=13, x=0.01, ha="left")
     fig.tight_layout()
     _save_figure(fig, output_path, "bieu do phan phoi")
@@ -415,6 +396,53 @@ def _label_top_bars(ax: plt.Axes, series: pd.Series, top_n: int, fmt: str) -> No
         ax.annotate(fmt.format(v), xy=(x, v), xytext=(0, 3), textcoords="offset points", ha="center", fontsize=8)
 
 
+def plot_casualties(df=None, output_path: Path = FIGURES_DIR / "eda_06_casualties.png", top_n: int = 3) -> plt.Figure:
+    """Ve so nguoi chet / bi thuong truc tiep theo nam (NOAA), tach phan bi dem trung giua cac vung du bao."""
+    # df: DataFrame NOAA tho; None -> tu doc
+    noaa = df if df is not None else load_raw_data()["noaa"]
+    noaa = noaa[noaa["YEAR"].between(*STUDY_YEARS)]
+    years = range(STUDY_YEARS[0], STUDY_YEARS[1] + 1)
+    measures = {"DEATHS_DIRECT": "Nguoi chet truc tiep", "INJURIES_DIRECT": "Nguoi bi thuong truc tiep"}
+
+    # 1 vu chay lan qua nhieu vung du bao -> nhieu dong lap lai cung so thuong vong; gop giong 03_clean.py
+    events = noaa.groupby(["EPISODE_ID", noaa_fire_key(noaa).rename("fire_key")]).agg(
+        YEAR=("YEAR", "first"), **{c: (c, "max") for c in measures}
+    ).reset_index()
+    raw_by_year = noaa.groupby("YEAR")[list(measures)].sum().reindex(years, fill_value=0)
+    by_year = events.groupby("YEAR")[list(measures)].sum().reindex(years, fill_value=0)
+
+    fig, axes = plt.subplots(2, 1, figsize=(13, 8), sharex=True)
+    for ax, (col, label) in zip(axes, measures.items()):
+        merged, duplicated = by_year[col], raw_by_year[col] - by_year[col]
+        ax.bar(years, merged, color=COLOR_FIRE_HIGH, label="Sau khi gop trung")
+        ax.bar(years, duplicated, bottom=merged, color="#FDAE6B", label="Bi dem trung (1 vu ghi o nhieu vung du bao)")
+
+        # Nhan top_n nam: gia tri sau gop + vu chay lon nhat trong nam (neu tach duoc ten)
+        for year, value in merged.nlargest(top_n).items():
+            top = events[events["YEAR"] == year].nlargest(1, col).iloc[0]
+            name = "" if top["fire_key"].startswith("_EVENT_") else f"\n{top['fire_key']} {top[col]:,}"
+            ax.annotate(f"{value:,}{name}", xy=(year, raw_by_year.at[year, col]), xytext=(0, 3),
+                        textcoords="offset points", ha="center", fontsize=8)
+        ax.set_ylabel("Nguoi")
+        ax.set_title(f"{label}: {merged.sum():,} nguoi sau khi gop trung (du lieu tho ghi {raw_by_year[col].sum():,})",
+                     loc="left", fontsize=11)
+        ax.set_ylim(0, raw_by_year[col].max() * 1.25)  # chua cho nhan 2 dong tren cot cao nhat
+        ax.spines[["top", "right"]].set_visible(False)
+
+    axes[0].legend(frameon=False, loc="upper left")
+    axes[-1].set_xticks(list(years))
+    axes[-1].tick_params(axis="x", rotation=45)
+
+    deadliest = events.nlargest(1, "DEATHS_DIRECT").iloc[0]
+    total_deaths = by_year["DEATHS_DIRECT"].sum()
+    fig.suptitle(f"Thiet hai ve nguoi hiem va don vao vai tham hoa: rieng {deadliest['fire_key']} {deadliest['YEAR']} chiem "
+                 f"{deadliest['DEATHS_DIRECT'] / total_deaths:.0%} so nguoi chet truc tiep {STUDY_YEARS[0]}-{STUDY_YEARS[1]}",
+                 fontsize=13, x=0.01, ha="left")
+    fig.tight_layout()
+    _save_figure(fig, output_path, "bieu do thiet hai ve nguoi")
+    return fig
+
+
 # ---------------------------------------------------------------------------
 # Dieu phoi
 # ---------------------------------------------------------------------------
@@ -437,6 +465,7 @@ def run_initial_eda() -> None:
         plot_outlier_boxplots(build_structures_destroyed(data), output_path=FIGURES_DIR / "eda_03_outliers_boxplot.png"),
         plot_correlation_heatmap(build_fire_features(data), output_path=FIGURES_DIR / "eda_04_correlation_heatmap.png"),
         plot_temporal_trends(data, output_path=FIGURES_DIR / "eda_05_temporal_trend.png"),
+        plot_casualties(raw["noaa"], output_path=FIGURES_DIR / "eda_06_casualties.png"),
     ]
 
     # Script khong hien thi bieu do -> dong figure de giai phong bo nho

@@ -12,7 +12,9 @@ Mục đích:
     - Hợp nhất số công trình bị phá hủy / hư hại thành chuỗi 20 năm: ICS-209 (2006–2012) + DINS (2013–2025).
     - Loại trùng lặp, chuyển giá trị bất hợp lý (âm, thời gian dập lửa > 1 năm) thành NULL.
     - Bảo toàn cột gốc để lưu vết (vd: `fire_name_raw`).
-    - Xuất tập dữ liệu trung gian: `data/interim/master_rules_cleaned.csv`.
+    - NOAA chỉ dùng cho thiệt hại về người (chết / bị thương); thiệt hại tài sản lấy từ DINS + ICS-209.
+      Gộp các dòng trùng của cùng 1 vụ cháy ghi ở nhiều vùng dự báo (forecast zone).
+    - Xuất tập dữ liệu trung gian: `data/interim/master_rules_cleaned.csv`, `data/interim/noaa_casualties_cleaned.csv`.
 
 Cách chạy (từ thư mục gốc dự án):
     python src/03_clean.py
@@ -31,6 +33,7 @@ eda = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(eda)
 
 OUTPUT_PATH = Path("data/interim/master_rules_cleaned.csv")
+NOAA_OUTPUT_PATH = Path("data/interim/noaa_casualties_cleaned.csv")
 MIN_ROWS = 5000  # yeu cau cung cua barem
 
 # Bang ma nguyen nhan CAL FIRE FRAP (metadata FRAP fire perimeters)
@@ -58,6 +61,13 @@ OUTPUT_COLUMNS = [
     "cause_code", "cause_name", "cause_group", "acres_burned", "burned_area_ha",
     "structures_destroyed", "structures_damaged", "damage_source", "damage_match", "n_polygons", "frap_global_id",
 ]
+
+# NOAA: chi giu cot thiet hai ve nguoi
+NOAA_CASUALTY_COLUMNS = {
+    "DEATHS_DIRECT": "deaths_direct", "DEATHS_INDIRECT": "deaths_indirect",
+    "INJURIES_DIRECT": "injuries_direct", "INJURIES_INDIRECT": "injuries_indirect",
+}
+NOAA_DATE_FORMAT = "%d-%b-%y %H:%M:%S"  # vd "08-NOV-18 06:30:00"
 
 CLEANING_LOG: list[dict] = []
 
@@ -272,6 +282,47 @@ def apply_rule_checks(fires: pd.DataFrame) -> pd.DataFrame:
     return fires
 
 
+def clean_noaa(noaa: pd.DataFrame) -> pd.DataFrame:
+    """Giu cot thuong vong, gop cac dong cua cung 1 vu chay bi ghi lap o nhieu vung du bao."""
+    n_raw = len(noaa)
+    df = pd.DataFrame({
+        "noaa_event_id": noaa["EVENT_ID"],
+        "episode_id": noaa["EPISODE_ID"],
+        "year": noaa["YEAR"].astype(int),
+        "begin_date": pd.to_datetime(noaa["BEGIN_DATE_TIME"], format=NOAA_DATE_FORMAT),
+        "fire_name": eda.extract_noaa_fire_name(noaa),
+        "_fire_key": eda.noaa_fire_key(noaa),
+        "zone_name": noaa["CZ_NAME"].str.strip().str.upper(),
+        **{new: noaa[old] for old, new in NOAA_CASUALTY_COLUMNS.items()},
+    })
+    df = df[df["year"].between(*eda.STUDY_YEARS)]
+    log_step("9a. Chon cot thuong vong (NOAA)", n_raw, len(df),
+             f"Bo DAMAGE_* (tai san lay tu DINS / ICS-209) va cot trong; "
+             f"tach duoc ten vu chay o {int(df['fire_name'].notna().sum())} dong")
+
+    # 1 vu chay lan qua nhieu vung du bao -> nhieu dong lap lai cung so nguoi chet (vd Woolsey 2018: 5 dong x 3).
+    # Gop theo (EPISODE_ID, ten vu chay), lay max; dong khong tach duoc ten giu rieng
+    cols = list(NOAA_CASUALTY_COLUMNS.values())
+    deaths_before = int(df["deaths_direct"].sum())
+    events = df.groupby(["episode_id", "_fire_key"], sort=False).agg(
+        noaa_event_id=("noaa_event_id", "min"),
+        year=("year", "first"),
+        begin_date=("begin_date", "min"),
+        fire_name=("fire_name", "first"),
+        zone_names=("zone_name", lambda s: "; ".join(sorted(s.unique()))),
+        n_zones=("zone_name", "nunique"),
+        **{c: (c, "max") for c in cols},
+    ).reset_index().drop(columns="_fire_key")
+    log_step("9b. Gop su kien trung giua cac vung du bao (NOAA)", len(df), len(events),
+             f"deaths_direct {deaths_before} -> {int(events['deaths_direct'].sum())}, "
+             f"injuries_direct {int(df['injuries_direct'].sum())} -> {int(events['injuries_direct'].sum())}")
+
+    events = events.sort_values(["begin_date", "noaa_event_id"]).reset_index(drop=True)
+    assert events["noaa_event_id"].is_unique
+    assert (events[cols] >= 0).all().all()
+    return events[["noaa_event_id", "episode_id", "year", "begin_date", "fire_name", "zone_names", "n_zones", *cols]]
+
+
 def finalize(fires: pd.DataFrame) -> pd.DataFrame:
     """Tao incident_id, ep kieu, sap xep cot theo DATA_DICTIONARY va kiem tra rang buoc."""
     fires = fires.sort_values(["year", "alarm_date", "fire_name", "unit_id"], na_position="last").reset_index(drop=True)
@@ -302,10 +353,13 @@ def clean_by_rules() -> pd.DataFrame:
     fires = attach_county(fires, damage, raw["demographics"])
     fires = apply_rule_checks(fires)
     fires = finalize(fires)
+    casualties = clean_noaa(raw["noaa"])
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     fires.to_csv(OUTPUT_PATH, index=False, encoding="utf-8")
     print(f"[TV1 - CLEAN] Da xuat {len(fires):,} vu chay x {fires.shape[1]} cot -> {OUTPUT_PATH}")
+    casualties.to_csv(NOAA_OUTPUT_PATH, index=False, encoding="utf-8")
+    print(f"[TV1 - CLEAN] Da xuat {len(casualties):,} su kien thuong vong NOAA -> {NOAA_OUTPUT_PATH}")
     print("\n[TV1 - CLEAN] Bang nhat ky (dan vao docs/CLEANING_LOG.md):")
     print(log_as_markdown())
     return fires

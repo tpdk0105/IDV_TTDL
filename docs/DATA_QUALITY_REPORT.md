@@ -56,11 +56,10 @@ Số liệu tính trên phạm vi dự án (FRAP 2006–2025: 7.342 dòng; ICS-2
 
 ## 4. Phân Bố & Ngoại Lai Sơ Bộ (Distributions & Initial Outliers)
 
-![Phân phối diện tích cháy và thiệt hại](../reports/figures/eda_02_distributions.png)
+![Phân phối diện tích cháy](../reports/figures/eda_02_distributions.png)
 
 - **Diện tích cháy (Acres / Ha)**: Phân phối lũy thừa cực đoan (heavy-tailed). Trung vị chỉ **14,6 ha**, lớn nhất **417.919 ha**. 87,7% số vụ < 1.000 acres. **33 siêu đám cháy (≥ 100.000 acres)** chiếm **44,6%** tổng diện tích cháy 2006–2025. Độ lệch (skewness) giảm từ **26,26 → 0,99** sau `log1p` → bắt buộc biến đổi log trước khi làm sạch / mô hình.
   > ⚠️ Con số "siêu đám cháy chiếm hơn 70% tổng diện tích" trong `docs/DEMO_SCRIPT.md` **không khớp** với dữ liệu FRAP (44,6%) — cần sửa lại kịch bản demo.
-- **Thiệt hại tài sản (NOAA)**: 187 sự kiện > $0, trung vị **$500.000**, lớn nhất **$17 tỷ**. Skewness **13,50 → −0,02** sau `log1p`. 2 sự kiện ghi `0.01K` (= $10) nghi nhập sai.
 
 ![Boxplot công trình bị phá hủy](../reports/figures/eda_03_outliers_boxplot.png)
 
@@ -76,6 +75,13 @@ Số liệu tính trên phạm vi dự án (FRAP 2006–2025: 7.342 dòng; ICS-2
 - **Xu hướng thời gian**: số vụ dao động 207–611 vụ/năm (trung bình 367), không có xu hướng tăng rõ; nhưng diện tích và thiệt hại dồn vào vài năm cực đoan: **2020** (1,69 triệu ha), **2018** (22.701 công trình), **2025** (16.512 công trình), **2017** (10.922 công trình).
 - **Tọa độ địa lý**: Toàn bộ tọa độ DINS (132.522) và ICS-209 (1.118 có giá trị) **nằm trong** Bounding Box California (vĩ độ $32^{\circ}$–$42^{\circ}$N, kinh độ $-125^{\circ}$–$-114^{\circ}$W). NOAA không có tọa độ (100% trống).
 
+![Thiệt hại về người theo năm](../reports/figures/eda_06_casualties.png)
+
+- **Thiệt hại về người (NOAA)**: NOAA chỉ dùng cho thương vong; thiệt hại tài sản lấy từ DINS + ICS-209 (cột `DAMAGE_PROPERTY` trống 27,2%, `$0` 54,0%, ghi thiếu nặng năm 2025 nên không dùng).
+  - **Đếm trùng**: 1 vụ cháy lan qua nhiều vùng dự báo NWS được ghi thành nhiều dòng, mỗi dòng lặp lại cùng số thương vong (vd Woolsey 2018: 5 dòng × 3 người; Eaton + Palisades 2025: 4 dòng, 58 → 29 người). Sau khi gộp theo (`EPISODE_ID`, tên vụ cháy): người chết trực tiếp **255 → 207**, bị thương **887 → 792**.
+  - **Hiếm và tập trung**: 8/20 năm có 0–1 người chết; riêng **Camp 2018 (86 người) chiếm 42%**. Diện tích cháy không đi kèm số người chết (2020 cháy 1,69 triệu ha – 29 người; 2018 chỉ ~641 nghìn ha – 93 người), mà đi theo số công trình bị phá hủy.
+  - **Ghi thiếu**: NOAA không có đợt cháy Wine Country 10/2017 ở Sonoma / Napa → số năm 2017 (14 người) thấp hơn thực tế; cần ghi chú khi trình bày.
+
 ---
 
 ## 5. Tóm Tắt Vấn Đề & Việc Cần Làm Ở Bước Làm Sạch
@@ -86,7 +92,8 @@ Số liệu tính trên phạm vi dự án (FRAP 2006–2025: 7.342 dòng; ICS-2
 | 2 | Vụ trùng tên cùng năm khác địa bàn (CAMP 2018 BTU/SLU) | Gán sai thiệt hại và thời gian dập lửa | `03_clean.py` – Khóa 3 |
 | 3 | 1 vụ cháy = nhiều polygon FRAP | Đếm trùng số vụ | `03_clean.py` – gộp theo (năm, tên, Unit ID) |
 | 4 | `Cause` = 14 (Unknown) chiếm 32,4% | Phân tích căn nguyên thiếu 1/3 dữ liệu | `03b_ml_clean.py` – Random Forest |
-| 5 | `DAMAGE_PROPERTY` trống 27,2% + `$0` 54,0% | Thiệt hại USD thiếu nghiêm trọng | `03b_ml_clean.py` – KNN/MICE hoặc giữ nguyên + cờ |
+| 5 | `DAMAGE_PROPERTY` trống 27,2% + `$0` 54,0% | Thiệt hại USD thiếu nghiêm trọng | Không dùng – NOAA chỉ lấy thương vong; tài sản dùng DINS + ICS-209 |
 | 6 | `CENSUS_POPULATION` trống 100% | Không tính được mật độ / thiệt hại theo đầu người | Bổ sung nguồn dân số khác |
 | 7 | 109 dòng DINS trùng logic | Đếm dư công trình bị phá hủy | `03_clean.py` – khử trùng |
 | 8 | 32 cột trống 100% (NOAA 21, ICS-209 8, Demographics 3) | Làm nặng dữ liệu, không có thông tin | `03_clean.py` – loại cột |
+| 9 | NOAA ghi lặp thương vong khi 1 vụ cháy lan qua nhiều vùng dự báo | Người chết bị thổi lên 255 thay vì 207 | `03_clean.py` – bước 9b, gộp theo (`EPISODE_ID`, tên vụ cháy) |

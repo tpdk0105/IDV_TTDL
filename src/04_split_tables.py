@@ -4,17 +4,17 @@ Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy r�
 Người phụ trách: Thành viên 2 - Kỹ sư Mô hình Dữ liệu (Data Modeling Engineer)
 Mục đích:
     - Đọc dữ liệu đã làm sạch từ `data/clean/master_clean.csv` (hoặc `data/interim/master_rules_cleaned.csv`).
-    - Phân rã dữ liệu thành 5 bảng Dimension và Fact theo mô hình hình sao (Star Schema, tối thiểu 3NF):
+    - Phân rã dữ liệu thành 6 bảng Dimension và Fact theo mô hình hình sao (Star Schema, tối thiểu 3NF):
         1. dim_date: Thứ bậc thời gian đầy đủ 2006–2025 (7.305 ngày).
         2. dim_county: 58 Hạt California kèm mã FIPS, diện tích, dân số chuẩn điều tra.
         3. dim_cause: 19 mã nguyên nhân CAL FIRE phân nhóm Tự nhiên / Con người.
         4. fact_fire_incident: Bảng fact trung tâm (7.235 vụ cháy FRAP, >= 5.000 dòng).
         5. fact_structure_damage: Bảng fact mở rộng lưu vết chi tiết công trình bị tàn phá (DINS + ICS-209).
+        6. fact_casualty_event: Thương vong NOAA theo từng vụ cháy (đã gộp trùng vùng dự báo) - phân tích số người chết theo năm.
     - Tạo các khóa đại diện (Surrogate Keys) duy nhất, đảm bảo tính toàn vẹn tham chiếu 100% (Zero Orphan FKs).
     - Xuất các tệp tin CSV tương ứng vào thư mục `data/tables/`.
 """
 
-import re
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -66,22 +66,6 @@ CAUSE_DATA = [
     (18, 18, "Escaped Prescribed Burn", "Human"),
     (19, 19, "Illegal Alien Campfire", "Human"),
 ]
-
-
-def parse_damage_val(v) -> float:
-    """Quy đổi chuỗi thiệt hại NOAA (vd: 16.50B, 300M, 500K) sang USD."""
-    if pd.isna(v):
-        return 0.0
-    v = str(v).strip().upper()
-    if not v or v == "0" or v == "0.00K":
-        return 0.0
-    m = re.match(r"^([\d\.]+)\s*([KMB])?$", v)
-    if not m:
-        return 0.0
-    num = float(m.group(1))
-    unit = m.group(2)
-    mult = {"K": 1e3, "M": 1e6, "B": 1e9}.get(unit, 1.0)
-    return num * mult
 
 
 def build_dim_date() -> pd.DataFrame:
@@ -165,44 +149,49 @@ def build_dim_cause() -> pd.DataFrame:
     return df
 
 
-def match_noaa_casualties(fires: pd.DataFrame, noaa_path: Path) -> pd.DataFrame:
-    """Trích xuất và gắn thông tin thương vong, thiệt hại tài sản từ NOAA NCEI lên từng vụ cháy."""
+def match_noaa_casualties(fires: pd.DataFrame, noaa_path: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Gắn thương vong NOAA (đã làm sạch ở 03_clean.py) vào vụ cháy FRAP lớn nhất cùng (năm, tên vụ cháy)."""
     if not noaa_path.exists():
-        fires["deaths_direct"] = 0
-        fires["injuries_direct"] = 0
-        fires["damage_property_usd"] = 0.0
-        return fires
+        raise FileNotFoundError(f"Không tìm thấy {noaa_path}! Hãy chạy src/03_clean.py trước.")
+    events = pd.read_csv(noaa_path, parse_dates=["begin_date"])
 
-    noaa = pd.read_csv(noaa_path)
-    noaa["dmg_usd"] = noaa["DAMAGE_PROPERTY"].apply(parse_damage_val)
+    # incident_id = chỉ số dòng + 1 (giống cách đánh khóa fact_fire_incident bên dưới)
+    named = fires[fires["fire_name"] != "UNNAMED"]
+    largest = (
+        named.assign(incident_id=named.index + 1)
+        .sort_values("acres_burned", ascending=False)
+        .drop_duplicates(["year", "fire_name"])[["year", "fire_name", "incident_id"]]
+    )
+    events = events.merge(largest, on=["year", "fire_name"], how="left", validate="m:1")
+    events["incident_id"] = events["incident_id"].astype("Int64")
 
-    # Từ điển tra cứu theo (năm, tên vụ cháy)
-    fire_deaths = {}
-    fire_injuries = {}
-    fire_damage = {}
+    per_fire = events.dropna(subset=["incident_id"]).groupby("incident_id")[["deaths_direct", "injuries_direct"]].sum()
+    fires["deaths_direct"] = (fires.index + 1).map(per_fire["deaths_direct"]).fillna(0).astype(int)
+    fires["injuries_direct"] = (fires.index + 1).map(per_fire["injuries_direct"]).fillna(0).astype(int)
 
-    for _, row in noaa.iterrows():
-        yr = row["YEAR"]
-        deaths = int(row["DEATHS_DIRECT"]) if pd.notna(row["DEATHS_DIRECT"]) else 0
-        injuries = int(row["INJURIES_DIRECT"]) if pd.notna(row["INJURIES_DIRECT"]) else 0
-        dmg = float(row["dmg_usd"])
-        narrative = f"{row.get('EVENT_NARRATIVE', '')} {row.get('EPISODE_NARRATIVE', '')}"
+    matched = events["incident_id"].notna()
+    print(f"[TV2 - MODEL] Đã đối soát NOAA: {int(matched.sum())}/{len(events)} sự kiện khớp vụ cháy FRAP, "
+          f"{int(events.loc[matched, 'deaths_direct'].sum())}/{int(events['deaths_direct'].sum())} người chết trực tiếp.")
+    return fires, events
 
-        # Tìm vụ cháy khớp tên trong cùng năm
-        cands = fires[fires["year"] == yr]
-        for idx, f in cands.iterrows():
-            fname = str(f["fire_name"])
-            if len(fname) >= 3 and re.search(r"\b" + re.escape(fname) + r"\b", narrative, re.IGNORECASE):
-                fire_deaths[idx] = fire_deaths.get(idx, 0) + deaths
-                fire_injuries[idx] = fire_injuries.get(idx, 0) + injuries
-                fire_damage[idx] = fire_damage.get(idx, 0.0) + dmg
-                break
 
-    fires["deaths_direct"] = fires.index.map(fire_deaths).fillna(0).astype(int)
-    fires["injuries_direct"] = fires.index.map(fire_injuries).fillna(0).astype(int)
-    fires["damage_property_usd"] = fires.index.map(fire_damage).fillna(0.0).astype(float)
-    print(f"[TV2 - MODEL] Đã đối soát NOAA: Khớp {fires['deaths_direct'].sum()} thương vong sinh mạng.")
-    return fires
+def build_fact_casualty_event(events: pd.DataFrame) -> pd.DataFrame:
+    """Bảng fact thương vong: 1 dòng = 1 vụ cháy theo NOAA; incident_id NULL nếu không khớp FRAP."""
+    df = events.reset_index(drop=True)
+    return pd.DataFrame({
+        "casualty_id": df.index + 1,
+        "noaa_event_id": df["noaa_event_id"],
+        "episode_id": df["episode_id"],
+        "date_id": df["begin_date"].dt.strftime("%Y%m%d").astype(int),
+        "incident_id": df["incident_id"],
+        "fire_name": df["fire_name"],
+        "zone_names": df["zone_names"],
+        "n_zones": df["n_zones"],
+        "deaths_direct": df["deaths_direct"],
+        "deaths_indirect": df["deaths_indirect"],
+        "injuries_direct": df["injuries_direct"],
+        "injuries_indirect": df["injuries_indirect"],
+    })
 
 
 def extract_fire_coordinates(dins_path: Path, ics_path: Path) -> dict:
@@ -255,8 +244,7 @@ def split_star_schema_tables() -> None:
     cause_map = dict(zip(dim_cause["cause_code"], dim_cause["cause_id"]))
 
     # 2. Bổ sung thông tin thương vong và tọa độ cho bảng Fact chính
-    noaa_path = raw_dir / "NOAA_California_Wildfires_Casualties.csv"
-    df = match_noaa_casualties(df, noaa_path)
+    df, noaa_events = match_noaa_casualties(df, Path("data/interim/noaa_casualties_cleaned.csv"))
     fire_coords = extract_fire_coordinates(
         raw_dir / "CAL_FIRE_Damage_Inspection_DINS.csv",
         raw_dir / "ICS209_California_Wildfires_2006_2012.csv"
@@ -307,7 +295,6 @@ def split_star_schema_tables() -> None:
             "total_structures_damaged": int(row.get("structures_damaged", 0)),
             "deaths_direct": int(row.get("deaths_direct", 0)),
             "injuries_direct": int(row.get("injuries_direct", 0)),
-            "damage_property_usd": round(float(row.get("damage_property_usd", 0.0)), 2),
             "is_outlier_ml": int(row.get("is_outlier_ml", 0)),
             "outlier_score": round(float(row.get("outlier_score", 0.0)), 4) if pd.notna(row.get("outlier_score")) else None,
             "burned_area_is_imputed": int(row.get("burned_area_is_imputed", 0)),
@@ -401,6 +388,7 @@ def split_star_schema_tables() -> None:
             record_id += 1
 
     df_fact_damage = pd.DataFrame(fact_damage)
+    df_fact_casualty = build_fact_casualty_event(noaa_events)
 
     # 5. Xuất các bảng ra thư mục data/tables/ (an toàn khi tệp đang mở xem)
     def safe_to_csv(df: pd.DataFrame, target_path: Path):
@@ -414,13 +402,15 @@ def split_star_schema_tables() -> None:
     safe_to_csv(dim_cause, tables_dir / "dim_cause.csv")
     safe_to_csv(df_fact_fires, tables_dir / "fact_fire_incident.csv")
     safe_to_csv(df_fact_damage, tables_dir / "fact_structure_damage.csv")
+    safe_to_csv(df_fact_casualty, tables_dir / "fact_casualty_event.csv")
 
-    print(f"[TV2 - MODEL] Xuất thành công 5 bảng Star Schema vào: {tables_dir.resolve()}")
+    print(f"[TV2 - MODEL] Xuất thành công 6 bảng Star Schema vào: {tables_dir.resolve()}")
     print(f"  - dim_date: {len(dim_date):,} dòng")
     print(f"  - dim_county: {len(dim_county):,} dòng")
     print(f"  - dim_cause: {len(dim_cause):,} dòng")
     print(f"  - fact_fire_incident: {len(df_fact_fires):,} dòng (ĐẠT YÊU CẦU >= 5.000 DÒNG)")
     print(f"  - fact_structure_damage: {len(df_fact_damage):,} dòng")
+    print(f"  - fact_casualty_event: {len(df_fact_casualty):,} dòng")
 
 
 if __name__ == "__main__":

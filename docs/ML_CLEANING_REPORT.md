@@ -24,7 +24,7 @@ Trong bài toán phân tích tần suất và thiệt hại cháy rừng Califor
 ## 2. Mô Hình 1 – Phát Hiện Ngoại Lai (Isolation Forest & LOF)
 
 ### 2.1. Lựa chọn đặc trưng & tiền xử lý
-- **Tập đặc trưng đầu vào**: `acres_burned`, `structures_destroyed`, `deaths_direct`, `injuries_direct`, `damage_property_usd`.
+- **Tập đặc trưng đầu vào**: `acres_burned`, `structures_destroyed`, `deaths_direct`, `injuries_direct`.
 - **Biến đổi phân phối**: Áp dụng $\log_{1p}(x) = \ln(1 + x)$ do các chỉ số diện tích và phá hủy có phân phối lệch phải cực nặng.
 - **Chuẩn hóa**: `RobustScaler` (sử dụng Median và Interquartile Range) nhằm tránh bị ảnh hưởng bởi chính các giá trị ngoại lai cực đại.
 
@@ -51,7 +51,7 @@ Trong bài toán phân tích tần suất và thiệt hại cháy rừng Califor
 
 ### 3.2. Thiết lập thực nghiệm đánh giá chéo (Cross-Validation Evaluation)
 - Lấy tập con gồm các bản ghi đã có đầy đủ giá trị quan sát (Complete Cases).
-- Che ngẫu nhiên (Masking) $15\%$ giá trị của biến mục tiêu (`acres_burned`, `damage_property_usd`).
+- Che ngẫu nhiên (Masking) $15\%$ giá trị của biến mục tiêu (`acres_burned`).
 - So sánh sai số dự báo của mô hình đề xuất với phương pháp chuẩn cơ sở (Baseline: Điền trung vị - Median Imputation).
 
 ### 3.3. Bảng Kết Quả Đánh Giá Sai Số (Error Metrics Table)
@@ -61,9 +61,6 @@ Trong bài toán phân tích tần suất và thiệt hại cháy rừng Califor
 | `acres_burned` | Baseline (Median) | *TODO* | *TODO* | *TODO* | Chuẩn đối chiếu |
 | `acres_burned` | KNN Imputer ($k=5$) | *TODO* | *TODO* | *TODO* | *TODO* |
 | `acres_burned` | Iterative Imputer (MICE) | *TODO* | *TODO* | *TODO* | *TODO* |
-| `damage_property_usd` | Baseline (Median) | *TODO* | *TODO* | *TODO* | Chuẩn đối chiếu |
-| `damage_property_usd` | KNN Imputer ($k=5$) | *TODO* | *TODO* | *TODO* | *TODO* |
-| `damage_property_usd` | Iterative Imputer (MICE) | *TODO* | *TODO* | *TODO* | *TODO* |
 | `burned_area_ha` | Iterative Imputer (MICE) | *TODO* | *TODO* | *TODO* | *TODO* |
 
 ---

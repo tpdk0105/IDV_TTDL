@@ -52,10 +52,8 @@ Tập dữ liệu sau làm sạch và tích hợp `data/clean/master_clean.csv` 
 | `structures_damaged` | Integer | $\ge 0$ công trình | Có | Tổng số công trình bị hư hại một phần | Hợp nhất 20 năm: ICS-209 (2006–2012) + DINS (2013–2025) |
 | `damage_source` | String | `CAL_FIRE_DINS`, `USDA_ICS_209`, `NONE` | Không | Nguồn dữ liệu kiểm kê thiệt hại công trình | Ghi nhận xuất xứ dữ liệu thiệt hại |
 | `damage_match` | String | `exact`, `name_year_unique`, `name_year_largest`, `none` | Không | Cách ghép thiệt hại vào vụ cháy (độ tin cậy) | `exact` = khớp 3 khóa; `name_year_unique` = khác `unit_id`, tên duy nhất trong năm; `name_year_largest` = nhiều vụ trùng tên, gán cho vụ lớn nhất (**có thể nhầm**); `none` = không có thiệt hại. Xem `CLEANING_LOG.md` mục 2.1 |
-| `deaths_direct` | Integer | $\ge 0$ người | Có | Số người thiệt mạng trực tiếp | Đối soát từ NOAA Casualties (2006–2025: 255 người) |
-| `injuries_direct` | Integer | $\ge 0$ người | Có | Số người bị thương trực tiếp | Đối soát từ NOAA Casualties (2006–2025: 887 người) |
-| `damage_property_usd` | Float | $\ge 0.0$ USD | Có | Ước tính thiệt hại tài sản quy đổi ra USD | Đối soát từ NOAA Casualties |
-| `damage_property_is_imputed`| Boolean | `True`, `False` | Không | Cờ xác định thiệt hại USD được điền bởi ML | Đánh dấu độ tin cậy dữ liệu |
+| `deaths_direct` | Integer | $\ge 0$ người | Có | Số người thiệt mạng trực tiếp | NOAA Casualties, đã gộp trùng vùng dự báo (2006–2025: 207 người) |
+| `injuries_direct` | Integer | $\ge 0$ người | Có | Số người bị thương trực tiếp | NOAA Casualties, đã gộp trùng vùng dự báo (2006–2025: 792 người) |
 | `latitude` | Float | [32.0, 42.0] | Có | Vĩ độ tọa độ tâm vụ cháy / công trình | Kiểm tra phạm vi Bang California |
 | `longitude` | Float | [-125.0, -114.0] | Có | Kinh độ tọa độ tâm vụ cháy / công trình | Kiểm tra phạm vi Bang California |
 | `is_outlier_ml` | Boolean | `True`, `False` | Không | Cờ phát hiện bất thường bởi Isolation Forest & LOF | Phân tích ngoại lai ML trên log diện tích |
