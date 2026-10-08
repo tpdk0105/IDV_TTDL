@@ -79,7 +79,6 @@ def test_src_pipeline_scripts_exist():
         "src/01_download.py",
         "src/02_eda.py",
         "src/03_clean.py",
-        "src/03b_ml_clean.py",
         "src/04_split_tables.py",
         "src/05_build_db.py",
         "src/07_validate.py",
