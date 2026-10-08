@@ -17,6 +17,7 @@
    * `fact_fire_incident` ↔ `dim_county`: `county_id` = `county_id`
    * `fact_fire_incident` ↔ `fact_structure_damage`: `incident_id` = `incident_id`
 4. *Lưu ý*: **Không nối `fact_structure_damage` với `dim_county`**, do mã Hạt giữa hai bảng fact bị lệch nhau ở 12% số dòng kiểm định.
+5. Thêm **nguồn dữ liệu phụ** (Data $\to$ New Data Source $\to$ Text file) `data/clean/casualties_by_year.csv` (20 dòng, 2006–2025). Nguồn này **không nối** vào mô hình hình sao, chỉ dùng cho `KPI_4_Tu_vong` và các phân tích số người chết theo năm.
 
 ---
 
@@ -39,7 +40,7 @@ Hệ thống gồm đúng **10 Worksheets** (8 biểu đồ cơ bản + 2 biểu
 * **Sheet 8**: `08_Scatter_Regression` (Scatter Plot + Hồi quy log-log: Mô hình $\log_{10}(Y) = 0{,}433436 \times \log_{10}(X) - 0{,}377417$, $R^2 = 0{,}356$, $p < 0{,}0001$. Đạt chuẩn Barem Dự báo).
 * **Sheet 9**: `09_Pareto_Damage` (Pareto Dual-Axis: 7 Hạt chịu 82% tổng số công trình bị phá hủy toàn bang; Reference Line mốc 80%).
 * **Sheet 10**: `10_Diverging_vs_Avg` (Diverging Bar quanh 0: Số vụ cháy từng năm so với trung bình 20 năm = 362 vụ/năm; năm 2017 vượt đỉnh +243 vụ).
-* **Hệ thống 4 KPI**: `KPI_1_So_vu` (7.235 vụ), `KPI_2_Dien_tich` (19,39M mẫu), `KPI_3_Pha_huy` (73.818 công trình), `KPI_4_Tu_vong` (255 người).
+* **Hệ thống 4 KPI**: `KPI_1_So_vu` (7.235 vụ), `KPI_2_Dien_tich` (19,39M mẫu), `KPI_3_Pha_huy` (73.818 công trình), `KPI_4_Tu_vong` (207 người – `SUM([deaths_direct])` trên nguồn `casualties_by_year.csv`, xem bước 5 mục 1).
 
 ---
 

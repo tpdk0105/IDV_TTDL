@@ -541,7 +541,7 @@ def build_chapter_1(doc):
             "NOAA NCEI (Chính phủ Hoa Kỳ)",
             "993 sự kiện thiên tai",
             "2006–2025",
-            "Số liệu thương vong nhân mạng (255 tử vong trực tiếp, 887 bị thương) và thiệt hại tài sản quy đổi USD.",
+            "Số liệu thương vong nhân mạng: 207 tử vong trực tiếp, 792 bị thương sau khi gộp các dòng trùng giữa vùng dự báo (dữ liệu thô ghi 255 / 887). Chỉ dùng cho thiệt hại về người.",
             "https://www.ncei.noaa.gov/pub/data/swdi/stormevents/"
         ],
         [
@@ -582,7 +582,6 @@ def build_chapter_1(doc):
         ["structures_destroyed", "Integer", "DINS + ICS-209", "Tổng số công trình kiến trúc bị phá hủy hoàn toàn (>50%)."],
         ["structures_damaged", "Integer", "DINS + ICS-209", "Tổng số công trình kiến trúc bị hư hại một phần (1–50%)."],
         ["deaths_direct / injuries", "Integer", "NOAA NCEI", "Số ca tử vong trực tiếp và bị thương do hỏa hoạn gây ra."],
-        ["damage_property_usd", "Float", "NOAA NCEI", "Giá trị thiệt hại tài sản quy đổi ra đơn vị USD thời giá."],
         ["is_outlier_ml", "Boolean Flag", "Isolation Forest", "Cờ đánh dấu sự kiện ngoại lai cực đoan phát hiện bởi mô hình học máy."],
         ["burned_area_is_imputed", "Boolean Flag", "MICE Imputer", "Cờ đánh dấu giá trị diện tích được điền khuyết bằng thuật toán MICE."]
     ]
@@ -625,7 +624,7 @@ def build_chapter_2(doc):
     )
     add_bullet_point(
         doc,
-        "Cột giá trị thiệt hại tài sản quy đổi USD (damage_property_usd) trong tệp NOAA có 27,2% bản ghi để trống hoàn toàn và thêm 54,0% bản ghi mang giá trị $0 (chỉ có 187 sự kiện có giá trị định lượng > 0). Cột nguyên nhân (Cause) trong FRAP có 32,4% bản ghi mang mã 14 ('Unknown'). Cột dân số Census trong file ranh giới hành chính ban đầu bị trống 100%, đòi hỏi nhóm phải bổ sung số liệu điều tra dân số chính thức US Census 2020.",
+        "Cột thiệt hại tài sản USD (DAMAGE_PROPERTY) trong tệp NOAA có 27,2% bản ghi để trống hoàn toàn và thêm 54,0% bản ghi mang giá trị $0 (chỉ có 187 sự kiện có giá trị định lượng > 0), nên nhóm không sử dụng; thiệt hại tài sản được đo bằng số công trình bị phá hủy từ DINS + ICS-209. Cột nguyên nhân (Cause) trong FRAP có 32,4% bản ghi mang mã 14 ('Unknown'). Cột dân số Census trong file ranh giới hành chính ban đầu bị trống 100%, đòi hỏi nhóm phải bổ sung số liệu điều tra dân số chính thức US Census 2020.",
         "Mức độ khuyết thiếu thông tin: "
     )
     add_bullet_point(
@@ -643,7 +642,7 @@ def build_chapter_2(doc):
     tbl_qa_data = [
         ["acres_burned", "FRAP GIS Calculated Acres", "0 / 7.342", "0,0%", "Thấp", "Dữ liệu đầy đủ. Giữ nguyên toàn bộ 291 vụ nhỏ < 0,1 ha."],
         ["structures_destroyed", "ICS-209 / DINS Damage", "0 / 133.649", "0,0%", "Thấp", "Hợp nhất chuỗi 20 năm. Các vụ FRAP không có thiệt hại gán bằng 0."],
-        ["damage_property_usd", "NOAA DAMAGE_PROPERTY", "270 / 993", "27,2%", "Cao", "Kết hợp thêm 54% dòng $0. Điền khuyết bằng mô hình học máy MICE."],
+        ["DAMAGE_PROPERTY (NOAA)", "NOAA DAMAGE_PROPERTY", "270 / 993", "27,2%", "Cao", "Kết hợp thêm 54% dòng $0. Không sử dụng – thiệt hại tài sản lấy từ DINS + ICS-209."],
         ["cause_name / code", "FRAP Cause", "0 / 7.342", "32,4% mã 14", "Trung bình", "Mã 14 là Unknown. Phân nhóm thành Undetermined trong phân tích."],
         ["county_population", "Demographics CENSUS", "58 / 58", "100%", "Rất cao", "Bổ sung trực tiếp bảng Dân số điều tra US Census Bureau 2020."],
         ["alarm_date / cont_date", "FRAP Alarm / Containment", "19 / 104", "0,3% / 1,4%", "Thấp", "Chuyển về chuẩn ISO 8601. Thời gian dập lửa bất hợp lý chuyển NULL."]
@@ -736,7 +735,7 @@ def build_chapter_2(doc):
     add_sub_heading(doc, "2.3.2. Mô hình 2: Điền Khuyết Thiếu Bằng Iterative Imputer (MICE)")
     add_body_paragraph(
         doc,
-        "Để xử lý các giá trị khuyết thiếu trên các trường định lượng (thời gian dập lửa, thiệt hại tài sản quy đổi USD), nhóm sử dụng kỹ thuật MICE (Multivariate Imputation by Chained Equations) dựa trên thuật toán Bayesian Ridge Regression. Thuật toán mô hình hóa từng biến số bị thiếu như một hàm hồi quy của các biến còn lại theo cơ chế chuỗi lặp hội tụ."
+        "Để xử lý các giá trị khuyết thiếu trên các trường định lượng (thời gian dập lửa, diện tích cháy), nhóm sử dụng kỹ thuật MICE (Multivariate Imputation by Chained Equations) dựa trên thuật toán Bayesian Ridge Regression. Thuật toán mô hình hóa từng biến số bị thiếu như một hàm hồi quy của các biến còn lại theo cơ chế chuỗi lặp hội tụ."
     )
     add_body_paragraph(
         doc,
@@ -748,8 +747,6 @@ def build_chapter_2(doc):
         ["acres_burned (log scale)", "Median Baseline", "68.9", "142.6", "Chuẩn đối chiếu"],
         ["acres_burned (log scale)", "KNN Imputer (k=5)", "51.3", "102.4", "Giảm 25,5% sai số"],
         ["acres_burned (log scale)", "Iterative Imputer (MICE)", "42.5", "88.2", "Giảm 38,3% sai số (Tốt nhất)"],
-        ["damage_property_usd (log)", "Median Baseline", "1.85", "3.42", "Chuẩn đối chiếu"],
-        ["damage_property_usd (log)", "Iterative Imputer (MICE)", "1.12", "2.15", "Giảm 39,4% sai số (Tốt nhất)"]
     ]
     add_academic_table(
         doc,
@@ -780,7 +777,7 @@ def build_chapter_2(doc):
     )
     add_bullet_point(
         doc,
-        "Ghi nhận 255 người tử vong trực tiếp và 887 người bị thương do các vụ cháy rừng gây ra suốt 20 năm.",
+        "Ghi nhận 207 người tử vong trực tiếp và 792 người bị thương do các vụ cháy rừng gây ra suốt 20 năm (NOAA, sau khi gộp các dòng trùng giữa vùng dự báo; riêng Camp Fire 2018 chiếm 86 người).",
         "Thương vong sinh mạng: "
     )
 
@@ -905,7 +902,7 @@ def build_chapter_3(doc):
     add_sub_heading(doc, "3.3.4. Bảng fact_fire_incident.csv (Bảng Sự Cố Trung Tâm - Fact Lõi)")
     add_bullet_point(doc, "Bảng Fact Trung Tâm (Lõi đo lường sự cố cháy rừng vĩ mô).", "Phân loại bảng: ")
     add_bullet_point(doc, "7.235 dòng quan sát (mỗi dòng đại diện cho một vụ cháy rừng đơn lẻ đã làm sạch, vượt xa chỉ tiêu ≥ 5.000 dòng của barem).", "Quy mô quan sát: ")
-    add_bullet_point(doc, "20 cột thuộc tính ([incident_id], [fire_name], [alarm_date], [cont_date], [date_id], [county_id], [cause_id], [acres_burned], [burned_area_ha], [duration_days], [latitude], [longitude], [total_structures_destroyed], [total_structures_damaged], [deaths_direct], [injuries_direct], [damage_property_usd], [is_outlier_ml], [outlier_score], [burned_area_is_imputed]).", "Cấu trúc trường: ")
+    add_bullet_point(doc, "19 cột thuộc tính ([incident_id], [fire_name], [frap_fire_num], [date_id], [county_id], [cause_id], [acres_burned], [burned_area_ha], [duration_days], [latitude], [longitude], [total_structures_destroyed], [total_structures_damaged], [deaths_direct], [injuries_direct], [is_outlier_ml], [outlier_score], [burned_area_is_imputed], [cause_is_predicted]).", "Cấu trúc trường: ")
     add_bullet_point(doc, "Khóa chính (PK): incident_id; Khóa ngoại (FK): date_id -> dim_date, county_id -> dim_county, cause_id -> dim_cause.", "Ràng buộc toàn vẹn khóa: ")
     add_bullet_point(doc, "Lưu trữ toàn bộ các đại lượng định lượng (Measures): diện tích cháy mẫu Anh, diện tích hecta, thời gian khống chế, số công trình bị phá hủy, số người tử vong/bị thương và thiệt hại quy đổi USD. Là nguồn dữ liệu cho hầu hết các biểu đồ vĩ mô trên Dashboard D1, D2, D3.", "Công dụng nghiệp vụ & Trực quan hóa: ")
 
@@ -1154,7 +1151,7 @@ def build_chapter_4(doc):
     add_bullet_point(doc, "Field: [Fire Incidents Count (calc)]. Định dạng: Số nguyên. Con số đúng: 7.235 vụ cháy.", "KPI 1 - Tổng số vụ cháy rừng: ")
     add_bullet_point(doc, "Field: SUM([acres_burned]). Định dạng: Millions (2 số lẻ). Con số đúng: 19,39 triệu mẫu Anh (Acres).", "KPI 2 - Tổng diện tích rừng bị thiêu rụi: ")
     add_bullet_point(doc, "Field: SUM([total_structures_destroyed]). Định dạng: Số nguyên. Con số đúng: 73.818 công trình bị phá hủy.", "KPI 3 - Tổng công trình bị tàn phá: ")
-    add_bullet_point(doc, "Field: SUM([deaths_direct]). Định dạng: Số nguyên. Con số đúng: 255 người tử vong trực tiếp.", "KPI 4 - Tổng thương vong sinh mạng: ")
+    add_bullet_point(doc, "Field: SUM([deaths_direct]) trên nguồn dữ liệu phụ casualties_by_year.csv. Định dạng: Số nguyên. Con số đúng: 207 người tử vong trực tiếp.", "KPI 4 - Tổng thương vong sinh mạng: ")
     add_image_placeholder(doc, "HỆ THỐNG 4 THẺ CHỈ SỐ KPI TỔNG QUAN VĨ MÔ", "Dán ảnh chụp màn hình cụm 4 Thẻ KPI trên đầu Dashboard D1 vào khung này")
 
     add_section_heading(doc, "4.4. Hệ Thống Các Trường Tính Toán (Calculated Fields) & Parameters Trên Tableau")
@@ -1489,7 +1486,7 @@ def build_chapter_7(doc):
     )
     add_bullet_point(
         doc,
-        "Giới thiệu bối cảnh biến đổi khí hậu California, mục tiêu nghiên cứu và công bố 4 chỉ số KPI vĩ mô trên đỉnh Dashboard D1 (7.235 vụ cháy, 19,39 triệu mẫu bị thiêu rụi, 73.818 công trình bị phá hủy, 255 sinh mạng tử vong).",
+        "Giới thiệu bối cảnh biến đổi khí hậu California, mục tiêu nghiên cứu và công bố 4 chỉ số KPI vĩ mô trên đỉnh Dashboard D1 (7.235 vụ cháy, 19,39 triệu mẫu bị thiêu rụi, 73.818 công trình bị phá hủy, 207 sinh mạng tử vong).",
         "Phút 1 - Mở đầu & Giới thiệu KPI vĩ mô: "
     )
     add_bullet_point(

@@ -183,4 +183,6 @@
 | `KPI_1_So_vu` | `[Fire Incidents Count (calc)]` | Số nguyên | **7.235 vụ** |
 | `KPI_2_Dien_tich` | `SUM([acres_burned])` | Millions, 2 số thập phân | **19,39 triệu mẫu (acres)** |
 | `KPI_3_Pha_huy` | `SUM([total_structures_destroyed])` | Số nguyên | **73.818 công trình** |
-| `KPI_4_Tu_vong` | `SUM([deaths_direct])` | Số nguyên | **255 người** |
+| `KPI_4_Tu_vong` | `SUM([deaths_direct])` của nguồn dữ liệu phụ `casualties_by_year.csv` | Số nguyên | **207 người** |
+
+> ⚠️ **KPI_4 không lấy từ `fact_fire_incident`**: cột `deaths_direct` ở bảng đó chỉ gồm thương vong NOAA khớp được với vụ cháy FRAP (tổng 174). Số chính thức là **207 người chết trực tiếp 2006–2025** (NOAA sau khi gộp các dòng trùng giữa vùng dự báo; dữ liệu thô cộng ra 255 do đếm trùng), lấy từ `data/clean/casualties_by_year.csv`.
