@@ -16,6 +16,11 @@ Mục đích:
       Gộp các dòng trùng của cùng 1 vụ cháy ghi ở nhiều vùng dự báo (forecast zone).
     - Xuất tập dữ liệu trung gian: `data/interim/master_rules_cleaned.csv`, `data/interim/noaa_casualties_cleaned.csv`.
 
+Luồng xử lý (clean_by_rules):
+    FRAP  -> clean_frap -> attach_damage (ICS-209 + DINS) -> attach_county -> apply_rule_checks -> finalize
+    NOAA  -> clean_noaa
+    Số bước ghi log ("1.", "3b.", "9a."...) khớp với bảng trong docs/CLEANING_LOG.md.
+
 Cách chạy (từ thư mục gốc dự án):
     python src/03_clean.py
 """
@@ -54,12 +59,14 @@ DINS_DUPLICATE_KEY = [
 DINS_DAMAGED_LEVELS = ["Affected (>0-10%)", "Minor (10-25%)", "Major (25-50%)"]
 
 FIRE_KEY = ["year", "fire_name", "unit_id"]
+UNNAMED_FIRE = "UNNAMED"  # ten gan cho vu FRAP khong co ten (khong dung de doi chieu)
+STRUCTURE_COLUMNS = ["structures_destroyed", "structures_damaged"]
 
 OUTPUT_COLUMNS = [
     "incident_id", "fire_name", "fire_name_raw", "year", "alarm_date", "cont_date", "duration_days",
     "county", "county_fips", "county_population", "county_area_sqmi", "unit_id", "agency",
     "cause_code", "cause_name", "cause_group", "acres_burned", "burned_area_ha",
-    "structures_destroyed", "structures_damaged", "damage_source", "damage_match", "n_polygons", "frap_global_id",
+    *STRUCTURE_COLUMNS, "damage_source", "damage_match", "n_polygons", "frap_global_id",
 ]
 
 # NOAA: chi giu cot thiet hai ve nguoi
@@ -71,6 +78,10 @@ NOAA_DATE_FORMAT = "%d-%b-%y %H:%M:%S"  # vd "08-NOV-18 06:30:00"
 
 CLEANING_LOG: list[dict] = []
 
+
+# ---------------------------------------------------------------------------
+# Nhat ky lam sach
+# ---------------------------------------------------------------------------
 
 def log_step(step: str, before: int, after: int, note: str = "") -> None:
     """Ghi lai 1 buoc lam sach (de dien vao docs/CLEANING_LOG.md) va in ra man hinh."""
@@ -85,35 +96,52 @@ def log_as_markdown() -> str:
     return "\n".join([header, *rows])
 
 
+# ---------------------------------------------------------------------------
+# FRAP: moi dong dau ra = 1 vu chay
+# ---------------------------------------------------------------------------
+
 def clean_frap(frap: pd.DataFrame) -> pd.DataFrame:
     """Loc 2006-2025, chuan hoa khoa / ngay / dien tich / nguyen nhan, gop nhieu polygon thanh 1 vu chay."""
     n_raw = len(frap)
-    df = frap[frap["Year"].between(*eda.STUDY_YEARS)].copy()
-    log_step("1. Loc nam 2006-2025 (FRAP)", n_raw, len(df), "Bo vu truoc 2006 va 77 dong thieu Year")
+    frap = frap[frap["Year"].between(*eda.STUDY_YEARS)]
+    log_step("1. Loc nam 2006-2025 (FRAP)", n_raw, len(frap), "Bo vu truoc 2006 va 77 dong thieu Year")
 
-    df = pd.DataFrame({
-        "year": df["Year"].astype(int),
-        "fire_name_raw": df["Fire Name"],
-        "fire_name": eda.normalize_fire_name(df["Fire Name"]),
-        "unit_id": df["Unit ID"].str.strip().str.upper(),
-        "agency": df["Agency"],
-        "alarm_date": pd.to_datetime(df["Alarm Date"], format=eda.DATE_FORMAT, errors="coerce"),
-        "cont_date": pd.to_datetime(df["Containment Date"], format=eda.DATE_FORMAT, errors="coerce"),
-        "cause_code": df["Cause"].astype("Int64"),
-        "acres_burned": df["GIS Calculated Acres"],
-        "objectid": df["OBJECTID"],
-        "frap_global_id": df["GlobalID"],
+    fires = merge_polygons(standardize_frap_columns(frap))
+    # Quy doi don vi, giu song song acres va ha
+    fires["burned_area_ha"] = fires["acres_burned"] * eda.ACRE_TO_HA
+    fires = null_invalid_duration(fires)
+    return add_cause_columns(fires)
+
+
+def standardize_frap_columns(frap: pd.DataFrame) -> pd.DataFrame:
+    """Doi ten cot FRAP, chuan hoa Khoa 1 / Khoa 3, ngay va ma nguyen nhan."""
+    return pd.DataFrame({
+        "year": frap["Year"].astype(int),
+        "fire_name_raw": frap["Fire Name"],
+        "fire_name": eda.normalize_fire_name(frap["Fire Name"]),
+        "unit_id": frap["Unit ID"].str.strip().str.upper(),
+        "agency": frap["Agency"],
+        "alarm_date": pd.to_datetime(frap["Alarm Date"], format=eda.DATE_FORMAT, errors="coerce"),
+        "cont_date": pd.to_datetime(frap["Containment Date"], format=eda.DATE_FORMAT, errors="coerce"),
+        "cause_code": frap["Cause"].astype("Int64"),
+        "acres_burned": frap["GIS Calculated Acres"],
+        "objectid": frap["OBJECTID"],
+        "frap_global_id": frap["GlobalID"],
     })
 
+
+def merge_polygons(df: pd.DataFrame) -> pd.DataFrame:
+    """1 vu chay co the gom nhieu polygon: gop theo (nam, ten, don vi); thuoc tinh dang chu lay theo polygon lon nhat."""
     # Vu khong ten: khoa gop rieng theo OBJECTID de khong bi gop chung voi nhau
     unnamed = df["fire_name"].isna()
-    df["_group_name"] = df["fire_name"].fillna("_UNNAMED_" + df["objectid"].astype(str))
-    df["fire_name"] = df["fire_name"].fillna("UNNAMED")
+    df = df.assign(
+        _group_name=df["fire_name"].fillna("_UNNAMED_" + df["objectid"].astype(str)),
+        fire_name=df["fire_name"].fillna(UNNAMED_FIRE),
+    )
 
-    # Gop polygon: (nam, ten, don vi). Thuoc tinh dang chu lay theo polygon lon nhat
-    n_before = len(df)
-    df = df.sort_values("acres_burned", ascending=False)
-    fires = df.groupby(["year", "_group_name", "unit_id"], dropna=False, sort=False).agg(
+    fires = df.sort_values("acres_burned", ascending=False).groupby(
+        ["year", "_group_name", "unit_id"], dropna=False, sort=False,
+    ).agg(
         fire_name=("fire_name", "first"),
         fire_name_raw=("fire_name_raw", "first"),
         agency=("agency", "first"),
@@ -124,27 +152,36 @@ def clean_frap(frap: pd.DataFrame) -> pd.DataFrame:
         acres_burned=("acres_burned", "sum"),
         n_polygons=("objectid", "size"),
     ).reset_index().drop(columns="_group_name")
-    log_step("3. Gop polygon trung lap logic (FRAP)", n_before, len(fires),
+    log_step("3. Gop polygon trung lap logic (FRAP)", len(df), len(fires),
              f"Khoa (year, fire_name, unit_id); {int(unnamed.sum())} vu khong ten giu rieng")
+    return fires
 
-    # Quy doi don vi, giu song song acres va ha
-    fires["burned_area_ha"] = fires["acres_burned"] * eda.ACRE_TO_HA
 
-    # Thoi gian dap lua: < 0 hoac > 1 nam coi la loi nhap lieu -> NULL
+def null_invalid_duration(fires: pd.DataFrame) -> pd.DataFrame:
+    """Thoi gian dap lua < 0 hoac > 1 nam coi la loi nhap lieu -> duration_days va cont_date = NULL."""
     days = (fires["cont_date"] - fires["alarm_date"]).dt.days
     invalid = days.notna() & ~days.between(0, eda.MAX_CONTAINMENT_DAYS)
     fires["duration_days"] = days.where(~invalid).astype(float)
     fires.loc[invalid, "cont_date"] = pd.NaT
     log_step("8a. Thoi gian dap lua bat hop ly -> NULL", len(fires), len(fires),
              f"{int(invalid.sum())} vu co cont_date < alarm_date hoac > {eda.MAX_CONTAINMENT_DAYS} ngay")
+    return fires
 
-    fires["cause_name"] = fires["cause_code"].map(CAUSE_NAMES)
+
+def add_cause_columns(fires: pd.DataFrame) -> pd.DataFrame:
+    """Ten nguyen nhan + nhom Natural / Human / Undetermined (thieu ma nguyen nhan -> Undetermined)."""
+    code = fires["cause_code"]
+    fires["cause_name"] = code.map(CAUSE_NAMES)
     fires["cause_group"] = np.select(
-        [fires["cause_code"].isin(NATURAL_CAUSES), fires["cause_code"].isin(UNDETERMINED_CAUSES) | fires["cause_code"].isna()],
+        [code.isin(NATURAL_CAUSES), code.isin(UNDETERMINED_CAUSES) | code.isna()],
         ["Natural", "Undetermined"], default="Human",
     )
     return fires
 
+
+# ---------------------------------------------------------------------------
+# Thiet hai cong trinh: ICS-209 (2006-2012) + DINS (2013-2025)
+# ---------------------------------------------------------------------------
 
 def clean_dins(dins: pd.DataFrame) -> pd.DataFrame:
     """Bo kiem ke lap, dem cong trinh bi pha huy / hu hai theo (year, fire_name, unit_id)."""
@@ -157,7 +194,7 @@ def clean_dins(dins: pd.DataFrame) -> pd.DataFrame:
         "fire_name": eda.normalize_fire_name(dins["* Incident Name"]),
         "unit_id": dins["* CAL FIRE Unit"].str.strip().str.upper(),
         "county": dins["County"].str.strip(),
-        "destroyed": dins["* Damage"].eq("Destroyed (>50%)"),
+        "destroyed": dins["* Damage"].eq(eda.DINS_DESTROYED),
         "damaged": dins["* Damage"].isin(DINS_DAMAGED_LEVELS),
     })
     return df.groupby(FIRE_KEY, as_index=False).agg(
@@ -199,17 +236,14 @@ def clean_ics209(ics: pd.DataFrame, county_names: list[str]) -> pd.DataFrame:
     ).assign(damage_source="USDA_ICS_209")
 
 
-def attach_damage(fires: pd.DataFrame, damage: pd.DataFrame) -> pd.DataFrame:
-    """Ghep thiet hai vao vu chay: khop du 3 khoa truoc, sau do khop (year, fire_name) -> vu lon nhat cung ten."""
-    fires = fires.reset_index(drop=True)
-    fires["_fire_idx"] = fires.index
-
-    # Vu khong ten (fire_name = UNNAMED) khong the doi chieu theo ten -> loai khoi ca 2 lan khop
-    named = fires[fires["fire_name"] != "UNNAMED"]
+def match_damage_to_fires(damage: pd.DataFrame, fires: pd.DataFrame) -> pd.DataFrame:
+    """Gan moi ban ghi thiet hai 1 chi so vu chay `_fire_idx` (NaN neu khong khop) va cach khop `damage_match`."""
+    # Vu khong ten khong the doi chieu theo ten -> loai khoi ca 2 lan khop
+    named = fires[fires["fire_name"] != UNNAMED_FIRE]
 
     # Lan 1: khop chinh xac (year, fire_name, unit_id)
-    exact = damage.merge(named[[*FIRE_KEY, "_fire_idx"]], on=FIRE_KEY, how="left", validate="m:1")
-    exact["damage_match"] = np.where(exact["_fire_idx"].notna(), "exact", None)
+    matched = damage.merge(named[[*FIRE_KEY, "_fire_idx"]], on=FIRE_KEY, how="left", validate="m:1")
+    matched["damage_match"] = np.where(matched["_fire_idx"].notna(), "exact", None)
 
     # Lan 2: dong chua khop (thuong do nguon ghi ma don vi khac) -> vu lon nhat cung (year, fire_name).
     # Neu ten la duy nhat trong nam thi gan chac chan; neu nhieu vu trung ten thi co the gan nham -> danh dau rieng
@@ -218,27 +252,41 @@ def attach_damage(fires: pd.DataFrame, damage: pd.DataFrame) -> pd.DataFrame:
         .groupby(["year", "fire_name"], as_index=False)
         .agg(_fire_idx=("_fire_idx", "first"), _n_same_name=("_fire_idx", "size"))
     )
-    unmatched = exact["_fire_idx"].isna()
-    fallback = exact.loc[unmatched, ["year", "fire_name"]].merge(largest, on=["year", "fire_name"], how="left")
-    exact.loc[unmatched, "_fire_idx"] = fallback["_fire_idx"].to_numpy()
-    exact.loc[unmatched, "damage_match"] = np.select(
+    unmatched = matched["_fire_idx"].isna()
+    fallback = matched.loc[unmatched, ["year", "fire_name"]].merge(largest, on=["year", "fire_name"], how="left")
+    matched.loc[unmatched, "_fire_idx"] = fallback["_fire_idx"].to_numpy()
+    matched.loc[unmatched, "damage_match"] = np.select(
         [fallback["_n_same_name"].eq(1), fallback["_n_same_name"].gt(1)],
         ["name_year_unique", "name_year_largest"], default=None,
     )
+    return matched
 
-    matched = exact["_fire_idx"].notna()
+
+def report_damage_match(matched: pd.DataFrame, damage: pd.DataFrame) -> None:
+    """Ghi log ty le cong trinh khop duoc theo tung cach khop va in 10 vu thiet hai lon nhat chua khop."""
+    found = matched["_fire_idx"].notna()
     total = damage["structures_destroyed"].sum()
-    got = exact.loc[matched, "structures_destroyed"].sum()
-    by_method = exact[matched].groupby("damage_match")["structures_destroyed"].agg(["size", "sum"])
+    got = matched.loc[found, "structures_destroyed"].sum()
+    by_method = matched[found].groupby("damage_match")["structures_destroyed"].agg(["size", "sum"])
     method_note = ", ".join(f"{m}: {int(r['size'])} vu / {r['sum']:,.0f} cong trinh" for m, r in by_method.iterrows())
-    log_step("7. Hop nhat thiet hai 20 nam (ICS-209 + DINS)", len(damage), int(matched.sum()),
+    log_step("7. Hop nhat thiet hai 20 nam (ICS-209 + DINS)", len(damage), int(found.sum()),
              f"Khop {got:,.0f} / {total:,.0f} cong trinh bi pha huy ({got / total:.1%}) [{method_note}]; "
-             f"{int((~matched).sum())} vu thiet hai khong tim thay trong FRAP")
-    top_unmatched = exact[~matched].nlargest(10, "structures_destroyed")
+             f"{int((~found).sum())} vu thiet hai khong tim thay trong FRAP")
+
+    top_unmatched = matched[~found].nlargest(10, "structures_destroyed")
     print("[TV1 - CLEAN] 10 vu thiet hai lon nhat chua khop (ghi vao CLEANING_LOG):")
     print(top_unmatched[[*FIRE_KEY, "structures_destroyed", "damage_source"]].to_string(index=False))
 
-    per_fire = exact[matched].groupby("_fire_idx").agg(
+
+def attach_damage(fires: pd.DataFrame, damage: pd.DataFrame) -> pd.DataFrame:
+    """Ghep thiet hai vao vu chay: khop du 3 khoa truoc, sau do khop (year, fire_name) -> vu lon nhat cung ten."""
+    fires = fires.reset_index(drop=True)
+    fires["_fire_idx"] = fires.index
+
+    matched = match_damage_to_fires(damage, fires)
+    report_damage_match(matched, damage)
+
+    per_fire = matched[matched["_fire_idx"].notna()].groupby("_fire_idx").agg(
         structures_destroyed=("structures_destroyed", "sum"),
         structures_damaged=("structures_damaged", "sum"),
         damage_source=("damage_source", "first"),
@@ -246,20 +294,25 @@ def attach_damage(fires: pd.DataFrame, damage: pd.DataFrame) -> pd.DataFrame:
         county=("county", "first"),
     )
     fires = fires.join(per_fire, on="_fire_idx").drop(columns="_fire_idx")
-    fires[["structures_destroyed", "structures_damaged"]] = fires[["structures_destroyed", "structures_damaged"]].fillna(0)
+    fires[STRUCTURE_COLUMNS] = fires[STRUCTURE_COLUMNS].fillna(0)
     fires["damage_source"] = fires["damage_source"].fillna("NONE")
     fires["damage_match"] = fires["damage_match"].fillna("none")
     return fires
 
 
+# ---------------------------------------------------------------------------
+# Hat, kiem tra quy tac, hoan thien bang
+# ---------------------------------------------------------------------------
+
 def attach_county(fires: pd.DataFrame, damage: pd.DataFrame, demographics: pd.DataFrame) -> pd.DataFrame:
     """Hat lay tu nguon thiet hai; vu con thieu -> Hat pho bien nhat cua don vi (unit_id). Ghep dien tich / FIPS."""
     unit_to_county = damage.dropna(subset=["unit_id", "county"]).groupby("unit_id")["county"].agg(lambda s: s.mode().iat[0])
-    before_missing = int(fires["county"].isna().sum())
+    missing_before = int(fires["county"].isna().sum())
     fires["county"] = fires["county"].fillna(fires["unit_id"].map(unit_to_county))
+    missing_after = int(fires["county"].isna().sum())
     log_step("4. Chuan hoa Hat (county)", len(fires), len(fires),
-             f"{before_missing - int(fires['county'].isna().sum()):,} vu suy Hat tu unit_id; "
-             f"con {int(fires['county'].isna().sum()):,} vu khong xac dinh duoc Hat")
+             f"{missing_before - missing_after:,} vu suy Hat tu unit_id; "
+             f"con {missing_after:,} vu khong xac dinh duoc Hat")
 
     counties = pd.DataFrame({
         "county": demographics["CDT_NAME_SHORT"],
@@ -272,15 +325,32 @@ def attach_county(fires: pd.DataFrame, damage: pd.DataFrame, demographics: pd.Da
 
 def apply_rule_checks(fires: pd.DataFrame) -> pd.DataFrame:
     """Gia tri am bat hop ly -> NULL (khong xoa dong)."""
-    cols = ["acres_burned", "burned_area_ha", "structures_destroyed", "structures_damaged"]
+    cols = ["acres_burned", "burned_area_ha", *STRUCTURE_COLUMNS]
     negative = fires[cols] < 0
     fires[cols] = fires[cols].mask(negative)
     log_step("8b. Gia tri am bat hop ly -> NULL", len(fires), len(fires),
              f"{int(negative.to_numpy().sum())} o am trong {', '.join(cols)}")
-    log_step("5. Chuan hoa toa do (bounding box)", len(fires), len(fires),
-             "N/A: FRAP khong co cot lat/lon; toa do DINS / ICS-209 deu nam trong California (xem DATA_QUALITY_REPORT)")
     return fires
 
+
+def finalize(fires: pd.DataFrame) -> pd.DataFrame:
+    """Tao incident_id, ep kieu, sap xep cot theo DATA_DICTIONARY va kiem tra rang buoc."""
+    fires = fires.sort_values(["year", "alarm_date", "fire_name", "unit_id"], na_position="last").reset_index(drop=True)
+    seq_in_year = fires.groupby("year").cumcount().add(1).astype(str).str.zfill(5)
+    fires["incident_id"] = "CALFIRE-" + fires["year"].astype(str) + "-" + seq_in_year
+    fires[STRUCTURE_COLUMNS] = fires[STRUCTURE_COLUMNS].astype(int)
+    fires = fires[OUTPUT_COLUMNS]
+
+    assert len(fires) >= MIN_ROWS, f"Chi con {len(fires)} dong, duoi muc toi thieu {MIN_ROWS}"
+    assert fires["incident_id"].is_unique
+    assert fires["year"].between(*eda.STUDY_YEARS).all()
+    assert (fires["burned_area_ha"].dropna() >= 0).all()
+    return fires
+
+
+# ---------------------------------------------------------------------------
+# NOAA: thiet hai ve nguoi
+# ---------------------------------------------------------------------------
 
 def clean_noaa(noaa: pd.DataFrame) -> pd.DataFrame:
     """Giu cot thuong vong, gop cac dong cua cung 1 vu chay bi ghi lap o nhieu vung du bao."""
@@ -302,8 +372,7 @@ def clean_noaa(noaa: pd.DataFrame) -> pd.DataFrame:
 
     # 1 vu chay lan qua nhieu vung du bao -> nhieu dong lap lai cung so nguoi chet (vd Woolsey 2018: 5 dong x 3).
     # Gop theo (EPISODE_ID, ten vu chay), lay max; dong khong tach duoc ten giu rieng
-    cols = list(NOAA_CASUALTY_COLUMNS.values())
-    deaths_before = int(df["deaths_direct"].sum())
+    casualty_cols = list(NOAA_CASUALTY_COLUMNS.values())
     events = df.groupby(["episode_id", "_fire_key"], sort=False).agg(
         noaa_event_id=("noaa_event_id", "min"),
         year=("year", "first"),
@@ -311,39 +380,29 @@ def clean_noaa(noaa: pd.DataFrame) -> pd.DataFrame:
         fire_name=("fire_name", "first"),
         zone_names=("zone_name", lambda s: "; ".join(sorted(s.unique()))),
         n_zones=("zone_name", "nunique"),
-        **{c: (c, "max") for c in cols},
+        **{c: (c, "max") for c in casualty_cols},
     ).reset_index().drop(columns="_fire_key")
     log_step("9b. Gop su kien trung giua cac vung du bao (NOAA)", len(df), len(events),
-             f"deaths_direct {deaths_before} -> {int(events['deaths_direct'].sum())}, "
+             f"deaths_direct {int(df['deaths_direct'].sum())} -> {int(events['deaths_direct'].sum())}, "
              f"injuries_direct {int(df['injuries_direct'].sum())} -> {int(events['injuries_direct'].sum())}")
 
     events = events.sort_values(["begin_date", "noaa_event_id"]).reset_index(drop=True)
     assert events["noaa_event_id"].is_unique
-    assert (events[cols] >= 0).all().all()
-    return events[["noaa_event_id", "episode_id", "year", "begin_date", "fire_name", "zone_names", "n_zones", *cols]]
+    assert (events[casualty_cols] >= 0).all().all()
+    return events[["noaa_event_id", "episode_id", "year", "begin_date", "fire_name", "zone_names", "n_zones", *casualty_cols]]
 
 
-def finalize(fires: pd.DataFrame) -> pd.DataFrame:
-    """Tao incident_id, ep kieu, sap xep cot theo DATA_DICTIONARY va kiem tra rang buoc."""
-    fires = fires.sort_values(["year", "alarm_date", "fire_name", "unit_id"], na_position="last").reset_index(drop=True)
-    fires["incident_id"] = "CALFIRE-" + fires["year"].astype(str) + "-" + fires.groupby("year").cumcount().add(1).astype(str).str.zfill(5)
-    fires[["structures_destroyed", "structures_damaged"]] = fires[["structures_destroyed", "structures_damaged"]].astype(int)
-    fires = fires[OUTPUT_COLUMNS]
-
-    assert len(fires) >= MIN_ROWS, f"Chi con {len(fires)} dong, duoi muc toi thieu {MIN_ROWS}"
-    assert fires["incident_id"].is_unique
-    assert fires["year"].between(*eda.STUDY_YEARS).all()
-    assert (fires["burned_area_ha"].dropna() >= 0).all()
-    return fires
-
+# ---------------------------------------------------------------------------
+# Dieu phoi
+# ---------------------------------------------------------------------------
 
 def clean_by_rules() -> pd.DataFrame:
     """Thuc hien lam sach theo quy tac tu data/raw/calfire sang data/interim/master_rules_cleaned.csv."""
     CLEANING_LOG.clear()
     print("[TV1 - CLEAN] Bat dau lam sach du lieu theo quy tac...")
     raw = eda.load_raw_data()
-    log_step("0. Nap du lieu tho", sum(len(df) for df in raw.values()), sum(len(df) for df in raw.values()),
-             f"{len(raw)} file tu {eda.RAW_DIR}")
+    n_raw = sum(len(df) for df in raw.values())
+    log_step("0. Nap du lieu tho", n_raw, n_raw, f"{len(raw)} file tu {eda.RAW_DIR}")
 
     county_names = raw["demographics"]["CDT_NAME_SHORT"].tolist()
     fires = clean_frap(raw["perimeters"])
@@ -352,6 +411,8 @@ def clean_by_rules() -> pd.DataFrame:
     fires = attach_damage(fires, damage)
     fires = attach_county(fires, damage, raw["demographics"])
     fires = apply_rule_checks(fires)
+    log_step("5. Chuan hoa toa do (bounding box)", len(fires), len(fires),
+             "N/A: FRAP khong co cot lat/lon; toa do DINS / ICS-209 deu nam trong California (xem DATA_QUALITY_REPORT)")
     fires = finalize(fires)
     casualties = clean_noaa(raw["noaa"])
 
@@ -366,4 +427,4 @@ def clean_by_rules() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    clean_by_rules() 
+    clean_by_rules()

@@ -13,6 +13,7 @@ Mục đích:
         6. Thiệt hại về người theo năm (NOAA): người chết / bị thương trực tiếp, tách phần bị đếm trùng giữa các vùng dự báo.
     - NOAA chỉ dùng cho thiệt hại về người; thiệt hại tài sản lấy từ DINS + ICS-209.
     - Xuất các biểu đồ tĩnh sang thư mục `reports/figures/` và lập báo cáo `docs/DATA_QUALITY_REPORT.md`.
+    - Các hằng số / hàm chuẩn hóa ở đầu file được dùng lại trong `03_clean.py` và `08_predictive_model.py`.
 
 Cách chạy (từ thư mục gốc dự án):
     python src/02_eda.py
@@ -29,10 +30,10 @@ if hasattr(sys.stdout, "reconfigure") and sys.stdout.encoding.lower() != "utf-8"
     sys.stdout.reconfigure(encoding="utf-8")
 
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FuncFormatter
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.ticker import FuncFormatter
 
 RAW_DIR = Path("data/raw/calfire")
 FIGURES_DIR = Path("reports/figures")
@@ -47,32 +48,33 @@ RAW_FILES = {
 }
 
 STUDY_YEARS = (2006, 2025)
+STUDY_YEAR_RANGE = range(STUDY_YEARS[0], STUDY_YEARS[1] + 1)
 DATE_FORMAT = "%m/%d/%Y %I:%M:%S %p"  # dinh dang ngay cua FRAP va DINS, vd "8/1/2025 12:00:00 AM"
 MAX_CONTAINMENT_DAYS = 365  # thoi gian dap lua < 0 hoac > 1 nam coi la loi nhap lieu
 ACRE_TO_HA = 0.404686
 MEGAFIRE_HA = 100_000 * ACRE_TO_HA  # sieu dam chay >= 100.000 acres (theo docs/DEMO_SCRIPT.md)
+DINS_DESTROYED = "Destroyed (>50%)"  # muc thiet hai "pha huy hoan toan" trong cot DINS `* Damage`
 # Ten vu chay trong narrative NOAA: "The Camp Fire", "the August Complex" -> CAMP, AUGUST
 NOAA_FIRE_NAME_PATTERN = r"\b(?:The )?([A-Z][\w'-]*(?: [A-Z][\w'-]*)?) (?:Fire|Complex)\b"
 
+# Nhan nguon thiet hai cong trinh (dung lam chu giai tren bieu do)
+SOURCE_ICS = "ICS-209 (2006-2012)"
+SOURCE_DINS = "DINS (2013-2025)"
+
 # Bang mau theo docs/COLOR_GUIDE.md (muc 2.1 Fire Sequential + mau trung tinh)
 COLOR_NEUTRAL = "#7F7F7F"
+COLOR_FIRE_LIGHT = "#FDAE6B"
 COLOR_FIRE_MID = "#F16913"
 COLOR_FIRE_HIGH = "#D94801"
 COLOR_FIRE_EXTREME = "#8C2D04"
+SOURCE_COLORS = {SOURCE_ICS: COLOR_FIRE_LIGHT, SOURCE_DINS: COLOR_FIRE_MID}
+
+JITTER_SEED = 42  # stripplot rai diem ngau nhien bang np.random -> co dinh de anh giong nhau moi lan chay
 
 
 # ---------------------------------------------------------------------------
-# Doc du lieu
+# Doc du lieu & chuan hoa (dung chung voi 03_clean.py)
 # ---------------------------------------------------------------------------
-
-def vn_number(value, decimals: int = 0) -> str:
-    """So hien thi tren bieu do theo kieu Viet Nam: 7.342 (hang nghin), 97,5 (thap phan)."""
-    return f"{value:,.{decimals}f}".replace(",", "_").replace(".", ",").replace("_", ".")
-
-
-# Nhan truc so kieu Viet Nam cho truc tuyen tinh (vd 20.000 thay vi 20000, 0,05 thay vi 0.05)
-VN_TICK_FORMATTER = FuncFormatter(lambda x, _: vn_number(x, 2).rstrip("0").rstrip(","))
-
 
 def load_raw_data(raw_dir: Path = RAW_DIR) -> dict:
     """Doc nguyen trang 5 file tho -> {ten_ngan: DataFrame}. Khong them / sua cot."""
@@ -85,11 +87,9 @@ def load_raw_data(raw_dir: Path = RAW_DIR) -> dict:
 
 def add_derived_columns(raw: dict) -> dict:
     """Tra ve ban sao co them cot phai sinh dung cho bieu do; giu nguyen dict tho de phan tich khuyet thieu."""
-    data = dict(raw)
     perimeters = raw["perimeters"].copy()
     perimeters["burned_area_ha"] = perimeters["GIS Calculated Acres"] * ACRE_TO_HA
-    data.update(perimeters=perimeters)
-    return data
+    return {**raw, "perimeters": perimeters}
 
 
 def normalize_fire_name(names: pd.Series) -> pd.Series:
@@ -121,17 +121,17 @@ def build_structures_destroyed(data: dict) -> pd.DataFrame:
         "year": ics["START_YEAR"],
         "fire_name": normalize_fire_name(ics["INCIDENT_NAME"]),
         "structures_destroyed": ics["STR_DESTROYED_TOTAL"],
-        "source": "ICS-209 (2006-2012)",
+        "source": SOURCE_ICS,
     })
 
-    # DINS: moi dong la 1 cong trinh -> dem so dong "Destroyed (>50%)" theo (nam, ten vu chay)
+    # DINS: moi dong la 1 cong trinh -> dem so dong bi pha huy theo (nam, ten vu chay)
     dins = data["dins"]
-    destroyed = dins[dins["* Damage"] == "Destroyed (>50%)"]
+    destroyed = dins[dins["* Damage"] == DINS_DESTROYED]
     year = pd.to_datetime(destroyed["Incident Start Date"], format=DATE_FORMAT).dt.year
     dins_part = (
         destroyed.assign(year=year, fire_name=normalize_fire_name(destroyed["* Incident Name"]))
         .groupby(["year", "fire_name"]).size().rename("structures_destroyed").reset_index()
-        .assign(source="DINS (2013-2025)")
+        .assign(source=SOURCE_DINS)
     )
 
     combined = pd.concat([ics_part, dins_part], ignore_index=True)
@@ -186,6 +186,40 @@ def summarize_all_files(raw: dict | None = None) -> pd.DataFrame:
     return summary
 
 
+# ---------------------------------------------------------------------------
+# Dinh dang & tien ich ve bieu do (dung chung voi 08_predictive_model.py)
+# ---------------------------------------------------------------------------
+
+def vn_number(value, decimals: int = 0) -> str:
+    """So hien thi tren bieu do theo kieu Viet Nam: 7.342 (hang nghin), 97,5 (thap phan)."""
+    return f"{value:,.{decimals}f}".replace(",", "_").replace(".", ",").replace("_", ".")
+
+
+# Nhan truc so kieu Viet Nam cho truc tuyen tinh (vd 20.000 thay vi 20000, 0,05 thay vi 0.05)
+VN_TICK_FORMATTER = FuncFormatter(lambda x, _: vn_number(x, 2).rstrip("0").rstrip(","))
+
+
+def _hide_top_right_spines(ax: plt.Axes) -> None:
+    ax.spines[["top", "right"]].set_visible(False)
+
+
+def _set_year_ticks(ax: plt.Axes) -> None:
+    """Truc hoanh = du 20 nam nghien cuu, nghieng 45 do cho de doc."""
+    ax.set_xticks(list(STUDY_YEAR_RANGE))
+    ax.tick_params(axis="x", rotation=45)
+
+
+def _set_suptitle(fig: plt.Figure, text: str) -> None:
+    """Tieu de chung can trai cua ca figure (thong diep chinh cua bieu do)."""
+    fig.suptitle(text, fontsize=13, x=0.01, ha="left")
+
+
+def _label_top_bars(ax: plt.Axes, series: pd.Series, top_n: int) -> None:
+    """Ghi gia tri len top_n cot cao nhat."""
+    for x, v in series.nlargest(top_n).items():
+        ax.annotate(vn_number(v), xy=(x, v), xytext=(0, 3), textcoords="offset points", ha="center", fontsize=8)
+
+
 def _save_figure(fig: plt.Figure, output_path: Path, label: str) -> None:
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -197,29 +231,29 @@ def _save_figure(fig: plt.Figure, output_path: Path, label: str) -> None:
 # Bieu do
 # ---------------------------------------------------------------------------
 
-def plot_missing_values(df=None, output_path: Path = FIGURES_DIR / "eda_01_missing_values.png", top_n: int = 12) -> plt.Figure:
+def plot_missing_values(data=None, output_path: Path = FIGURES_DIR / "eda_01_missing_values.png", top_n: int = 12) -> plt.Figure:
     """Ve bieu do phan tich ty le khuyet thieu cua cac cot du lieu bang Matplotlib."""
-    # df: None -> doc ca 5 file tho; DataFrame -> 1 bang; dict {ten: DataFrame} -> nhieu bang
-    if df is None:
+    # data: None -> doc ca 5 file tho; DataFrame -> 1 bang; dict {ten: DataFrame} -> nhieu bang
+    if data is None:
         datasets = load_raw_data()
-    elif isinstance(df, pd.DataFrame):
-        datasets = {"data": df}
+    elif isinstance(data, pd.DataFrame):
+        datasets = {"data": data}
     else:
-        datasets = df
+        datasets = data
 
     ncols = 2 if len(datasets) > 1 else 1
     nrows = math.ceil(len(datasets) / ncols)
     fig, axes = plt.subplots(nrows, ncols, figsize=(8 * ncols, 4.5 * nrows), squeeze=False)
     cmap = plt.get_cmap("OrRd")
 
-    for ax, (name, data) in zip(axes.flat, datasets.items()):
-        missing_pct = data.isna().mean() * 100
+    for ax, (name, df) in zip(axes.flat, datasets.items()):
+        missing_pct = df.isna().mean() * 100
         n_missing_cols = int((missing_pct > 0).sum())
         # Chi giu top_n cot thieu nhieu nhat, dao nguoc de cot thieu nhieu nhat nam tren cung
         top = missing_pct[missing_pct > 0].sort_values(ascending=False).head(top_n)[::-1]
 
         title = Path(RAW_FILES.get(name, name)).stem
-        ax.set_title(f"{title}\n{vn_number(len(data))} dòng | {n_missing_cols}/{data.shape[1]} cột có ô trống", loc="left", fontsize=10)
+        ax.set_title(f"{title}\n{vn_number(len(df))} dòng | {n_missing_cols}/{df.shape[1]} cột có ô trống", loc="left", fontsize=10)
         if top.empty:
             ax.text(0.5, 0.5, "Không có ô trống", ha="center", va="center", transform=ax.transAxes)
             ax.set_axis_off()
@@ -233,60 +267,62 @@ def plot_missing_values(df=None, output_path: Path = FIGURES_DIR / "eda_01_missi
         ax.set_xlim(0, 112)
         ax.set_xlabel("Tỷ lệ khuyết thiếu (%)")
         ax.tick_params(axis="y", labelsize=8)
-        ax.spines[["top", "right"]].set_visible(False)
+        _hide_top_right_spines(ax)
 
     # An cac o trong thua cua luoi subplot (vd 5 bang -> luoi 3x2 thua 1 o)
     for ax in axes.flat[len(datasets):]:
         ax.set_axis_off()
 
-    fig.suptitle(f"Tỷ lệ khuyết thiếu theo cột (top {top_n} mỗi bảng, nét đứt = 50%)", fontsize=13, x=0.01, ha="left")
+    _set_suptitle(fig, f"Tỷ lệ khuyết thiếu theo cột (top {top_n} mỗi bảng, nét đứt = 50%)")
     fig.tight_layout()
     _save_figure(fig, output_path, "bieu do khuyet thieu")
     return fig
 
 
-def plot_distributions(df=None, output_path: Path = FIGURES_DIR / "eda_02_distributions.png") -> plt.Figure:
+def plot_distributions(data=None, output_path: Path = FIGURES_DIR / "eda_02_distributions.png") -> plt.Figure:
     """Ve bieu do phan phoi Histogram/KDE cua dien tich chay tren thang log."""
-    # df: dict tu add_derived_columns(); None -> tu doc
-    data = df if df is not None else add_derived_columns(load_raw_data())
+    # data: dict tu add_derived_columns(); None -> tu doc
+    data = data if data is not None else add_derived_columns(load_raw_data())
     perimeters = data["perimeters"]
 
     # Chi lay giai doan nghien cuu 2006-2025; thang log khong nhan gia tri <= 0
     area = perimeters.loc[perimeters["Year"].between(*STUDY_YEARS), "burned_area_ha"]
     area = area[area > 0]
+    median = area.median()
 
     fig, ax = plt.subplots(figsize=(10, 5))
     sns.histplot(area, log_scale=True, bins=40, kde=True, color=COLOR_FIRE_MID, edgecolor="white", ax=ax)
-    ax.axvline(area.median(), color=COLOR_NEUTRAL, linestyle="--", linewidth=1)
-    ax.text(area.median(), 0.97, f" trung vị {vn_number(area.median())} ha", transform=ax.get_xaxis_transform(), va="top", fontsize=8)
+    ax.axvline(median, color=COLOR_NEUTRAL, linestyle="--", linewidth=1)
+    ax.text(median, 0.97, f" trung vị {vn_number(median)} ha", transform=ax.get_xaxis_transform(), va="top", fontsize=8)
     ax.axvline(MEGAFIRE_HA, color=COLOR_FIRE_EXTREME, linestyle=":", linewidth=1.2)
     ax.text(MEGAFIRE_HA, 0.88, f" siêu đám cháy\n ≥ {vn_number(MEGAFIRE_HA)} ha", transform=ax.get_xaxis_transform(),
             va="top", fontsize=8, color=COLOR_FIRE_EXTREME)
     ax.set_title(f"Diện tích cháy (FRAP {STUDY_YEARS[0]}–{STUDY_YEARS[1]}, n = {vn_number(len(area))} vụ)", loc="left", fontsize=11)
     ax.set_xlabel("Diện tích cháy, ha (thang log)")
     ax.set_ylabel("Số vụ cháy")
-    ax.spines[["top", "right"]].set_visible(False)
-    fig.suptitle("Phân phối lệch phải mạnh → cần biến đổi log1p trước khi làm sạch / mô hình", fontsize=13, x=0.01, ha="left")
+    _hide_top_right_spines(ax)
+    _set_suptitle(fig, "Phân phối lệch phải mạnh → cần biến đổi log1p trước khi làm sạch / mô hình")
     fig.tight_layout()
     _save_figure(fig, output_path, "bieu do phan phoi")
     return fig
 
 
-def plot_outlier_boxplots(df=None, output_path: Path = FIGURES_DIR / "eda_03_outliers_boxplot.png", top_n: int = 3) -> plt.Figure:
+def plot_outlier_boxplots(data=None, output_path: Path = FIGURES_DIR / "eda_03_outliers_boxplot.png", top_n: int = 3) -> plt.Figure:
     """Ve bieu do hop (Boxplot) phat hien ngoai lai so cong trinh bi pha huy moi vu chay."""
-    # df: DataFrame tu build_structures_destroyed(); None -> tu doc va gop
-    data = df if df is not None else build_structures_destroyed(load_raw_data())
-    palette = {"ICS-209 (2006-2012)": "#FDAE6B", "DINS (2013-2025)": COLOR_FIRE_MID}
+    # data: DataFrame tu build_structures_destroyed(); None -> tu doc va gop
+    data = data if data is not None else build_structures_destroyed(load_raw_data())
+    sources = list(SOURCE_COLORS)
 
     fig, ax = plt.subplots(figsize=(12, 5))
     # whis=1.5 tinh tren truc log -> nguong ngoai lai Tukey cho phan phoi log-normal
-    sns.boxplot(data=data, x="structures_destroyed", y="source", hue="source", palette=palette, order=list(palette),
+    sns.boxplot(data=data, x="structures_destroyed", y="source", hue="source", palette=SOURCE_COLORS, order=sources,
                 log_scale=True, whis=1.5, width=0.5, showfliers=False, legend=False, ax=ax)
-    sns.stripplot(data=data, x="structures_destroyed", y="source", order=list(palette), color=COLOR_FIRE_EXTREME,
+    np.random.seed(JITTER_SEED)
+    sns.stripplot(data=data, x="structures_destroyed", y="source", order=sources, color=COLOR_FIRE_EXTREME,
                   size=3, alpha=0.4, jitter=0.2, ax=ax)
 
     # Gan nhan top_n vu lon nhat MOI nguon; moi nhan 1 tang cao rieng de khong de len nhau
-    for y, source in enumerate(palette):
+    for y, source in enumerate(sources):
         top = data[data["source"] == source].nlargest(top_n, "structures_destroyed")
         for k, (_, row) in enumerate(top.iterrows()):
             ax.annotate(f"{row['fire_name'].title()} {int(row['year'])}: {vn_number(row['structures_destroyed'])}",
@@ -294,10 +330,10 @@ def plot_outlier_boxplots(df=None, output_path: Path = FIGURES_DIR / "eda_03_out
                         ha="center", fontsize=8, arrowprops={"arrowstyle": "-", "color": COLOR_NEUTRAL, "lw": 0.8})
 
     counts = data["source"].value_counts()
-    ax.set_yticks(range(len(palette)), [f"{s}\nn = {counts.get(s, 0)} vụ" for s in palette])
+    ax.set_yticks(range(len(sources)), [f"{s}\nn = {counts.get(s, 0)} vụ" for s in sources])
     ax.set_xlabel("Số công trình bị phá hủy mỗi vụ cháy (thang log)")
     ax.set_ylabel("")
-    ax.spines[["top", "right"]].set_visible(False)
+    _hide_top_right_spines(ax)
     ax.set_title("Công trình bị phá hủy mỗi vụ cháy: phần lớn vụ cháy < 40 nhà, một số ít siêu thảm họa hàng nghìn nhà",
                  loc="left", fontsize=12)
     fig.tight_layout()
@@ -305,10 +341,10 @@ def plot_outlier_boxplots(df=None, output_path: Path = FIGURES_DIR / "eda_03_out
     return fig
 
 
-def plot_correlation_heatmap(df=None, output_path: Path = FIGURES_DIR / "eda_04_correlation_heatmap.png") -> plt.Figure:
+def plot_correlation_heatmap(data=None, output_path: Path = FIGURES_DIR / "eda_04_correlation_heatmap.png") -> plt.Figure:
     """Ve Correlation Heatmap bang Seaborn the hien moi tuong quan giua cac bien so."""
-    # df: DataFrame tu build_fire_features(); None -> tu doc va gop
-    fires = df if df is not None else build_fire_features(add_derived_columns(load_raw_data()))
+    # data: DataFrame tu build_fire_features(); None -> tu doc va gop
+    fires = data if data is not None else build_fire_features(add_derived_columns(load_raw_data()))
     labels = {
         "year": "Năm",
         "burned_area_ha": "Diện tích cháy (ha)",
@@ -328,130 +364,119 @@ def plot_correlation_heatmap(df=None, output_path: Path = FIGURES_DIR / "eda_04_
     mask = np.triu(np.ones((len(labels) - 1, len(labels) - 1), dtype=bool), k=1)
     for ax, (title, corr) in zip(axes, matrices.items()):
         corr = corr.rename(index=labels, columns=labels).iloc[1:, :-1]
+        show_colorbar = ax is axes[-1]
         # RdBu phan ky theo docs/COLOR_GUIDE.md muc 2.2: am = xanh, 0 = xam nhat, duong = do
-        sns.heatmap(corr, mask=mask, annot=corr.map(lambda v: vn_number(v, 2)), fmt="", cmap="RdBu_r", vmin=-1, vmax=1, center=0,
-                    square=True, linewidths=0.5, cbar=ax is axes[-1], cbar_kws={"shrink": 0.8}, ax=ax)
+        sns.heatmap(corr, mask=mask, annot=corr.map(lambda v: vn_number(v, 2)), fmt="", cmap="RdBu_r",
+                    vmin=-1, vmax=1, center=0, square=True, linewidths=0.5,
+                    cbar=show_colorbar, cbar_kws={"shrink": 0.8}, ax=ax)
         ax.set_title(title, loc="left", fontsize=11)
-        if ax.collections[0].colorbar is not None:
+        if show_colorbar:
             ax.collections[0].colorbar.ax.yaxis.set_major_formatter(FuncFormatter(lambda x, _: vn_number(x, 2)))
         ax.tick_params(axis="x", rotation=30)
         ax.tick_params(axis="y", rotation=0)
 
     n_days = int(values["containment_days"].notna().sum())
-    fig.suptitle(f"Tương quan giữa các biến vụ cháy FRAP {STUDY_YEARS[0]}–{STUDY_YEARS[1]} "
-                 f"(n = {vn_number(len(fires))} vụ; {vn_number(n_days)} vụ có đủ ngày bắt đầu / dập tắt)", fontsize=13, x=0.01, ha="left")
+    _set_suptitle(fig, f"Tương quan giữa các biến vụ cháy FRAP {STUDY_YEARS[0]}–{STUDY_YEARS[1]} "
+                       f"(n = {vn_number(len(fires))} vụ; {vn_number(n_days)} vụ có đủ ngày bắt đầu / dập tắt)")
     fig.tight_layout()
     _save_figure(fig, output_path, "Correlation Heatmap")
     return fig
 
 
-def plot_temporal_trends(df=None, output_path: Path = FIGURES_DIR / "eda_05_temporal_trend.png", top_n: int = 3) -> plt.Figure:
+def plot_temporal_trends(data=None, output_path: Path = FIGURES_DIR / "eda_05_temporal_trend.png", top_n: int = 3) -> plt.Figure:
     """Ve xu huong tan suat tham hoa va chay rung qua cac nam (2006-2025)."""
-    # df: dict tu add_derived_columns(); None -> tu doc
-    data = df if df is not None else add_derived_columns(load_raw_data())
-    years = range(STUDY_YEARS[0], STUDY_YEARS[1] + 1)
+    # data: dict tu add_derived_columns(); None -> tu doc
+    data = data if data is not None else add_derived_columns(load_raw_data())
     perimeters = data["perimeters"]
     perimeters = perimeters[perimeters["Year"].between(*STUDY_YEARS)]
-    n_fires = perimeters.groupby("Year").size().reindex(years, fill_value=0)
-    area_kha = perimeters.groupby("Year")["burned_area_ha"].sum().reindex(years, fill_value=0) / 1000
+    n_fires = perimeters.groupby("Year").size().reindex(STUDY_YEAR_RANGE, fill_value=0)
+    area_kha = perimeters.groupby("Year")["burned_area_ha"].sum().reindex(STUDY_YEAR_RANGE, fill_value=0) / 1000
     destroyed = (
         build_structures_destroyed(data).groupby(["year", "source"])["structures_destroyed"].sum()
-        .unstack(fill_value=0).reindex(years, fill_value=0)
+        .unstack(fill_value=0).reindex(STUDY_YEAR_RANGE, fill_value=0)
     )
 
-    fig, axes = plt.subplots(3, 1, figsize=(13, 10), sharex=True)
+    fig, (ax_fires, ax_area, ax_destroyed) = plt.subplots(3, 1, figsize=(13, 10), sharex=True)
 
     # 1. So vu chay moi nam
-    ax = axes[0]
-    ax.plot(n_fires.index, n_fires.values, marker="o", color=COLOR_FIRE_HIGH, linewidth=2)
-    ax.axhline(n_fires.mean(), color=COLOR_NEUTRAL, linestyle="--", linewidth=1)
-    ax.set_ylabel("Số vụ cháy")
-    ax.set_title(f"Số vụ cháy ghi nhận (FRAP, tổng {vn_number(n_fires.sum())} vụ, nét đứt = trung bình {vn_number(n_fires.mean())} vụ/năm)",
-                 loc="left", fontsize=11)
+    ax_fires.plot(n_fires.index, n_fires.values, marker="o", color=COLOR_FIRE_HIGH, linewidth=2)
+    ax_fires.axhline(n_fires.mean(), color=COLOR_NEUTRAL, linestyle="--", linewidth=1)
+    ax_fires.set_ylabel("Số vụ cháy")
+    ax_fires.set_title(f"Số vụ cháy ghi nhận (FRAP, tổng {vn_number(n_fires.sum())} vụ, "
+                       f"nét đứt = trung bình {vn_number(n_fires.mean())} vụ/năm)", loc="left", fontsize=11)
 
     # 2. Tong dien tich chay moi nam
-    ax = axes[1]
-    ax.bar(area_kha.index, area_kha.values, color=COLOR_FIRE_MID)
-    ax.set_ylabel("Nghìn ha")
-    ax.set_title(f"Tổng diện tích cháy (nghìn ha, tổng {vn_number(area_kha.sum())})", loc="left", fontsize=11)
-    _label_top_bars(ax, area_kha, top_n)
+    ax_area.bar(area_kha.index, area_kha.values, color=COLOR_FIRE_MID)
+    ax_area.set_ylabel("Nghìn ha")
+    ax_area.set_title(f"Tổng diện tích cháy (nghìn ha, tổng {vn_number(area_kha.sum())})", loc="left", fontsize=11)
+    _label_top_bars(ax_area, area_kha, top_n)
 
-    # 3. Cong trinh bi pha huy moi nam, to mau theo nguon du lieu
-    ax = axes[2]
-    palette = {"ICS-209 (2006-2012)": "#FDAE6B", "DINS (2013-2025)": COLOR_FIRE_MID}
+    # 3. Cong trinh bi pha huy moi nam, cot chong to mau theo nguon du lieu
     bottom = np.zeros(len(destroyed))
-    for source, color in palette.items():
+    for source, color in SOURCE_COLORS.items():
         values = destroyed.get(source, pd.Series(0, index=destroyed.index))
-        ax.bar(destroyed.index, values, bottom=bottom, color=color, label=source)
+        ax_destroyed.bar(destroyed.index, values, bottom=bottom, color=color, label=source)
         bottom += values.to_numpy()
-    _label_top_bars(ax, destroyed.sum(axis=1), top_n)
-    ax.axvline(2012.5, color=COLOR_NEUTRAL, linestyle=":", linewidth=1)  # moc chuyen nguon ICS-209 -> DINS
-    ax.legend(frameon=False, loc="upper left")
-    ax.set_ylabel("Công trình")
-    ax.set_title(f"Công trình bị phá hủy hoàn toàn (tổng {vn_number(destroyed.to_numpy().sum())})", loc="left", fontsize=11)
+    _label_top_bars(ax_destroyed, destroyed.sum(axis=1), top_n)
+    ax_destroyed.axvline(2012.5, color=COLOR_NEUTRAL, linestyle=":", linewidth=1)  # moc chuyen nguon ICS-209 -> DINS
+    ax_destroyed.legend(frameon=False, loc="upper left")
+    ax_destroyed.set_ylabel("Công trình")
+    ax_destroyed.set_title(f"Công trình bị phá hủy hoàn toàn (tổng {vn_number(destroyed.to_numpy().sum())})",
+                           loc="left", fontsize=11)
 
-    for ax in axes:
-        ax.spines[["top", "right"]].set_visible(False)
+    for ax in (ax_fires, ax_area, ax_destroyed):
+        _hide_top_right_spines(ax)
         ax.yaxis.set_major_formatter(VN_TICK_FORMATTER)
-    axes[-1].set_xticks(list(years))
-    axes[-1].tick_params(axis="x", rotation=45)
-    fig.suptitle(f"Xu hướng cháy rừng California {STUDY_YEARS[0]}–{STUDY_YEARS[1]}: "
-                 f"số vụ dao động {n_fires.min()}–{n_fires.max()}/năm, diện tích và thiệt hại dồn vào vài năm cực đoan",
-                 fontsize=13, x=0.01, ha="left")
+    _set_year_ticks(ax_destroyed)
+    _set_suptitle(fig, f"Xu hướng cháy rừng California {STUDY_YEARS[0]}–{STUDY_YEARS[1]}: "
+                       f"số vụ dao động {n_fires.min()}–{n_fires.max()}/năm, diện tích và thiệt hại dồn vào vài năm cực đoan")
     fig.tight_layout()
     _save_figure(fig, output_path, "bieu do xu huong thoi gian")
     return fig
 
 
-def _label_top_bars(ax: plt.Axes, series: pd.Series, top_n: int) -> None:
-    """Ghi gia tri len top_n cot cao nhat."""
-    for x, v in series.nlargest(top_n).items():
-        ax.annotate(vn_number(v), xy=(x, v), xytext=(0, 3), textcoords="offset points", ha="center", fontsize=8)
-
-
-def plot_casualties(df=None, output_path: Path = FIGURES_DIR / "eda_06_casualties.png", top_n: int = 3) -> plt.Figure:
+def plot_casualties(data=None, output_path: Path = FIGURES_DIR / "eda_06_casualties.png", top_n: int = 3) -> plt.Figure:
     """Ve so nguoi chet / bi thuong truc tiep theo nam (NOAA), tach phan bi dem trung giua cac vung du bao."""
-    # df: DataFrame NOAA tho; None -> tu doc
-    noaa = df if df is not None else load_raw_data()["noaa"]
+    # data: DataFrame NOAA tho; None -> tu doc
+    noaa = data if data is not None else load_raw_data()["noaa"]
     noaa = noaa[noaa["YEAR"].between(*STUDY_YEARS)]
-    years = range(STUDY_YEARS[0], STUDY_YEARS[1] + 1)
     measures = {"DEATHS_DIRECT": "Người chết trực tiếp", "INJURIES_DIRECT": "Người bị thương trực tiếp"}
 
     # 1 vu chay lan qua nhieu vung du bao -> nhieu dong lap lai cung so thuong vong; gop giong 03_clean.py
     events = noaa.groupby(["EPISODE_ID", noaa_fire_key(noaa).rename("fire_key")]).agg(
         YEAR=("YEAR", "first"), **{c: (c, "max") for c in measures}
     ).reset_index()
-    raw_by_year = noaa.groupby("YEAR")[list(measures)].sum().reindex(years, fill_value=0)
-    by_year = events.groupby("YEAR")[list(measures)].sum().reindex(years, fill_value=0)
+    raw_by_year = noaa.groupby("YEAR")[list(measures)].sum().reindex(STUDY_YEAR_RANGE, fill_value=0)
+    merged_by_year = events.groupby("YEAR")[list(measures)].sum().reindex(STUDY_YEAR_RANGE, fill_value=0)
 
     fig, axes = plt.subplots(2, 1, figsize=(13, 8), sharex=True)
     for ax, (col, label) in zip(axes, measures.items()):
-        merged, duplicated = by_year[col], raw_by_year[col] - by_year[col]
-        ax.bar(years, merged, color=COLOR_FIRE_HIGH, label="Sau khi gộp trùng")
-        ax.bar(years, duplicated, bottom=merged, color="#FDAE6B", label="Bị đếm trùng (1 vụ ghi ở nhiều vùng dự báo)")
+        merged, raw = merged_by_year[col], raw_by_year[col]
+        ax.bar(STUDY_YEAR_RANGE, merged, color=COLOR_FIRE_HIGH, label="Sau khi gộp trùng")
+        ax.bar(STUDY_YEAR_RANGE, raw - merged, bottom=merged, color=COLOR_FIRE_LIGHT,
+               label="Bị đếm trùng (1 vụ ghi ở nhiều vùng dự báo)")
 
         # Nhan top_n nam: gia tri sau gop + vu chay lon nhat trong nam (neu tach duoc ten)
         for year, value in merged.nlargest(top_n).items():
             top = events[events["YEAR"] == year].nlargest(1, col).iloc[0]
             name = "" if top["fire_key"].startswith("_EVENT_") else f"\n{top['fire_key'].title()} {vn_number(top[col])}"
-            ax.annotate(f"{vn_number(value)}{name}", xy=(year, raw_by_year.at[year, col]), xytext=(0, 3),
+            ax.annotate(f"{vn_number(value)}{name}", xy=(year, raw.at[year]), xytext=(0, 3),
                         textcoords="offset points", ha="center", fontsize=8)
         ax.set_ylabel("Người")
-        ax.set_title(f"{label}: {vn_number(merged.sum())} người sau khi gộp trùng (dữ liệu thô ghi {vn_number(raw_by_year[col].sum())})",
+        ax.set_title(f"{label}: {vn_number(merged.sum())} người sau khi gộp trùng (dữ liệu thô ghi {vn_number(raw.sum())})",
                      loc="left", fontsize=11)
-        ax.set_ylim(0, raw_by_year[col].max() * 1.25)  # chua cho nhan 2 dong tren cot cao nhat
-        ax.spines[["top", "right"]].set_visible(False)
+        ax.set_ylim(0, raw.max() * 1.25)  # chua cho nhan 2 dong tren cot cao nhat
+        _hide_top_right_spines(ax)
         ax.yaxis.set_major_formatter(VN_TICK_FORMATTER)
 
     axes[0].legend(frameon=False, loc="upper left")
-    axes[-1].set_xticks(list(years))
-    axes[-1].tick_params(axis="x", rotation=45)
+    _set_year_ticks(axes[-1])
 
     deadliest = events.nlargest(1, "DEATHS_DIRECT").iloc[0]
-    total_deaths = by_year["DEATHS_DIRECT"].sum()
-    fig.suptitle(f"Thiệt hại về người hiếm và dồn vào vài thảm họa: riêng {deadliest['fire_key'].title()} {deadliest['YEAR']} chiếm "
-                 f"{deadliest['DEATHS_DIRECT'] / total_deaths:.0%} số người chết trực tiếp {STUDY_YEARS[0]}–{STUDY_YEARS[1]}",
-                 fontsize=13, x=0.01, ha="left")
+    deadliest_share = deadliest["DEATHS_DIRECT"] / merged_by_year["DEATHS_DIRECT"].sum()
+    _set_suptitle(fig, f"Thiệt hại về người hiếm và dồn vào vài thảm họa: riêng {deadliest['fire_key'].title()} "
+                       f"{deadliest['YEAR']} chiếm {deadliest_share:.0%} số người chết trực tiếp "
+                       f"{STUDY_YEARS[0]}–{STUDY_YEARS[1]}")
     fig.tight_layout()
     _save_figure(fig, output_path, "bieu do thiet hai ve nguoi")
     return fig
@@ -472,7 +497,7 @@ def run_initial_eda() -> None:
     print("[TV1 - EDA] Tong quan 5 tap du lieu tho:")
     summarize_all_files(raw)
 
-    print("[TV1 - EDA] Khoi tao cac bieu do tinh (Matplotlib, Seaborn) theo barem do an IDV (3-5 bieu do)...")
+    print("[TV1 - EDA] Khoi tao 6 bieu do tinh (Matplotlib, Seaborn) theo barem do an IDV...")
     figures = [
         plot_missing_values(raw, output_path=FIGURES_DIR / "eda_01_missing_values.png"),
         plot_distributions(data, output_path=FIGURES_DIR / "eda_02_distributions.png"),

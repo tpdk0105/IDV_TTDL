@@ -15,7 +15,8 @@ Mục đích:
 Đầu ra:
     - `data/clean/forecast_results.csv`  : year, metric, actual, predicted, lower_95, upper_95, is_forecast (bàn giao TV2/TV3).
     - `data/clean/forecast_metrics.csv`  : sai số rolling origin + độ dốc xu hướng của từng chỉ số.
-    - `reports/figures/model_01_forecast.png`.
+    - `reports/figures/model_01_forecast.png` : điểm thực tế, đường xu hướng, dự báo + khoảng dự báo 95%.
+    - `reports/figures/model_02_metrics.png`  : độ dốc xu hướng, p-value / R², MAE so với mốc trung bình.
 
 Cách chạy (từ thư mục gốc dự án, sau src/03_clean.py):
     python src/08_predictive_model.py
@@ -49,6 +50,7 @@ METRICS_FIGURE_PATH = Path("reports/figures/model_02_metrics.png")
 FIRST_TEST_YEAR = 2016                # rolling origin: du bao lan luot 2016..2025 (10 lan)
 FORECAST_YEARS = range(2026, 2036)    # 10 nam tuong lai
 CONFIDENCE = 0.95
+SIGNIFICANCE = 0.05                   # nguong p-value
 
 # (ten cot, co huan luyen tren log1p khong, nhan hien thi)
 FORECAST_TARGETS = [
@@ -56,16 +58,28 @@ FORECAST_TARGETS = [
     ("area_ha", True, "Tổng diện tích cháy (ha)"),
     ("destroyed", True, "Công trình bị phá hủy"),
 ]
+# Nhan 2 dong cho truc cua bieu do thong so mo hinh
+METRIC_AXIS_LABELS = {
+    "n_fires": "Số vụ cháy\n(n_fires)",
+    "area_ha": "Tổng diện tích\n(area_ha)",
+    "destroyed": "Công trình phá hủy\n(destroyed)",
+}
+# Don vi trend_unit trong forecast_metrics.csv -> nhan hien thi tren bieu do
+TREND_UNIT_LABELS = {"%/nam": "%/năm", "don vi/nam": "vụ/năm"}
 
 # Mau theo docs/COLOR_GUIDE.md
 COLOR_ACTUAL = "#D94801"
 COLOR_FIT = "#7F7F7F"
 COLOR_FORECAST = "#2171B5"
 COLOR_BAND = "#9ECAE1"
+COLOR_LABEL = "#084594"
+COLOR_THRESHOLD = "#B2182B"
+MAE_BAR_COLORS = ["#6BAED6", "#9ECAE1", "#4292C6"]
 
-# Don vi trend_unit trong forecast_metrics.csv -> nhan hien thi tren bieu do
-TREND_UNIT_LABELS = {"%/nam": "%/năm", "don vi/nam": "vụ/năm"}
 
+# ---------------------------------------------------------------------------
+# Du lieu & mo hinh
+# ---------------------------------------------------------------------------
 
 def load_data(path: Path = INPUT_PATH) -> pd.DataFrame:
     """Doc bang vu chay da lam sach (giu county_fips dang chuoi de khong mat so 0 dau)."""
@@ -86,11 +100,13 @@ def build_yearly(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _fit(train: pd.DataFrame, target: str, use_log: bool) -> LinearRegression:
+    """Hoi quy target theo nam; chi so lech nang duoc huan luyen tren log1p."""
     y = np.log1p(train[target]) if use_log else train[target]
     return LinearRegression().fit(train[["year"]], y)
 
 
 def _to_original_scale(values, use_log: bool):
+    """Dua du bao tren thang log1p ve lai don vi goc."""
     return np.expm1(values) if use_log else values
 
 
@@ -142,12 +158,12 @@ def forecast_trend(yearly: pd.DataFrame, target: str, use_log: bool) -> pd.DataF
 
     # Khoang du bao cua hoi quy tuyen tinh don: rong dan khi nam cang xa trung tam du lieu
     n = len(x)
-    resid = y_fit - model.predict(yearly[["year"]])
-    s = np.sqrt((resid ** 2).sum() / (n - 2))
+    residuals = y_fit - model.predict(yearly[["year"]])
+    residual_std = np.sqrt((residuals ** 2).sum() / (n - 2))
     x0 = all_years["year"].to_numpy()
-    se = s * np.sqrt(1 + 1 / n + (x0 - x.mean()) ** 2 / ((x - x.mean()) ** 2).sum())
-    t = stats.t.ppf((1 + CONFIDENCE) / 2, df=n - 2)
-    lower, upper = pred - t * se, pred + t * se
+    std_error = residual_std * np.sqrt(1 + 1 / n + (x0 - x.mean()) ** 2 / ((x - x.mean()) ** 2).sum())
+    t_critical = stats.t.ppf((1 + CONFIDENCE) / 2, df=n - 2)
+    lower, upper = pred - t_critical * std_error, pred + t_critical * std_error
 
     pred, lower, upper = (_to_original_scale(v, use_log) for v in (pred, lower, upper))
 
@@ -161,6 +177,16 @@ def forecast_trend(yearly: pd.DataFrame, target: str, use_log: bool) -> pd.DataF
     result = result.merge(actual, on="year", how="left")
     result["is_forecast"] = result["year"] > x.max()
     return result[["year", "metric", "actual", "predicted", "lower_95", "upper_95", "is_forecast"]]
+
+
+# ---------------------------------------------------------------------------
+# Bieu do
+# ---------------------------------------------------------------------------
+
+def _save_figure(fig: plt.Figure, output_path: Path, label: str) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    print(f"[TV1 - MODEL] Da luu {label} -> {output_path}")
 
 
 def plot_forecasts(forecast: pd.DataFrame, output_path: Path = FIGURE_PATH) -> plt.Figure:
@@ -180,8 +206,10 @@ def plot_forecasts(forecast: pd.DataFrame, output_path: Path = FIGURE_PATH) -> p
         ax.scatter(hist["year"], hist["actual"], color=COLOR_ACTUAL, zorder=3, s=25, label="Thực tế")
         ax.axvline(last_year + 0.5, color=COLOR_FIT, linestyle=":", linewidth=1)
 
+        # Ghi gia tri du bao nam cuoi kem khoang [thap - cao]
         end = future.iloc[-1]
-        ax.annotate(f"{eda.vn_number(end['predicted'])}\n[{eda.vn_number(end['lower_95'])} – {eda.vn_number(end['upper_95'])}]",
+        ax.annotate(f"{eda.vn_number(end['predicted'])}\n"
+                    f"[{eda.vn_number(end['lower_95'])} – {eda.vn_number(end['upper_95'])}]",
                     xy=(end["year"], end["predicted"]), xytext=(8, 0), textcoords="offset points",
                     va="center", fontsize=8, color=COLOR_FORECAST)
         if use_log:
@@ -196,83 +224,85 @@ def plot_forecasts(forecast: pd.DataFrame, output_path: Path = FIGURE_PATH) -> p
     fig.suptitle(f"Dự báo hồi quy tuyến tính {min(FORECAST_YEARS)}–{max(FORECAST_YEARS)} "
                  f"(vùng xanh = khoảng dự báo {CONFIDENCE:.0%})", fontsize=13, x=0.01, ha="left")
     fig.tight_layout()
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output_path, dpi=150, bbox_inches="tight")
-    print(f"[TV1 - MODEL] Da luu bieu do du bao -> {output_path}")
+    _save_figure(fig, output_path, "bieu do du bao")
     return fig
 
 
-def plot_model_metrics(metrics: pd.DataFrame, output_path: Path = METRICS_FIGURE_PATH) -> plt.Figure:
-    """Truc quan hoa cac thong so danh gia mo hinh: do doc xu huong, p-value / R2 va so sanh sai so MAE."""
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
+def _style_metric_panel(ax: plt.Axes, title: str) -> None:
+    ax.set_title(title, fontsize=11, fontweight="bold", loc="left")
+    ax.spines[["top", "right"]].set_visible(False)
 
-    labels_map = {
-        "n_fires": "Số vụ cháy\n(n_fires)",
-        "area_ha": "Tổng diện tích\n(area_ha)",
-        "destroyed": "Công trình phá hủy\n(destroyed)",
-    }
-    y_labels = [labels_map.get(m, m) for m in metrics["metric"]]
 
-    # 1. Do doc xu huong moi nam (trend_per_year)
-    ax = axes[0]
-    bars = ax.barh(y_labels, metrics["trend_per_year"], color=COLOR_FORECAST, alpha=0.85, height=0.55)
+def _plot_trend_panel(ax: plt.Axes, metrics: pd.DataFrame, labels: list[str]) -> None:
+    """Khung 1: do doc xu huong moi nam (thang log: %/nam, thang goc: vu/nam)."""
+    bars = ax.barh(labels, metrics["trend_per_year"], color=COLOR_FORECAST, alpha=0.85, height=0.55)
     ax.axvline(0, color=COLOR_FIT, linestyle="--", linewidth=1)
     max_trend = float(metrics["trend_per_year"].max())
     for bar, (_, row) in zip(bars, metrics.iterrows()):
-        val = row["trend_per_year"]
+        value = row["trend_per_year"]
         unit = TREND_UNIT_LABELS.get(row["trend_unit"], row["trend_unit"])
-        ax.text(val + (max_trend * 0.03), bar.get_y() + bar.get_height() / 2,
-                f"{'+' if val >= 0 else '-'}{eda.vn_number(abs(val), 2)} {unit}", va="center", ha="left", fontsize=9, fontweight="bold", color="#084594")
-    ax.set_title("1. Tốc độ thay đổi hằng năm (xu hướng)", fontsize=11, fontweight="bold", loc="left")
+        sign = "+" if value >= 0 else "-"
+        ax.text(value + (max_trend * 0.03), bar.get_y() + bar.get_height() / 2,
+                f"{sign}{eda.vn_number(abs(value), 2)} {unit}",
+                va="center", ha="left", fontsize=9, fontweight="bold", color=COLOR_LABEL)
+    _style_metric_panel(ax, "1. Tốc độ thay đổi hằng năm (xu hướng)")
     ax.set_xlabel("Giá trị thay đổi mỗi năm")
     ax.set_xlim(0, max_trend * 1.5)
     ax.xaxis.set_major_formatter(eda.VN_TICK_FORMATTER)
-    ax.spines[["top", "right"]].set_visible(False)
 
-    # 2. Muc y nghia thong ke (p-value) & R2
-    ax = axes[1]
-    p_colors = [COLOR_ACTUAL if p < 0.05 else (COLOR_BAND if p < 0.1 else COLOR_FIT) for p in metrics["p_value"]]
-    bars = ax.bar(y_labels, metrics["p_value"], color=p_colors, alpha=0.85, width=0.5)
-    ax.axhline(0.05, color="#B2182B", linestyle=":", linewidth=1.5, label="Ngưỡng p = 0,05 (độ tin cậy 95%)")
-    max_p = float(metrics["p_value"].max())
+
+def _plot_pvalue_panel(ax: plt.Axes, metrics: pd.DataFrame, labels: list[str]) -> None:
+    """Khung 2: p-value cua do doc; cam = co y nghia, xanh nhat = gan nguong (< 0,1), xam = khong co y nghia."""
+    colors = [COLOR_ACTUAL if p < SIGNIFICANCE else (COLOR_BAND if p < 0.1 else COLOR_FIT) for p in metrics["p_value"]]
+    bars = ax.bar(labels, metrics["p_value"], color=colors, alpha=0.85, width=0.5)
+    ax.axhline(SIGNIFICANCE, color=COLOR_THRESHOLD, linestyle=":", linewidth=1.5,
+               label=f"Ngưỡng p = {eda.vn_number(SIGNIFICANCE, 2)} (độ tin cậy 95%)")
     for bar, (_, row) in zip(bars, metrics.iterrows()):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
                 f"p = {eda.vn_number(row['p_value'], 3)}\nR² = {eda.vn_number(row['r2_fit_all_years'] * 100, 1)}%",
                 ha="center", va="bottom", fontsize=8.5)
-    ax.set_title("2. Kiểm định ý nghĩa thống kê (p-value)", fontsize=11, fontweight="bold", loc="left")
+    _style_metric_panel(ax, "2. Kiểm định ý nghĩa thống kê (p-value)")
     ax.set_ylabel("Giá trị p-value")
-    ax.set_ylim(0, max_p * 1.35)
+    ax.set_ylim(0, float(metrics["p_value"].max()) * 1.35)
     ax.yaxis.set_major_formatter(eda.VN_TICK_FORMATTER)
     ax.legend(frameon=False, loc="upper right", fontsize=8.5)
-    ax.spines[["top", "right"]].set_visible(False)
 
-    # 3. So sanh sai so MAE Model vs MAE Naive Baseline
-    ax = axes[2]
-    rel_mae = (metrics["mae"] / metrics["mae_naive_mean"]) * 100
-    bars = ax.bar(y_labels, rel_mae, color=["#6BAED6", "#9ECAE1", "#4292C6"], alpha=0.9, width=0.5)
-    ax.axhline(100, color="#7F7F7F", linestyle="--", linewidth=1.2, label="Mốc so sánh: đoán bằng trung bình (100%)")
-    max_rel = float(rel_mae.max())
-    for bar, (_, row), r in zip(bars, metrics.iterrows(), rel_mae):
+
+def _plot_mae_panel(ax: plt.Axes, metrics: pd.DataFrame, labels: list[str]) -> None:
+    """Khung 3: MAE mo hinh / MAE moc 'doan bang trung binh' (%); < 100% nghia la mo hinh tot hon moc."""
+    relative_mae = (metrics["mae"] / metrics["mae_naive_mean"]) * 100
+    bars = ax.bar(labels, relative_mae, color=MAE_BAR_COLORS, alpha=0.9, width=0.5)
+    ax.axhline(100, color=COLOR_FIT, linestyle="--", linewidth=1.2, label="Mốc so sánh: đoán bằng trung bình (100%)")
+    for bar, (_, row), rel in zip(bars, metrics.iterrows(), relative_mae):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 1.5,
-                f"{eda.vn_number(r, 1)}%\n(MAE: {eda.vn_number(row['mae'])})",
+                f"{eda.vn_number(rel, 1)}%\n(MAE: {eda.vn_number(row['mae'])})",
                 ha="center", va="bottom", fontsize=8)
-    ax.set_title("3. So sánh MAE mô hình với mốc trung bình", fontsize=11, fontweight="bold", loc="left")
+    _style_metric_panel(ax, "3. So sánh MAE mô hình với mốc trung bình")
     ax.set_ylabel("Tỷ lệ MAE mô hình / MAE mốc (%)")
-    ax.set_ylim(0, max_rel * 1.25)
+    ax.set_ylim(0, float(relative_mae.max()) * 1.25)
     ax.yaxis.set_major_formatter(eda.VN_TICK_FORMATTER)
     ax.legend(frameon=False, loc="upper right", fontsize=8.5)
-    ax.spines[["top", "right"]].set_visible(False)
+
+
+def plot_model_metrics(metrics: pd.DataFrame, output_path: Path = METRICS_FIGURE_PATH) -> plt.Figure:
+    """Truc quan hoa cac thong so danh gia mo hinh: do doc xu huong, p-value / R2 va so sanh sai so MAE."""
+    fig, (ax_trend, ax_pvalue, ax_mae) = plt.subplots(1, 3, figsize=(15, 4.5))
+    labels = [METRIC_AXIS_LABELS.get(m, m) for m in metrics["metric"]]
+
+    _plot_trend_panel(ax_trend, metrics, labels)
+    _plot_pvalue_panel(ax_pvalue, metrics, labels)
+    _plot_mae_panel(ax_mae, metrics, labels)
 
     fig.suptitle("Tổng hợp các thông số đánh giá mô hình hồi quy tuyến tính (2006–2025)",
                  fontsize=12, fontweight="bold", x=0.01, ha="left")
     fig.tight_layout()
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output_path, dpi=150, bbox_inches="tight")
-    print(f"[TV1 - MODEL] Da luu bieu do thong so mo hinh -> {output_path}")
+    _save_figure(fig, output_path, "bieu do thong so mo hinh")
     return fig
 
+
+# ---------------------------------------------------------------------------
+# Dieu phoi
+# ---------------------------------------------------------------------------
 
 def run_predictive_models() -> pd.DataFrame:
     """Danh gia (rolling origin), du bao 10 nam va xuat ket qua cho TV2 / TV3."""
