@@ -75,10 +75,6 @@ def log_as_markdown() -> str:
     return "\n".join([header, *rows])
 
 
-# ---------------------------------------------------------------------------
-# Buoc 1: FRAP - bang vu chay chinh
-# ---------------------------------------------------------------------------
-
 def clean_frap(frap: pd.DataFrame) -> pd.DataFrame:
     """Loc 2006-2025, chuan hoa khoa / ngay / dien tich / nguyen nhan, gop nhieu polygon thanh 1 vu chay."""
     n_raw = len(frap)
@@ -140,10 +136,6 @@ def clean_frap(frap: pd.DataFrame) -> pd.DataFrame:
     return fires
 
 
-# ---------------------------------------------------------------------------
-# Buoc 2-3: thiet hai cong trinh DINS + ICS-209
-# ---------------------------------------------------------------------------
-
 def clean_dins(dins: pd.DataFrame) -> pd.DataFrame:
     """Bo kiem ke lap, dem cong trinh bi pha huy / hu hai theo (year, fire_name, unit_id)."""
     n_raw = len(dins)
@@ -196,10 +188,6 @@ def clean_ics209(ics: pd.DataFrame, county_names: list[str]) -> pd.DataFrame:
         county=("county", "first"),
     ).assign(damage_source="USDA_ICS_209")
 
-
-# ---------------------------------------------------------------------------
-# Buoc 4-5: ghep thiet hai + Hat vao bang vu chay
-# ---------------------------------------------------------------------------
 
 def attach_damage(fires: pd.DataFrame, damage: pd.DataFrame) -> pd.DataFrame:
     """Ghep thiet hai vao vu chay: khop du 3 khoa truoc, sau do khop (year, fire_name) -> vu lon nhat cung ten."""
@@ -272,10 +260,6 @@ def attach_county(fires: pd.DataFrame, damage: pd.DataFrame, demographics: pd.Da
     return fires.merge(counties, on="county", how="left", validate="m:1")
 
 
-# ---------------------------------------------------------------------------
-# Kiem tra quy tac + xuat file
-# ---------------------------------------------------------------------------
-
 def apply_rule_checks(fires: pd.DataFrame) -> pd.DataFrame:
     """Gia tri am bat hop ly -> NULL (khong xoa dong)."""
     cols = ["acres_burned", "burned_area_ha", "structures_destroyed", "structures_damaged"]
@@ -328,4 +312,4 @@ def clean_by_rules() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    clean_by_rules()  # UTF-8 cho console da duoc cau hinh khi nap 02_eda.py
+    clean_by_rules() 
