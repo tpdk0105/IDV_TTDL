@@ -1,4 +1,4 @@
-.PHONY: help setup pipeline download eda clean clean-ml forecast split db export validate test lint format serve
+.PHONY: help setup pipeline download eda clean forecast split db export validate test lint format serve
 
 help:
 	@echo "Available commands:"
@@ -18,7 +18,6 @@ pipeline:
 	python src/01_download.py
 	python src/02_eda.py
 	python src/03_clean.py
-	python src/03b_ml_clean.py
 	python src/08_predictive_model.py
 	python src/04_split_tables.py
 	python src/05_build_db.py
@@ -33,9 +32,6 @@ eda:
 
 clean:
 	python src/03_clean.py
-
-clean-ml:
-	python src/03b_ml_clean.py
 
 forecast:
 	python src/08_predictive_model.py

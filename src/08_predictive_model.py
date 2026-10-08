@@ -34,10 +34,11 @@ from scipy import stats
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, r2_score, root_mean_squared_error
 
-INPUT_PATH = Path("data/interim/master_rules_cleaned.csv")  # doi sang data/clean/master_clean.csv khi 03b xong
+INPUT_PATH = Path("data/interim/master_rules_cleaned.csv")
 FORECAST_PATH = Path("data/clean/forecast_results.csv")
 METRICS_PATH = Path("data/clean/forecast_metrics.csv")
 FIGURE_PATH = Path("reports/figures/model_01_forecast.png")
+METRICS_FIGURE_PATH = Path("reports/figures/model_02_metrics.png")
 
 FIRST_TEST_YEAR = 2016                # rolling origin: du bao lan luot 2016..2025 (10 lan)
 FORECAST_YEARS = range(2026, 2036)    # 10 nam tuong lai
@@ -191,6 +192,74 @@ def plot_forecasts(forecast: pd.DataFrame, output_path: Path = FIGURE_PATH) -> p
     return fig
 
 
+def plot_model_metrics(metrics: pd.DataFrame, output_path: Path = METRICS_FIGURE_PATH) -> plt.Figure:
+    """Truc quan hoa cac thong so danh gia mo hinh: do doc xu huong, p-value / R2 va so sanh sai so MAE."""
+    fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
+
+    labels_map = {
+        "n_fires": "So vu chay\n(n_fires)",
+        "area_ha": "Tong dien tich\n(area_ha)",
+        "destroyed": "Cong trinh pha huy\n(destroyed)",
+    }
+    y_labels = [labels_map.get(m, m) for m in metrics["metric"]]
+
+    # 1. Do doc xu huong moi nam (trend_per_year)
+    ax = axes[0]
+    bars = ax.barh(y_labels, metrics["trend_per_year"], color=COLOR_FORECAST, alpha=0.85, height=0.55)
+    ax.axvline(0, color=COLOR_FIT, linestyle="--", linewidth=1)
+    max_trend = float(metrics["trend_per_year"].max())
+    for bar, (_, row) in zip(bars, metrics.iterrows()):
+        val = row["trend_per_year"]
+        unit = row["trend_unit"]
+        ax.text(val + (max_trend * 0.03), bar.get_y() + bar.get_height() / 2,
+                f"+{val:.2f} {unit}", va="center", ha="left", fontsize=9, fontweight="bold", color="#084594")
+    ax.set_title("1. Toc do thay doi hang nam (Trend)", fontsize=11, fontweight="bold", loc="left")
+    ax.set_xlabel("Gia tri thay doi moi nam")
+    ax.set_xlim(0, max_trend * 1.5)
+    ax.spines[["top", "right"]].set_visible(False)
+
+    # 2. Muc y nghia thong ke (p-value) & R2
+    ax = axes[1]
+    p_colors = [COLOR_ACTUAL if p < 0.05 else (COLOR_BAND if p < 0.1 else COLOR_FIT) for p in metrics["p_value"]]
+    bars = ax.bar(y_labels, metrics["p_value"], color=p_colors, alpha=0.85, width=0.5)
+    ax.axhline(0.05, color="#B2182B", linestyle=":", linewidth=1.5, label="Nguong p = 0.05 (95% CI)")
+    max_p = float(metrics["p_value"].max())
+    for bar, (_, row) in zip(bars, metrics.iterrows()):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
+                f"p={row['p_value']:.3f}\nR²={row['r2_fit_all_years']:.1%}",
+                ha="center", va="bottom", fontsize=8.5)
+    ax.set_title("2. Kiem dinh y nghia thong ke (p-value)", fontsize=11, fontweight="bold", loc="left")
+    ax.set_ylabel("Gia tri p-value")
+    ax.set_ylim(0, max_p * 1.35)
+    ax.legend(frameon=False, loc="upper right", fontsize=8.5)
+    ax.spines[["top", "right"]].set_visible(False)
+
+    # 3. So sanh sai so MAE Model vs MAE Naive Baseline
+    ax = axes[2]
+    rel_mae = (metrics["mae"] / metrics["mae_naive_mean"]) * 100
+    bars = ax.bar(y_labels, rel_mae, color=["#6BAED6", "#9ECAE1", "#4292C6"], alpha=0.9, width=0.5)
+    ax.axhline(100, color="#7F7F7F", linestyle="--", linewidth=1.2, label="Moc Baseline Naive (100%)")
+    max_rel = float(rel_mae.max())
+    for bar, (_, row), r in zip(bars, metrics.iterrows(), rel_mae):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 1.5,
+                f"{r:.1f}%\n(MAE: {row['mae']:,.0f})",
+                ha="center", va="bottom", fontsize=8)
+    ax.set_title("3. So sanh MAE mo hinh vs Naive Baseline", fontsize=11, fontweight="bold", loc="left")
+    ax.set_ylabel("Ty le MAE / Naive MAE (%)")
+    ax.set_ylim(0, max_rel * 1.25)
+    ax.legend(frameon=False, loc="upper right", fontsize=8.5)
+    ax.spines[["top", "right"]].set_visible(False)
+
+    fig.suptitle("Tong hop cac thong so danh gia mo hinh hoi quy (Linear Regression 2006-2025)",
+                 fontsize=12, fontweight="bold", x=0.01, ha="left")
+    fig.tight_layout()
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    print(f"[TV1 - MODEL] Da luu bieu do thong so mo hinh -> {output_path}")
+    return fig
+
+
 def run_predictive_models() -> pd.DataFrame:
     """Danh gia (rolling origin), du bao 10 nam va xuat ket qua cho TV2 / TV3."""
     yearly = build_yearly(load_data())
@@ -223,6 +292,7 @@ def run_predictive_models() -> pd.DataFrame:
     print(edge.drop(columns=["actual", "is_forecast"]).to_string(index=False, float_format=lambda v: f"{v:,.0f}"))
 
     plt.close(plot_forecasts(forecast))
+    plt.close(plot_model_metrics(metrics))
     return forecast
 
 
