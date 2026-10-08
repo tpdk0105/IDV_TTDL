@@ -1,10 +1,10 @@
 """
 Test suite for IDV_TTDL pipeline.
-Kiểm thử cấu trúc thư mục, quy chuẩn tập tin, CSDL SQLite và tính sẵn sàng của pipeline.
+Kiểm thử cấu trúc thư mục, quy chuẩn tập tin, Star Schema CSV và tính sẵn sàng của pipeline cho Tableau Web/Desktop.
 """
 
-import sqlite3
 from pathlib import Path
+import pandas as pd
 
 
 def test_directory_structure():
@@ -15,7 +15,6 @@ def test_directory_structure():
         "data/clean",
         "data/tables",
         "notebooks",
-        "sql",
         "src",
         "docs",
         "dashboard",
@@ -62,26 +61,13 @@ def test_team_task_files_exist():
         assert Path(tf).is_file(), f"Tập tin phân công {tf} không tồn tại!"
 
 
-def test_sql_files_exist():
-    """Kiểm tra các tệp tin SQL cơ bản."""
-    sql_files = [
-        "sql/schema.sql",
-        "sql/load.sql",
-        "sql/queries_for_charts.sql",
-    ]
-    for sf in sql_files:
-        assert Path(sf).is_file(), f"Tập tin SQL {sf} không tồn tại!"
-
-
 def test_src_pipeline_scripts_exist():
     """Kiểm tra các script thực thi pipeline cốt lõi trong src/."""
     scripts = [
         "src/01_download.py",
         "src/02_eda.py",
         "src/03_clean.py",
-        "src/03b_ml_clean.py",
         "src/04_split_tables.py",
-        "src/05_build_db.py",
         "src/07_validate.py",
     ]
     for s in scripts:
@@ -103,35 +89,28 @@ def test_star_schema_csv_files_exist():
         assert p.stat().st_size > 0, f"Bảng {tbl} rỗng (0 bytes)!"
 
 
-def test_sqlite_database_integrity_and_row_counts():
-    """Kiểm tra CSDL SQLite: tính toàn vẹn khóa ngoại (Zero Orphan FK) và fact >= 5.000 dòng."""
-    db_path = Path("data/tables/database.sqlite")
-    assert db_path.is_file(), "Tập tin data/tables/database.sqlite không tồn tại!"
+def test_star_schema_referential_integrity_and_row_counts():
+    """Kiểm tra tính toàn vẹn khóa ngoại (Zero Orphan FK) và dòng thỏa mãn barem."""
+    df_date = pd.read_csv("data/tables/dim_date.csv")
+    df_county = pd.read_csv("data/tables/dim_county.csv")
+    df_cause = pd.read_csv("data/tables/dim_cause.csv")
+    df_fact = pd.read_csv("data/tables/fact_fire_incident.csv")
+    df_damage = pd.read_csv("data/tables/fact_structure_damage.csv")
 
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+    # 1. Zero Orphan FK
+    orphan_date = set(df_fact["date_id"]) - set(df_date["date_id"])
+    assert len(orphan_date) == 0, f"fact_fire_incident có date_id mồ côi: {len(orphan_date)}"
 
-    # 1. PRAGMA integrity_check
-    integrity = cursor.execute("PRAGMA integrity_check;").fetchall()
-    assert integrity == [("ok",)], f"SQLite integrity check thất bại: {integrity}"
+    orphan_county = set(df_fact["county_id"]) - set(df_county["county_id"])
+    assert len(orphan_county) == 0, f"fact_fire_incident có county_id mồ côi: {len(orphan_county)}"
 
-    # 2. PRAGMA foreign_key_check (Zero Orphan Foreign Keys)
-    fk_errors = cursor.execute("PRAGMA foreign_key_check;").fetchall()
-    assert len(fk_errors) == 0, f"Phát hiện lỗi khóa ngoại mồ côi: {fk_errors}"
+    orphan_cause = set(df_fact["cause_id"]) - set(df_cause["cause_id"])
+    assert len(orphan_cause) == 0, f"fact_fire_incident có cause_id mồ côi: {len(orphan_cause)}"
 
-    # 3. Bảng fact trung tâm >= 5.000 dòng
-    cursor.execute("SELECT COUNT(*) FROM fact_fire_incident;")
-    fact_count = cursor.fetchone()[0]
-    assert fact_count >= 5000, f"fact_fire_incident chỉ có {fact_count} dòng (< 5.000)!"
+    orphan_inc = set(df_damage["incident_id"]) - set(df_fact["incident_id"])
+    assert len(orphan_inc) == 0, f"fact_structure_damage có incident_id mồ côi: {len(orphan_inc)}"
 
-    # 4. Bảng fact mở rộng > 100.000 dòng
-    cursor.execute("SELECT COUNT(*) FROM fact_structure_damage;")
-    damage_count = cursor.fetchone()[0]
-    assert damage_count > 100000, f"fact_structure_damage quá ít dòng: {damage_count}!"
-
-    # 5. Đủ 58 hạt California (+ 1 unknown)
-    cursor.execute("SELECT COUNT(*) FROM dim_county;")
-    county_count = cursor.fetchone()[0]
-    assert county_count >= 58, f"dim_county thiếu hạt: {county_count}!"
-
-    conn.close()
+    # 2. Row count barem
+    assert len(df_fact) >= 5000, f"fact_fire_incident chỉ có {len(df_fact)} dòng (< 5.000)!"
+    assert len(df_damage) > 100000, f"fact_structure_damage quá ít dòng: {len(df_damage)}!"
+    assert len(df_county) >= 58, f"dim_county thiếu hạt: {len(df_county)}!"

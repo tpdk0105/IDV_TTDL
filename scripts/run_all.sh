@@ -28,10 +28,7 @@ python src/08_predictive_model.py
 echo -e "\n>>> Running Step 4: Star Schema Table Splitting..."
 python src/04_split_tables.py
 
-echo -e "\n>>> Running Step 5: Database Build & Integrity Checks..."
-python src/05_build_db.py
-
-echo -e "\n>>> Running Step 6: Automated Validation & Assertions..."
+echo -e "\n>>> Running Step 5: Automated Validation & Assertions..."
 python src/07_validate.py
 
 echo "=========================================================="
