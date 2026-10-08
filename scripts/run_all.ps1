@@ -16,8 +16,7 @@ $steps = @(
     @{ Name = "Step 8: Linear Regression Forecast 2026-2035"; Script = "src/08_predictive_model.py" },
     @{ Name = "Step 4: Star Schema Table Splitting"; Script = "src/04_split_tables.py" },
     @{ Name = "Step 5: Database Build & Integrity Checks"; Script = "src/05_build_db.py" },
-    @{ Name = "Step 6: Export Dashboard JSON Data"; Script = "src/06_export_json.py" },
-    @{ Name = "Step 7: Automated Validation & Assertions"; Script = "src/07_validate.py" }
+    @{ Name = "Step 6: Automated Validation & Assertions"; Script = "src/07_validate.py" }
 )
 
 foreach ($step in $steps) {

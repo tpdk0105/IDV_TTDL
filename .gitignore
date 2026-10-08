@@ -37,11 +37,14 @@ data/raw/MANIFEST.md
 data/raw/manifest.json
 data/interim/*
 !data/interim/.gitkeep
+data/clean/*
+!data/clean/.gitkeep
 *.sqlite
 *.sqlite3
 *.db
 
 # Temporary and log files
 *.log
+*.docx
 scratch/
 tmp/

@@ -24,49 +24,43 @@
 
 ---
 
-## 2. Quy Trình Phân Chia 10 Biểu Đồ (Worksheets)
+## 2. Quy Trình Phân Chia 10 Biểu Đồ Tinh Gọn (Worksheets)
 
-Hệ thống gồm **10 Worksheets** (được chia theo tỷ lệ 2/4/4: TV1 làm 2 biểu đồ, TV2 làm 4 biểu đồ, TV3 làm 4 biểu đồ), đặt tên Sheet theo quy ước: `Sheet_01`, `Sheet_02`... để quản lý đồng bộ.
+Hệ thống gồm **10 Worksheets** tinh gọn, không rối mắt (chia theo tỷ lệ 2/4/4: TV1 làm 2 biểu đồ, TV2 làm 4 biểu đồ, TV3 làm 4 biểu đồ), gồm **8 biểu đồ cơ bản + 1 biểu đồ kết hợp dự báo 10 năm (2026–2035) + 1 bản đồ địa lý bắt buộc**:
 
 ### 👤 Thành viên 1: Biểu đồ #1 – #2 (Data & ML Engineer: 2 Sheets)
-> *Ghi chú*: TV1 phụ trách 2 biểu đồ để tập trung toàn lực vào Pipeline xử lý dữ liệu và Xây dựng Mô hình dự báo Linear/Logistic Regression.
-- **Worksheet #1**: `Sheet_01_Combo_Trend` (Combo Dual-Axis: Cột số vụ cháy + Đường diện tích cháy Acres theo năm 2006–2025; **tích hợp đường Trend Line dự báo Linear Regression**).
-- **Worksheet #2**: `Sheet_02_Stacked_Area` (Stacked Area: Cơ cấu nguyên nhân cháy theo thời gian 2006–2025).
+- **Worksheet #1**: `Sheet_01_Line_Yearly_Trend` (Line Chart cơ bản: Xu hướng biến động số vụ cháy qua 20 năm 2006–2025, thấy rõ đỉnh 2017 & 2020).
+- **Worksheet #2**: `Sheet_02_Combo_Forecast` (Combo Dual-Axis: Cột số vụ + Đường diện tích cháy + **Trend Line hồi quy dự báo 10 năm 2026–2035 đạt Barem 0.5 điểm**).
 
 ### 👤 Thành viên 2: Biểu đồ #3 – #6 (Data Modeling & SQL Engineer: 4 Sheets)
-- **Worksheet #3**: `Sheet_03_Diverging_Bar` (Cột phân kỳ: Chênh lệch số vụ cháy của từng năm so với trung bình chuẩn 20 năm, tâm = 0).
-- **Worksheet #4**: `Sheet_04_Treemap_Damage` (Treemap: Phân cấp tỷ trọng nhà cửa bị phá hủy từ Hạt $\to$ Loại công trình).
-- **Worksheet #5**: `Sheet_05_Bubble_Scatter` (Bubble Chart: Tương quan Diện tích cháy vs Số nhà phá hủy vs Thương vong, trục Log-Log).
-- **Worksheet #6**: `Sheet_06_Combo_Histogram` (Combo Histogram diện tích cháy theo bin logarit + Đường phân vị lũy kế).
+- **Worksheet #3**: `Sheet_03_Divergence_Bar` (Diverging Bar quanh 0: Độ lệch số vụ từng năm so với chuẩn 20 năm; cột đỏ vượt chuẩn, cột xanh dưới chuẩn).
+- **Worksheet #4**: `Sheet_04_Monthly_Heatmap` (Heatmap / Highlight Table: Ma trận mùa vụ 12 Tháng $\times$ 20 Năm, thấy rõ mùa cháy đỏ rực từ tháng 7–10).
+- **Worksheet #5**: `Sheet_05_Pie_Cause_Share` (Pie Chart: Biểu đồ tròn 3 múi tỷ trọng căn nguyên: Con người 36.4%, Sét đánh 20.9%, Khác 42.7%).
+- **Worksheet #6**: `Sheet_06_Scatter_County_Risk` (Scatter Plot: Tương quan diện tích vs nhà bị phá hủy vs dân số tập hợp theo **58 Hạt**, không bị đè chấm).
 
 ### 👤 Thành viên 3: Biểu đồ #7 – #10 (Dashboard & Storytelling Specialist: 4 Sheets)
-- **Worksheet #7**: `Sheet_07_Combo_Pareto` (Combo Pareto Chart: Cột số nhà bị phá hủy top 10 Hạt + Đường % lũy kế 80/20).
-- **Worksheet #8**: `Sheet_08_Donut_Cause` (Donut 2 tầng phân tích cơ cấu nguyên nhân: Tự nhiên vs Con người).
-- **Worksheet #9**: `Sheet_09_Choropleth_Map` (Bản đồ phân vùng 58 Hạt California theo mức độ thiệt hại/số nhà bị cháy - Map #1).
-- **Worksheet #10**: `Sheet_10_Proportional_Map` (Bản đồ điểm phân bố không gian các đại vụ cháy lớn California - Map #2).
+- **Worksheet #7**: `Sheet_07_Treemap_Damage` (Treemap 1 tầng: Cơ cấu loại công trình bị thiêu rụi; Single Family Residence chiếm >80%).
+- **Worksheet #8**: `Sheet_08_Top10_Counties_Bar` (Horizontal Bar Chart: Cột ngang xếp hạng Top 10 Hạt bị thiệt hại nặng nhất: Butte, Los Angeles, Sonoma...).
+- **Worksheet #9**: `Sheet_09_Choropleth_Map` (Geographic Map: Bản đồ phân vùng 58 Hạt California theo thiệt hại - **Bản đồ bắt buộc đạt 0.5 điểm Map của PDF**).
+- **Worksheet #10**: `Sheet_10_Stacked_Area_Cause` (Stacked Area Chart: Cơ cấu nguyên nhân biến thiên theo 20 năm 2006–2025).
 
 ---
 
-## 3. Tạo 3 Dashboards Trong Tableau (D1 – D3)
+## 3. Tạo 3 Dashboards Tinh Gọn Trong Tableau (D1 – D3)
 
-Nhấn nút **New Dashboard** ở thanh dưới để tạo 3 Dashboard tương ứng với 3 câu hỏi nghiên cứu:
+Nhấn nút **New Dashboard** ở thanh dưới để tạo 3 Dashboard (Kích thước Fixed size 1366 $\times$ 768 px):
 
-1. **Dashboard D1: Bức tranh 20 năm Cháy rừng California** (Xu hướng vĩ mô & Dự báo)
-   - **Kích thước**: Fixed size (1200 $\times$ 800 px) hoặc Automatic.
-   - **Thành phần**: Header tiêu đề + Thẻ KPI Cards (Tổng số vụ, Tổng diện tích cháy, Tổng nhà phá hủy) + Kéo thả `Sheet_01` (TV1), `Sheet_02` (TV1), `Sheet_03` (TV2).
-   - **Tương tác**: Bộ lọc năm dạng Slider gắn cho cả 3 sheet (**Apply to Worksheets $\to$ Selected Worksheets**).
-   - **Tích hợp Dự báo**: Thể hiện rõ đường Trend Line (kết quả mô hình hồi quy tuyến tính từ TV1) trên `Sheet_01`.
-   - **Hộp Insight**: Tóm tắt xu hướng 20 năm và xu hướng dự báo thiệt hại trong tương lai.
+1. **Dashboard D1: Bức tranh 20 năm Cháy rừng California & Dự báo** (Xu hướng vĩ mô & Dự báo 2026–2035)
+   - **Thành phần**: Header + Kéo thả `Sheet_01` (Line), `Sheet_02` (Combo Forecast 10 năm), `Sheet_03` (Diverging Bar).
+   - **Tương tác**: Biểu tượng phễu (*Use as Filter*) trên `Sheet_03` để click vào năm bất kỳ sẽ lọc toàn bộ Dashboard.
 
-2. **Dashboard D2: Điểm nóng & Phân cấp thiệt hại theo 58 Hạt** (Không gian & Nguyên lý 80/20)
-   - **Thành phần**: Kéo thả `Sheet_04` (TV2), `Sheet_07` (TV3), `Sheet_09` (TV3).
-   - **Tương tác**: Bộ lọc Hạt / Vùng, click vào Hạt trên bản đồ để highlight biểu đồ Treemap và Pareto.
-   - **Hộp Insight**: Tóm tắt các điểm nóng 58 Hạt và sự tập trung theo nguyên lý 80/20.
+2. **Dashboard D2: Không gian địa lý & Phân cấp thiệt hại 58 Hạt** (Địa lý & Điểm nóng)
+   - **Thành phần**: Kéo thả `Sheet_09` (Bản đồ 58 Hạt), `Sheet_08` (Top 10 Hạt), `Sheet_07` (Treemap loại công trình).
+   - **Tương tác**: Click vào Hạt Butte trên bản đồ `Sheet_09` $\to$ Treemap tự động phóng to cơ cấu loại nhà bị cháy tại Hạt Butte.
 
-3. **Dashboard D3: Mùa vụ, Căn nguyên & Siêu đám cháy** (Chi tiết chuyên sâu)
-   - **Thành phần**: Kéo thả `Sheet_05` (TV2), `Sheet_06` (TV2), `Sheet_08` (TV3), `Sheet_10` (TV3).
-   - **Tương tác**: Bộ lọc nguyên nhân, bộ lọc quy mô diện tích siêu đám cháy (>100.000 Acres).
-   - **Hộp Insight & Kết luận**: Kết luận mối tương quan diện tích vs phá hủy công trình, tác nhân con người vs sấm sét và khuyến nghị phòng ngừa.
+3. **Dashboard D3: Mùa vụ, Căn nguyên & Đánh giá rủi ro** (Chi tiết chuyên sâu)
+   - **Thành phần**: Bố cục lưới 2x2: `Sheet_04` (Monthly Heatmap), `Sheet_05` (Pie Cause), `Sheet_10` (Stacked Area), `Sheet_06` (Scatter 58 Hạt).
+   - **Tương tác**: Lọc theo mùa vụ và nguyên nhân.
 
 ---
 
