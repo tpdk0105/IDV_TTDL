@@ -1,149 +1,187 @@
 # Danh Mục Các Trường Tính Toán Trong Tableau (CALCULATED FIELDS)
 
-> Tài liệu hướng dẫn Thành viên 1, Thành viên 2, Thành viên 3 tạo các trường tính toán (Calculated Fields) trong Tableau Desktop / Tableau Public phục vụ cho 10 biểu đồ, 3 Dashboard và Tableau Story về Cháy rừng California (2006–2025).
+> **Dự án**: Trực quan hóa dữ liệu Cháy rừng Bang California 2006–2025 (IDV_TTDL)  
+> **Tác giả / Hiệu đính**: @DiKhang · Cập nhật ngày 08/10/2026  
+> **Đối chiếu thực nghiệm**: Đã đối chiếu 100% bằng Python trên dữ liệu gốc (7.235 vụ cháy, 114.726 bản ghi công trình DINS, 73.818 công trình bị phá hủy).
 
 ---
 
-## 1. Các Trường Tính Toán Chung (Common Fields)
+## 1. MÔ HÌNH DỮ LIỆU & QUAN HỆ (DATA SOURCE RELATIONSHIPS)
 
-### CF1: Năm Sự Kiện (Event Year)
-- **Tên trường**: `[Event Year]`
-- **Công thức**:
-  ```tableau
-  YEAR([alarm_date])
-  ```
-- **Ý nghĩa**: Trích xuất năm dạng số nguyên hoặc thứ bậc thời gian (nếu dùng trường `year` thì không cần tính).
+Bảng gốc trung tâm là `fact_fire_incident.csv`, nối hình sao (Star Schema Relationship / Noodle) ra 4 bảng vệ tinh:
+* `fact_fire_incident` ↔ `dim_date`: `date_id` = `date_id`
+* `fact_fire_incident` ↔ `dim_cause`: `cause_id` = `cause_id`
+* `fact_fire_incident` ↔ `dim_county`: `county_id` = `county_id`
+* `fact_fire_incident` ↔ `fact_structure_damage`: `incident_id` = `incident_id`
 
-### CF2: Tháng Bùng Phát (Event Month)
-- **Tên trường**: `[Event Month]`
-- **Công thức**:
-  ```tableau
-  MONTH([alarm_date])
-  ```
-- **Ý nghĩa**: Phục vụ phân tích chu kỳ mùa vụ cháy rừng.
-
-### CF3: Quy Đổi Diện Tích Sang Hecta (Burned Area Hectares)
-- **Tên trường**: `[Burned Area Ha]`
-- **Công thức**:
-  ```tableau
-  ZN([acres_burned]) * 0.404686
-  ```
-- **Ý nghĩa**: Quy đổi đơn vị mẫu Anh (Acres) sang Hecta (ha) chuẩn quốc tế.
-
-### CF4: Phân Loại Quy Mô Đám Cháy (Fire Size Class)
-- **Tên trường**: `[Fire Size Class]`
-- **Công thức**:
-  ```tableau
-  IF ISNULL([acres_burned]) OR [acres_burned] = 0 THEN "Chưa ghi nhận"
-  ELSEIF [acres_burned] < 1000 THEN "Nhỏ (< 1.000 Acres)"
-  ELSEIF [acres_burned] < 10000 THEN "Trung bình (1.000 - 10.000 Acres)"
-  ELSEIF [acres_burned] < 100000 THEN "Lớn (10.000 - 100.000 Acres)"
-  ELSE "Siêu đám cháy (≥ 100.000 Acres - Megafire)"
-  END
-  ```
-- **Ý nghĩa**: Phân cấp quy mô đám cháy theo chuẩn phân loại lâm nghiệp Hoa Kỳ.
+> **LƯU Ý QUAN TRỌNG**: Không nối `fact_structure_damage` với `dim_county` theo `county_id`, vì mã hạt giữa hai bảng fact bị lệch nhau ở khoảng 12% số dòng kiểm định.
 
 ---
 
-## 2. Các Trường Tính Toán Cho Thành Viên 1 (#1 – #2)
+## 2. BẢNG TỔNG HỢP CALCULATED FIELDS CHÍNH THỨC
 
-### CF5: Số Vụ Cháy Hàng Năm (Annual Fire Count)
-- **Tên trường**: `[Fire Incidents Count]`
-- **Công thức**:
+| Tên Calculated Field | Dùng ở Sheet | Mục đích & Ý nghĩa kỹ thuật |
+|---|---|---|
+| `[Fire Incidents Count (calc)]` | Sheet 1, 2, 3, 4, 6, 10, KPI_1 | Đếm số vụ cháy duy nhất (`COUNTD`), tránh nhân đôi dòng khi kết nối với bảng chi tiết công trình |
+| `[Giai đoạn]` | Sheet 1 | Phân tách 2 thập kỷ (2006–2015 vs 2016–2025) để kiểm định hiện tượng mùa cháy kéo dài |
+| `[Mật độ cháy (vụ/1.000 dặm²)]` | Sheet 3 | Chuẩn hóa tần suất cháy theo diện tích địa lý của từng Hạt |
+| `[State]` | Sheet 3 | Gán cố định giá trị `"California"` để định vị địa lý chính xác, tránh nhầm các Hạt trùng tên ở bang khác |
+| `[Acres Bin Log (calc)]` | Sheet 6 | Chia 6 mức quy mô diện tích đám cháy theo cấp số nhân |
+| `[Nhóm công trình]` | Sheet 7 | Chuẩn hóa và gộp 21 loại công trình kiểm định thành 6 nhóm kiến trúc chính, sửa lỗi chính tả |
+| `[Log Diện tích]` | Sheet 8 | Biến đổi logarit cơ số 10 cho diện tích cháy phục vụ mô hình hồi quy log-log |
+| `[Log Công trình phá hủy]` | Sheet 8 | Biến đổi logarit cơ số 10 cho số công trình bị phá hủy phục vụ mô hình hồi quy log-log |
+| `[Diff from 20Yr Avg (calc)]` | Sheet 10 | Đo lường độ chênh lệch số vụ cháy mỗi năm so với mức trung bình 20 năm |
+| `[Divergence Flag (calc)]` | Sheet 10 | Gắn nhãn phân kỳ: "Vượt trung bình" hoặc "Dưới trung bình" để tô màu trực quan |
+| `[Nhóm Pareto (tuỳ chọn)]` | Sheet 9 | Table calculation phân loại nhóm Hạt gây ra 80% tổng thiệt hại tài sản |
+
+---
+
+## 3. CÔNG THỨC CHI TIẾT (COPY/PASTE VÀO TABLEAU)
+
+### 3.1. `[Fire Incidents Count (calc)]`
+* **Công thức**:
   ```tableau
   COUNTD([incident_id])
   ```
-- **Ý nghĩa**: Trục cột cho biểu đồ Combo Trend (#1).
+* **Giải thích**: Bắt buộc dùng `COUNTD` thay vì `COUNT` vì bảng `fact_structure_damage` có nhiều dòng cho cùng 1 vụ cháy.
 
 ---
 
-## 3. Các Trường Tính Toán Cho Thành Viên 2 (#3 – #6)
-
-### CF6: Trung Bình Số Vụ Cháy 20 Năm (20-Year Benchmark Average)
-- **Tên trường**: `[Avg Events 20Yr]`
-- **Công thức**:
+### 3.2. `[Giai đoạn]`
+* **Công thức**:
   ```tableau
-  WINDOW_AVG(COUNTD([incident_id]))
+  IF [year] <= 2015 THEN "2006–2015" ELSE "2016–2025" END
   ```
-- **Thiết lập bảng**: Compute using `[year]`.
-
-### CF7: Độ Lệch So Với Trung Bình (Divergence from Average)
-- **Tên trường**: `[Diff from 20Yr Avg]`
-- **Công thức**:
-  ```tableau
-  COUNTD([incident_id]) - [Avg Events 20Yr]
-  ```
-- **Ý nghĩa**: Trục đo cho Diverging Bar (#3), giá trị âm (xanh) hoặc dương (đỏ cam).
-
-### CF8: Màu Phân Kỳ (Diverging Color Flag)
-- **Tên trường**: `[Divergence Flag]`
-- **Công thức**:
-  ```tableau
-  IF [Diff from 20Yr Avg] > 0 THEN "Vượt trung bình (+)"
-  ELSE "Dưới trung bình (-)"
-  END
-  ```
-
-### CF9: Log10 Diện Tích Cháy (Log10 Acres Burned)
-- **Tên trường**: `[Log10 Acres Burned]`
-- **Công thức**:
-  ```tableau
-  LOG(ZN([acres_burned]) + 1, 10)
-  ```
-- **Ý nghĩa**: Trục hoành cho Bubble Scatter (#5) (hoặc có thể chọn trực tiếp Logarithmic Scale trên trục của Tableau).
-
-### CF10: Log10 Nhà Cửa Phá Hủy (Log10 Structures Destroyed)
-- **Tên trường**: `[Log10 Structures Destroyed]`
-- **Công thức**:
-  ```tableau
-  LOG(ZN([structures_destroyed]) + 1, 10)
-  ```
-- **Ý nghĩa**: Trục tung cho Bubble Scatter (#5).
-
-### CF11: Nhóm Phân Vị Diện Tích (Burned Acres Bin)
-- **Tên trường**: `[Acres Bin Log]`
-- **Công thức**:
-  ```tableau
-  IF ISNULL([acres_burned]) OR [acres_burned] < 300 THEN "< 300 Acres"
-  ELSEIF [acres_burned] < 1000 THEN "300 - 1.000 Acres"
-  ELSEIF [acres_burned] < 5000 THEN "1.000 - 5.000 Acres"
-  ELSEIF [acres_burned] < 25000 THEN "5.000 - 25.000 Acres"
-  ELSEIF [acres_burned] < 100000 THEN "25.000 - 100.000 Acres"
-  ELSE "≥ 100.000 Acres (Siêu đám cháy)"
-  END
-  ```
-- **Ý nghĩa**: Trục phân loại cho Histogram (#6).
+* **Giải thích**: Chia đôi chuỗi 20 năm thành 2 giai đoạn 10 năm để so sánh sự dịch chuyển của đường cong mùa cháy.
 
 ---
 
-## 4. Các Trường Tính Toán Cho Thành Viên 3 (#7 – #10)
-
-### CF12: Tỷ Lệ % Lũy Kế Nhà Cửa Bị Phá Hủy (Cumulative Destroyed %)
-- **Tên trường**: `[Cumulative Destroyed %]`
-- **Công thức**:
+### 3.3. `[Mật độ cháy (vụ/1.000 dặm²)]`
+* **Công thức**:
   ```tableau
-  RUNNING_SUM(SUM([structures_destroyed])) / TOTAL(SUM([structures_destroyed]))
+  [Fire Incidents Count (calc)] / MIN([area_sqmi]) * 1000
   ```
-- **Thiết lập bảng**: Compute using `[county]` (đã sắp xếp giảm dần theo `SUM([structures_destroyed])`).
-- **Ý nghĩa**: Đường cong Pareto lũy kế (#7) so sánh với ngưỡng tham chiếu 80%.
-
-### CF13: Phân Loại Nhóm Nguyên Nhân (Cause Group High Level)
-- **Tên trường**: `[Cause Group High Level]`
-- **Công thức**:
-  ```tableau
-  IF CONTAINS(LOWER([cause_name]), "lightning") OR [cause_code] = 1 THEN "Tự nhiên (Sấm sét)"
-  ELSEIF [cause_code] IN (2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 16) OR CONTAINS(LOWER([cause_group]), "human") THEN "Tác động con người (Thiết bị, Điện, Đốt phá)"
-  ELSE "Chưa xác định / Khác"
-  END
-  ```
-- **Ý nghĩa**: Vòng trong của biểu đồ Donut 2 tầng (#8).
+* **Giải thích**: `MIN([area_sqmi])` lấy diện tích của Hạt từ `dim_county` để làm mẫu số chuẩn hóa.
 
 ---
 
-## 5. Quy Chuẩn Bảng Màu Trong Tableau
+### 3.4. `[State]`
+* **Công thức**:
+  ```tableau
+  "California"
+  ```
+* **Thiết lập**: Chuột phải vào field $\to$ **Geographic Role** $\to$ Chọn **State/Province**. Đưa vào Detail của bản đồ để Tableau không bị nhầm Hạt Orange, Lake, Kern với các bang khác.
 
-Khi chọn màu trên thẻ **Color (Marks)**:
-- **Biểu đồ thời gian / Số lượng**: Bảng màu `Tableau Classic 10` hoặc `Color Blind` (Okabe-Ito).
-- **Cháy rừng / Thiệt hại**: Luôn cố định dải màu Đỏ Cam `#D55E00` (hoặc `Orange-Red`).
-- **Bản đồ phân vùng 58 Hạt (Choropleth Map)**: Chọn dải tuần tự `Orange-Red`.
-- **Biểu đồ phân kỳ (#3)**: Chọn dải phân kỳ `Red-Blue Diverging` (Tâm = 0).
+---
+
+### 3.5. `[Acres Bin Log (calc)]`
+* **Công thức**:
+  ```tableau
+  IF ISNULL([acres_burned]) OR [acres_burned] < 300 THEN "< 300"
+  ELSEIF [acres_burned] < 1000 THEN "300–1k"
+  ELSEIF [acres_burned] < 5000 THEN "1k–5k"
+  ELSEIF [acres_burned] < 25000 THEN "5k–25k"
+  ELSEIF [acres_burned] < 100000 THEN "25k–100k"
+  ELSE "≥ 100k"
+  END
+  ```
+* **Giải thích**: Chia các khoảng diện tích lũy tiến theo cấp số nhân phù hợp với phân phối hàm mũ của cháy rừng.
+
+---
+
+### 3.6. `[Nhóm công trình]`
+* **Công thức**:
+  ```tableau
+  IF CONTAINS([structure_type], "Single Fam") THEN "Nhà 1 hộ"
+  ELSEIF CONTAINS([structure_type], "Multi Family") THEN "Nhà nhiều hộ"
+  ELSEIF CONTAINS([structure_type], "Mobile Home") OR CONTAINS([structure_type], "Motor Home") THEN "Nhà di động"
+  ELSEIF CONTAINS([structure_type], "Commercial") OR CONTAINS([structure_type], "Mixed") THEN "Thương mại"
+  ELSEIF CONTAINS([structure_type], "Utility") THEN "Công trình phụ"
+  ELSE "Công cộng/Khác"
+  END
+  ```
+* **Giải thích**: Gộp 21 phân loại DINS thành 6 nhóm lớn, gom đúng các biến thể tên gọi trong dữ liệu CAL FIRE.
+
+---
+
+### 3.7. `[Log Diện tích]`
+* **Công thức**:
+  ```tableau
+  IF [acres_burned] > 0 THEN LOG([acres_burned]) END
+  ```
+* **Giải thích**: Biến đổi logarit thập phân $\log_{10}(X)$. Giá trị bằng 0 hoặc âm sẽ tự trả về `NULL` và được Tableau tự động loại khỏi hồi quy.
+
+---
+
+### 3.8. `[Log Công trình phá hủy]`
+* **Công thức**:
+  ```tableau
+  IF [total_structures_destroyed] > 0 THEN LOG([total_structures_destroyed]) END
+  ```
+* **Giải thích**: Biến đổi $\log_{10}(Y)$. Giúp đưa hệ số xác định hồi quy từ $R^2 = 0{,}026$ (số gốc) lên $R^2 = 0{,}356$ (log-log).
+
+---
+
+### 3.9. `[Diff from 20Yr Avg (calc)]`
+* **Công thức**:
+  ```tableau
+  [Fire Incidents Count (calc)] - WINDOW_AVG([Fire Incidents Count (calc)])
+  ```
+* **Thiết lập Table Calculation**: Chuột phải vào viên thuốc trên Rows $\to$ **Compute Using** $\to$ `[year]`.
+
+---
+
+### 3.10. `[Divergence Flag (calc)]`
+* **Công thức**:
+  ```tableau
+  IF [Diff from 20Yr Avg (calc)] >= 0 THEN "Vượt trung bình" ELSE "Dưới trung bình" END
+  ```
+* **Giải thích**: Dùng để kéo vào thẻ Color trên Sheet 10.
+
+---
+
+### 3.11. `[Nhóm Pareto (tuỳ chọn)]`
+* **Công thức**:
+  ```tableau
+  IF (RUNNING_SUM(SUM([total_structures_destroyed])) - SUM([total_structures_destroyed])) 
+     / TOTAL(SUM([total_structures_destroyed])) < 0.8
+  THEN "Nhóm gây 80% thiệt hại" 
+  ELSE "Các hạt còn lại" 
+  END
+  ```
+* **Thiết lập**: Compute Using: `Table (across)` hoặc theo `county_name`.
+
+---
+
+## 4. DANH MỤC PARAMETERS (THAM SỐ ĐIỀU KHIỂN)
+
+| Tên Parameter | Data Type | Giá trị cho phép | Giá trị mặc định | Mục đích sử dụng |
+|---|---|---|---|---|
+| `[Top N]` | Integer | Range: 5 đến 20 (Step = 1) | `10` | Lọc động Top Hạt tại Sheet 5 và tiêu đề động |
+| `[Mốc 80%]` | Float | Giá trị cố định `0.8` | `0.8` | Tạo Reference Line 80% cho trục tỷ lệ Pareto (Sheet 9) |
+| `[Mốc 0]` | Float | Giá trị cố định `0.0` | `0.0` | Tạo Reference Line mốc 0 cho Diverging Bar (Sheet 10) |
+
+*(Lưu ý: Do Tableau bản Web không có lựa chọn "Constant" trực tiếp trên Reference Line nên phải dùng Parameter thay thế).*
+
+---
+
+## 5. HIERARCHIES, ALIASES VÀ ĐỔI TÊN TRƯỜNG
+
+1. **Hierarchy Nguyên nhân**: Kéo `cause_name` thả đè lên `cause_group` $\to$ Đặt tên hierarchy là **Nguyên nhân**.
+2. **Hierarchy Loại công trình**: Kéo `structure_type` thả đè lên `Nhóm công trình` $\to$ Đặt tên hierarchy là **Loại công trình**.
+3. **Alias `cause_group`**:
+   * `Human` $\to$ **Con người** (Màu đỏ `#D95F02`)
+   * `Natural` $\to$ **Tự nhiên** (Màu xanh lá `#2CA02C`)
+   * `Undetermined` $\to$ **Chưa xác định** (Màu xám `#7F7F7F`)
+4. **Alias `month`**: Đổi số `1`–`12` thành `T1`–`T12`.
+5. **Đổi tên trường**: `acres_burned` $\to$ **Diện tích cháy (acres)**.
+
+---
+
+## 6. DANH SÁCH CÁC HÀM CŨ ĐÃ BÃI BỎ (DEPRECATED)
+
+| Hàm / Field cũ | Lý do loại bỏ / Khắc phục | Giải pháp thay thế mới |
+|---|---|---|
+| `[Cause Group High Level (calc)]` | Phân loại sai nhóm "Miscellaneous" vào Con người, làm lệch số vụ năm 2017 (193 vs 275) | Sử dụng trực tiếp trường gốc `[cause_group]` trong `dim_cause` kèm Alias tiếng Việt |
+| `[Cumulative Destroyed % (calc)]` | Công thức cũ bị trộn lẫn giữa `damaged` và `destroyed`, làm sai lệch tỷ lệ | Dùng Table Calculation: Running Total + Percent of Total trên `total_structures_destroyed` |
+| `[Burned Area Ha]` | Không cần thiết quy đổi, giữ nguyên mẫu Anh (Acres) thống nhất với dữ liệu CAL FIRE | Sử dụng trực tiếp `[acres_burned]` |
