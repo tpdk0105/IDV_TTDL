@@ -13,6 +13,7 @@ Mục đích:
         6. fact_casualty_event: Thương vong NOAA theo từng vụ cháy (đã gộp trùng vùng dự báo) - phân tích số người chết theo năm.
     - Tạo các khóa đại diện (Surrogate Keys) duy nhất, đảm bảo tính toàn vẹn tham chiếu 100% (Zero Orphan FKs).
     - Xuất các tệp tin CSV tương ứng vào thư mục `data/tables/`.
+    - Xuất bảng tổng hợp thương vong theo năm `data/clean/casualties_by_year.csv` (20 dòng, 2006–2025).
 """
 
 import sys
@@ -192,6 +193,34 @@ def build_fact_casualty_event(events: pd.DataFrame) -> pd.DataFrame:
         "injuries_direct": df["injuries_direct"],
         "injuries_indirect": df["injuries_indirect"],
     })
+
+
+def build_casualties_by_year(events: pd.DataFrame) -> pd.DataFrame:
+    """Tổng hợp thương vong NOAA theo năm (đủ 2006–2025, năm không có sự kiện = 0) kèm vụ cháy chết người nhiều nhất."""
+    years = pd.Index(range(2006, 2026), name="year")
+    yearly = events.groupby("year").agg(
+        noaa_fire_events=("noaa_event_id", "size"),
+        deaths_direct=("deaths_direct", "sum"),
+        deaths_indirect=("deaths_indirect", "sum"),
+        injuries_direct=("injuries_direct", "sum"),
+        injuries_indirect=("injuries_indirect", "sum"),
+    ).reindex(years, fill_value=0)
+    yearly.insert(3, "deaths_total", yearly["deaths_direct"] + yearly["deaths_indirect"])
+    yearly["injuries_total"] = yearly["injuries_direct"] + yearly["injuries_indirect"]
+
+    # Vụ cháy làm chết nhiều người nhất trong năm; bỏ trống nếu năm đó không có người chết trực tiếp
+    deadliest = (
+        events[events["deaths_direct"] > 0]
+        .sort_values("deaths_direct", ascending=False)
+        .drop_duplicates("year")
+        .set_index("year")
+    )
+    # NOAA không ghi tên vụ cháy (vd Redwood Valley 2017) -> ghi vùng dự báo để còn tra lại
+    unnamed = "(không rõ tên) " + deadliest["zone_names"].str.title()
+    yearly["deadliest_fire"] = deadliest["fire_name"].str.title().fillna(unnamed)
+    yearly["deadliest_fire_deaths"] = deadliest["deaths_direct"].astype("Int64")
+    yearly["deaths_share_of_period"] = (yearly["deaths_direct"] / yearly["deaths_direct"].sum()).round(4)
+    return yearly.reset_index()
 
 
 def extract_fire_coordinates(dins_path: Path, ics_path: Path) -> dict:
@@ -391,9 +420,9 @@ def split_star_schema_tables() -> None:
     df_fact_casualty = build_fact_casualty_event(noaa_events)
 
     # 5. Xuất các bảng ra thư mục data/tables/ (an toàn khi tệp đang mở xem)
-    def safe_to_csv(df: pd.DataFrame, target_path: Path):
+    def safe_to_csv(df: pd.DataFrame, target_path: Path, encoding: str = "utf-8"):
         try:
-            df.to_csv(target_path, index=False, encoding="utf-8")
+            df.to_csv(target_path, index=False, encoding=encoding)
         except PermissionError:
             print(f"  [CẢNH BÁO] Không thể ghi đè {target_path.name} do tệp đang được mở trong ứng dụng khác. Giữ nguyên tệp hiện có.")
 
@@ -411,6 +440,13 @@ def split_star_schema_tables() -> None:
     print(f"  - fact_fire_incident: {len(df_fact_fires):,} dòng (ĐẠT YÊU CẦU >= 5.000 DÒNG)")
     print(f"  - fact_structure_damage: {len(df_fact_damage):,} dòng")
     print(f"  - fact_casualty_event: {len(df_fact_casualty):,} dòng")
+
+    casualties_by_year = build_casualties_by_year(noaa_events)
+    casualties_path = Path("data/clean/casualties_by_year.csv")
+    casualties_path.parent.mkdir(parents=True, exist_ok=True)
+    safe_to_csv(casualties_by_year, casualties_path, encoding="utf-8-sig")  # BOM: Excel đọc đúng tiếng Việt
+    print(f"[TV2 - MODEL] Xuất thương vong theo năm: {casualties_path} ({len(casualties_by_year)} năm, "
+          f"{int(casualties_by_year['deaths_direct'].sum())} người chết trực tiếp)")
 
 
 if __name__ == "__main__":
