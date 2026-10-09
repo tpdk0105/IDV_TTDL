@@ -39,6 +39,9 @@ data/interim/*
 !data/interim/.gitkeep
 data/clean/*
 !data/clean/.gitkeep
+
+# Hinh nhap khi thu ham ve trong notebook (vd _test_missing_perimeters.png)
+reports/figures/_test_*
 *.sqlite
 *.sqlite3
 *.db

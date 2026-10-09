@@ -79,10 +79,6 @@ NOAA_DATE_FORMAT = "%d-%b-%y %H:%M:%S"  # vd "08-NOV-18 06:30:00"
 CLEANING_LOG: list[dict] = []
 
 
-# ---------------------------------------------------------------------------
-# Nhat ky lam sach
-# ---------------------------------------------------------------------------
-
 def log_step(step: str, before: int, after: int, note: str = "") -> None:
     """Ghi lai 1 buoc lam sach (de dien vao docs/CLEANING_LOG.md) va in ra man hinh."""
     CLEANING_LOG.append({"buoc": step, "truoc": before, "sau": after, "loai_bo": before - after, "ghi_chu": note})
@@ -95,10 +91,6 @@ def log_as_markdown() -> str:
     rows = [f"| {r['buoc']} | {r['truoc']:,} | {r['sau']:,} | {r['loai_bo']:,} | {r['ghi_chu']} |" for r in CLEANING_LOG]
     return "\n".join([header, *rows])
 
-
-# ---------------------------------------------------------------------------
-# FRAP: moi dong dau ra = 1 vu chay
-# ---------------------------------------------------------------------------
 
 def clean_frap(frap: pd.DataFrame) -> pd.DataFrame:
     """Loc 2006-2025, chuan hoa khoa / ngay / dien tich / nguyen nhan, gop nhieu polygon thanh 1 vu chay."""
@@ -178,10 +170,6 @@ def add_cause_columns(fires: pd.DataFrame) -> pd.DataFrame:
     )
     return fires
 
-
-# ---------------------------------------------------------------------------
-# Thiet hai cong trinh: ICS-209 (2006-2012) + DINS (2013-2025)
-# ---------------------------------------------------------------------------
 
 def clean_dins(dins: pd.DataFrame) -> pd.DataFrame:
     """Bo kiem ke lap, dem cong trinh bi pha huy / hu hai theo (year, fire_name, unit_id)."""
@@ -300,10 +288,6 @@ def attach_damage(fires: pd.DataFrame, damage: pd.DataFrame) -> pd.DataFrame:
     return fires
 
 
-# ---------------------------------------------------------------------------
-# Hat, kiem tra quy tac, hoan thien bang
-# ---------------------------------------------------------------------------
-
 def attach_county(fires: pd.DataFrame, damage: pd.DataFrame, demographics: pd.DataFrame) -> pd.DataFrame:
     """Hat lay tu nguon thiet hai; vu con thieu -> Hat pho bien nhat cua don vi (unit_id). Ghep dien tich / FIPS."""
     unit_to_county = damage.dropna(subset=["unit_id", "county"]).groupby("unit_id")["county"].agg(lambda s: s.mode().iat[0])
@@ -348,10 +332,6 @@ def finalize(fires: pd.DataFrame) -> pd.DataFrame:
     return fires
 
 
-# ---------------------------------------------------------------------------
-# NOAA: thiet hai ve nguoi
-# ---------------------------------------------------------------------------
-
 def clean_noaa(noaa: pd.DataFrame) -> pd.DataFrame:
     """Giu cot thuong vong, gop cac dong cua cung 1 vu chay bi ghi lap o nhieu vung du bao."""
     n_raw = len(noaa)
@@ -391,10 +371,6 @@ def clean_noaa(noaa: pd.DataFrame) -> pd.DataFrame:
     assert (events[casualty_cols] >= 0).all().all()
     return events[["noaa_event_id", "episode_id", "year", "begin_date", "fire_name", "zone_names", "n_zones", *casualty_cols]]
 
-
-# ---------------------------------------------------------------------------
-# Dieu phoi
-# ---------------------------------------------------------------------------
 
 def clean_by_rules() -> pd.DataFrame:
     """Thuc hien lam sach theo quy tac tu data/raw/calfire sang data/interim/master_rules_cleaned.csv."""

@@ -72,10 +72,6 @@ SOURCE_COLORS = {SOURCE_ICS: COLOR_FIRE_LIGHT, SOURCE_DINS: COLOR_FIRE_MID}
 JITTER_SEED = 42  # stripplot rai diem ngau nhien bang np.random -> co dinh de anh giong nhau moi lan chay
 
 
-# ---------------------------------------------------------------------------
-# Doc du lieu & chuan hoa (dung chung voi 03_clean.py)
-# ---------------------------------------------------------------------------
-
 def load_raw_data(raw_dir: Path = RAW_DIR) -> dict:
     """Doc nguyen trang 5 file tho -> {ten_ngan: DataFrame}. Khong them / sua cot."""
     # utf-8-sig: bo ky tu BOM o dau mot so file CAL FIRE
@@ -186,10 +182,6 @@ def summarize_all_files(raw: dict | None = None) -> pd.DataFrame:
     return summary
 
 
-# ---------------------------------------------------------------------------
-# Dinh dang & tien ich ve bieu do (dung chung voi 08_predictive_model.py)
-# ---------------------------------------------------------------------------
-
 def vn_number(value, decimals: int = 0) -> str:
     """So hien thi tren bieu do theo kieu Viet Nam: 7.342 (hang nghin), 97,5 (thap phan)."""
     return f"{value:,.{decimals}f}".replace(",", "_").replace(".", ",").replace("_", ".")
@@ -226,10 +218,6 @@ def _save_figure(fig: plt.Figure, output_path: Path, label: str) -> None:
     fig.savefig(output_path, dpi=150, bbox_inches="tight")
     print(f"[TV1 - EDA] Da luu {label} -> {output_path}")
 
-
-# ---------------------------------------------------------------------------
-# Bieu do
-# ---------------------------------------------------------------------------
 
 def plot_missing_values(data=None, output_path: Path = FIGURES_DIR / "eda_01_missing_values.png", top_n: int = 12) -> plt.Figure:
     """Ve bieu do phan tich ty le khuyet thieu cua cac cot du lieu bang Matplotlib."""
@@ -541,10 +529,6 @@ def plot_casualties(data=None, output_path: Path = FIGURES_DIR / "eda_06_casualt
     _save_figure(fig, output_path, "bieu do thiet hai ve nguoi")
     return fig
 
-
-# ---------------------------------------------------------------------------
-# Dieu phoi
-# ---------------------------------------------------------------------------
 
 def run_initial_eda() -> None:
     """Ham dieu phoi toan bo luong EDA du lieu tho va xuat bao cao chat luong."""
