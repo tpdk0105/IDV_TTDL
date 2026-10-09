@@ -46,8 +46,18 @@ reports/figures/_test_*
 *.sqlite3
 *.db
 
+# Microsoft Word documents and temp files
+*.doc
+*.docx
+*.docm
+*.dot
+*.dotx
+~$*
+
+# Submission package archives & folders
+NHOM17_*
+
 # Temporary and log files
 *.log
-*.docx
 scratch/
 tmp/
