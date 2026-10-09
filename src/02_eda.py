@@ -1,31 +1,7 @@
-"""
-Module: src/02_eda.py
-Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy rừng / thảm họa thiên nhiên (2006–2025)
-Người phụ trách: Thành viên 1 - Kỹ sư Dữ liệu (Data Engineer)
-Mục đích:
-    - Thực hiện phân tích khám phá dữ liệu ban đầu (EDA) trên 5 tập dữ liệu thô trong `data/raw/calfire/`.
-    - Sử dụng các thư viện biểu đồ tĩnh (Matplotlib, Seaborn) vẽ 6 biểu đồ tĩnh theo đúng barem IDV:
-        1. Tỷ lệ dữ liệu khuyết thiếu theo cột của cả 5 tập (Missing values bar).
-        2. Phân phối diện tích cháy trên thang log (Histogram + KDE: burned_area_ha).
-        3. Biểu đồ hộp phát hiện ngoại lai sơ bộ (Boxplot: structures_destroyed, ICS-209 + DINS).
-        4. Bản đồ nhiệt tương quan (Pearson trên log1p / Spearman): năm, diện tích cháy, số ngày dập lửa, công trình bị phá hủy.
-        5. Xu hướng theo năm: số vụ cháy, tổng diện tích cháy, công trình bị phá hủy (chuỗi 20/20 năm ICS-209 + DINS).
-        6. Thiệt hại về người theo năm (NOAA): người chết / bị thương trực tiếp, tách phần bị đếm trùng giữa các vùng dự báo.
-    - NOAA chỉ dùng cho thiệt hại về người; thiệt hại tài sản lấy từ DINS + ICS-209.
-    - Xuất các biểu đồ tĩnh sang thư mục `reports/figures/` và lập báo cáo `docs/DATA_QUALITY_REPORT.md`.
-    - Các hằng số / hàm chuẩn hóa ở đầu file được dùng lại trong `03_clean.py` và `08_predictive_model.py`.
-
-Cách chạy (từ thư mục gốc dự án):
-    python src/02_eda.py
-
-Trạng thái: Đã hoàn thành đủ 6 biểu đồ.
-"""
-
 import math
 import sys
 from pathlib import Path
 
-# Dam bao UTF-8 tren Windows console (Jupyter khong co reconfigure nen phai kiem tra truoc)
 if hasattr(sys.stdout, "reconfigure") and sys.stdout.encoding.lower() != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
 
@@ -38,7 +14,6 @@ from matplotlib.ticker import FuncFormatter
 RAW_DIR = Path("data/raw/calfire")
 FIGURES_DIR = Path("reports/figures")
 
-# Ten ngan -> ten file tho
 RAW_FILES = {
     "perimeters": "California_Fire_Perimeters_all.csv",
     "dins": "CAL_FIRE_Damage_Inspection_DINS.csv",
@@ -69,12 +44,10 @@ COLOR_FIRE_HIGH = "#D94801"
 COLOR_FIRE_EXTREME = "#8C2D04"
 SOURCE_COLORS = {SOURCE_ICS: COLOR_FIRE_LIGHT, SOURCE_DINS: COLOR_FIRE_MID}
 
-JITTER_SEED = 42  # stripplot rai diem ngau nhien bang np.random -> co dinh de anh giong nhau moi lan chay
+JITTER_SEED = 42
 
 
 def load_raw_data(raw_dir: Path = RAW_DIR) -> dict:
-    """Doc nguyen trang 5 file tho -> {ten_ngan: DataFrame}. Khong them / sua cot."""
-    # utf-8-sig: bo ky tu BOM o dau mot so file CAL FIRE
     return {
         name: pd.read_csv(raw_dir / filename, encoding="utf-8-sig", low_memory=False)
         for name, filename in RAW_FILES.items()
@@ -82,14 +55,12 @@ def load_raw_data(raw_dir: Path = RAW_DIR) -> dict:
 
 
 def add_derived_columns(raw: dict) -> dict:
-    """Tra ve ban sao co them cot phai sinh dung cho bieu do; giu nguyen dict tho de phan tich khuyet thieu."""
     perimeters = raw["perimeters"].copy()
     perimeters["burned_area_ha"] = perimeters["GIS Calculated Acres"] * ACRE_TO_HA
     return {**raw, "perimeters": perimeters}
 
 
 def normalize_fire_name(names: pd.Series) -> pd.Series:
-    """Khoa 1 (ban rut gon cho EDA): viet hoa, CMPLX -> COMPLEX, bo hau to FIRE / INCIDENT / COMPLEX."""
     return (
         names.str.upper().str.strip()
         .str.replace(r"\bCMPLX\b", "COMPLEX", regex=True)
@@ -99,19 +70,16 @@ def normalize_fire_name(names: pd.Series) -> pd.Series:
 
 
 def extract_noaa_fire_name(noaa: pd.DataFrame) -> pd.Series:
-    """Tach ten vu chay tu EVENT_NARRATIVE (uu tien) hoac EPISODE_NARRATIVE, chuan hoa theo Khoa 1."""
     name = noaa["EVENT_NARRATIVE"].str.extract(NOAA_FIRE_NAME_PATTERN, expand=False)
     name = name.fillna(noaa["EPISODE_NARRATIVE"].str.extract(NOAA_FIRE_NAME_PATTERN, expand=False))
     return normalize_fire_name(name)
 
 
 def noaa_fire_key(noaa: pd.DataFrame) -> pd.Series:
-    """Khoa gop dong NOAA cua cung 1 vu chay (dung kem EPISODE_ID); dong khong tach duoc ten giu rieng."""
     return extract_noaa_fire_name(noaa).fillna("_EVENT_" + noaa["EVENT_ID"].astype(str))
 
 
 def build_structures_destroyed(data: dict) -> pd.DataFrame:
-    """Gop so cong trinh bi pha huy theo tung vu chay: ICS-209 (2006-2012) + DINS (2013-2025)."""
     ics = data["ics209"]
     ics_part = pd.DataFrame({
         "year": ics["START_YEAR"],
@@ -131,15 +99,12 @@ def build_structures_destroyed(data: dict) -> pd.DataFrame:
     )
 
     combined = pd.concat([ics_part, dins_part], ignore_index=True)
-    # Chi giu vu chay co pha huy >= 1 cong trinh (DINS von chi ghi nhan vu co thiet hai; thang log khong nhan 0)
     return combined[combined["structures_destroyed"] > 0]
 
 
 def build_fire_features(data: dict) -> pd.DataFrame:
-    """Moi dong 1 vu chay FRAP 2006-2025: year, burned_area_ha, containment_days, structures_destroyed."""
     perimeters = data["perimeters"]
     p = perimeters[perimeters["Year"].between(*STUDY_YEARS)]
-    # Vu khong ten -> khoa rieng theo OBJECTID de khong bi gop chung voi nhau
     fire_key = normalize_fire_name(p["Fire Name"]).fillna("_NO_NAME_" + p["OBJECTID"].astype(str))
     p = p.assign(
         year=p["Year"].astype(int),
@@ -166,7 +131,6 @@ def build_fire_features(data: dict) -> pd.DataFrame:
 
 
 def summarize_all_files(raw: dict | None = None) -> pd.DataFrame:
-    """Tong quan nhanh 5 file tho: so dong, so cot, ty le o trong, so dong trung lap."""
     raw = raw if raw is not None else load_raw_data()
     summary = pd.DataFrame([
         {
@@ -183,11 +147,9 @@ def summarize_all_files(raw: dict | None = None) -> pd.DataFrame:
 
 
 def vn_number(value, decimals: int = 0) -> str:
-    """So hien thi tren bieu do theo kieu Viet Nam: 7.342 (hang nghin), 97,5 (thap phan)."""
     return f"{value:,.{decimals}f}".replace(",", "_").replace(".", ",").replace("_", ".")
 
 
-# Nhan truc so kieu Viet Nam cho truc tuyen tinh (vd 20.000 thay vi 20000, 0,05 thay vi 0.05)
 VN_TICK_FORMATTER = FuncFormatter(lambda x, _: vn_number(x, 2).rstrip("0").rstrip(","))
 
 
@@ -196,18 +158,15 @@ def _hide_top_right_spines(ax: plt.Axes) -> None:
 
 
 def _set_year_ticks(ax: plt.Axes) -> None:
-    """Truc hoanh = du 20 nam nghien cuu, nghieng 45 do cho de doc."""
     ax.set_xticks(list(STUDY_YEAR_RANGE))
     ax.tick_params(axis="x", rotation=45)
 
 
 def _set_suptitle(fig: plt.Figure, text: str) -> None:
-    """Tieu de chung can trai cua ca figure (thong diep chinh cua bieu do)."""
     fig.suptitle(text, fontsize=13, x=0.01, ha="left")
 
 
 def _label_top_bars(ax: plt.Axes, series: pd.Series, top_n: int) -> None:
-    """Ghi gia tri len top_n cot cao nhat."""
     for x, v in series.nlargest(top_n).items():
         ax.annotate(vn_number(v), xy=(x, v), xytext=(0, 3), textcoords="offset points", ha="center", fontsize=8)
 
@@ -220,8 +179,6 @@ def _save_figure(fig: plt.Figure, output_path: Path, label: str) -> None:
 
 
 def plot_missing_values(data=None, output_path: Path = FIGURES_DIR / "eda_01_missing_values.png", top_n: int = 12) -> plt.Figure:
-    """Ve bieu do phan tich ty le khuyet thieu cua cac cot du lieu bang Matplotlib."""
-    # data: None -> doc ca 5 file tho; DataFrame -> 1 bang; dict {ten: DataFrame} -> nhieu bang
     if data is None:
         datasets = load_raw_data()
     elif isinstance(data, pd.DataFrame):
@@ -268,8 +225,6 @@ def plot_missing_values(data=None, output_path: Path = FIGURES_DIR / "eda_01_mis
 
 
 def plot_distributions_raw(data=None, output_path: Path = FIGURES_DIR / "eda_02_distributions_raw.png") -> plt.Figure:
-    """Ve Histogram dien tich chay tren thang tuyen tinh (truoc log) de thay do lech phai."""
-    # data: dict tu add_derived_columns(); None -> tu doc
     data = data if data is not None else add_derived_columns(load_raw_data())
     perimeters = data["perimeters"]
 
@@ -280,7 +235,7 @@ def plot_distributions_raw(data=None, output_path: Path = FIGURES_DIR / "eda_02_
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
-    # (a) Toan bo mien gia tri: gan nhu moi vu don vao cot dau tien, duoi keo dai toi vai tram nghin ha
+    # Toan bo mien gia tri: gan nhu moi vu don vao cot dau tien, duoi keo dai toi vai tram nghin ha
     ax = axes[0]
     ax.hist(area, bins=60, color=COLOR_FIRE_MID, edgecolor="white")
     ax.axvline(MEGAFIRE_HA, color=COLOR_FIRE_EXTREME, linestyle=":", linewidth=1.2)
@@ -297,7 +252,7 @@ def plot_distributions_raw(data=None, output_path: Path = FIGURES_DIR / "eda_02_
     ax.set_xlabel("Diện tích cháy, ha")
     ax.set_ylabel("Số vụ cháy")
 
-    # (b) Phong to 95% vu nho nhat: van lech phai du da cat duoi
+    # Phong to 95% vu nho nhat: van lech phai du da cat duoi
     ax = axes[1]
     ax.hist(area[area <= p95], bins=60, color=COLOR_FIRE_LIGHT, edgecolor="white")
     ax.axvline(median, color=COLOR_NEUTRAL, linestyle="--", linewidth=1)
@@ -320,12 +275,8 @@ def plot_distributions_raw(data=None, output_path: Path = FIGURES_DIR / "eda_02_
 
 
 def plot_distributions(data=None, output_path: Path = FIGURES_DIR / "eda_02_distributions.png") -> plt.Figure:
-    """Ve bieu do phan phoi Histogram/KDE cua dien tich chay tren thang log."""
-    # data: dict tu add_derived_columns(); None -> tu doc
     data = data if data is not None else add_derived_columns(load_raw_data())
     perimeters = data["perimeters"]
-
-    # Chi lay giai doan nghien cuu 2006-2025; thang log khong nhan gia tri <= 0
     area = perimeters.loc[perimeters["Year"].between(*STUDY_YEARS), "burned_area_ha"]
     area = area[area > 0]
     median = area.median()
@@ -348,13 +299,10 @@ def plot_distributions(data=None, output_path: Path = FIGURES_DIR / "eda_02_dist
 
 
 def plot_outlier_boxplots(data=None, output_path: Path = FIGURES_DIR / "eda_03_outliers_boxplot.png", top_n: int = 3) -> plt.Figure:
-    """Ve bieu do hop (Boxplot) phat hien ngoai lai so cong trinh bi pha huy moi vu chay."""
-    # data: DataFrame tu build_structures_destroyed(); None -> tu doc va gop
     data = data if data is not None else build_structures_destroyed(load_raw_data())
     sources = list(SOURCE_COLORS)
 
     fig, ax = plt.subplots(figsize=(12, 5))
-    # whis=1.5 tinh tren truc log -> nguong ngoai lai Tukey cho phan phoi log-normal
     sns.boxplot(data=data, x="structures_destroyed", y="source", hue="source", palette=SOURCE_COLORS, order=sources,
                 log_scale=True, whis=1.5, width=0.5, showfliers=False, legend=False, ax=ax)
     np.random.seed(JITTER_SEED)
@@ -382,8 +330,6 @@ def plot_outlier_boxplots(data=None, output_path: Path = FIGURES_DIR / "eda_03_o
 
 
 def plot_correlation_heatmap(data=None, output_path: Path = FIGURES_DIR / "eda_04_correlation_heatmap.png") -> plt.Figure:
-    """Ve Correlation Heatmap bang Seaborn the hien moi tuong quan giua cac bien so."""
-    # data: DataFrame tu build_fire_features(); None -> tu doc va gop
     fires = data if data is not None else build_fire_features(add_derived_columns(load_raw_data()))
     labels = {
         "year": "Năm",
@@ -424,8 +370,6 @@ def plot_correlation_heatmap(data=None, output_path: Path = FIGURES_DIR / "eda_0
 
 
 def plot_temporal_trends(data=None, output_path: Path = FIGURES_DIR / "eda_05_temporal_trend.png", top_n: int = 3) -> plt.Figure:
-    """Ve xu huong tan suat tham hoa va chay rung qua cac nam (2006-2025)."""
-    # data: dict tu add_derived_columns(); None -> tu doc
     data = data if data is not None else add_derived_columns(load_raw_data())
     perimeters = data["perimeters"]
     perimeters = perimeters[perimeters["Year"].between(*STUDY_YEARS)]
@@ -438,20 +382,18 @@ def plot_temporal_trends(data=None, output_path: Path = FIGURES_DIR / "eda_05_te
 
     fig, (ax_fires, ax_area, ax_destroyed) = plt.subplots(3, 1, figsize=(13, 10), sharex=True)
 
-    # 1. So vu chay moi nam
     ax_fires.plot(n_fires.index, n_fires.values, marker="o", color=COLOR_FIRE_HIGH, linewidth=2)
     ax_fires.axhline(n_fires.mean(), color=COLOR_NEUTRAL, linestyle="--", linewidth=1)
     ax_fires.set_ylabel("Số vụ cháy")
     ax_fires.set_title(f"Số vụ cháy ghi nhận (FRAP, tổng {vn_number(n_fires.sum())} vụ, "
                        f"nét đứt = trung bình {vn_number(n_fires.mean())} vụ/năm)", loc="left", fontsize=11)
 
-    # 2. Tong dien tich chay moi nam
     ax_area.bar(area_kha.index, area_kha.values, color=COLOR_FIRE_MID)
     ax_area.set_ylabel("Nghìn ha")
     ax_area.set_title(f"Tổng diện tích cháy (nghìn ha, tổng {vn_number(area_kha.sum())})", loc="left", fontsize=11)
     _label_top_bars(ax_area, area_kha, top_n)
 
-    # 3. Cong trinh bi pha huy moi nam, cot chong to mau theo nguon du lieu
+    # Cot chong to mau theo nguon du lieu (ICS-209 / DINS)
     bottom = np.zeros(len(destroyed))
     for source, color in SOURCE_COLORS.items():
         values = destroyed.get(source, pd.Series(0, index=destroyed.index))
@@ -476,11 +418,8 @@ def plot_temporal_trends(data=None, output_path: Path = FIGURES_DIR / "eda_05_te
 
 
 def plot_casualties(data=None, output_path: Path = FIGURES_DIR / "eda_06_casualties.png", top_n: int = 3) -> plt.Figure:
-    """Ve so nguoi chet / bi thuong (truc tiep + gian tiep) theo nam (NOAA), tach phan bi dem trung giua cac vung du bao."""
-    # data: DataFrame NOAA tho; None -> tu doc
     noaa = data if data is not None else load_raw_data()["noaa"]
     noaa = noaa[noaa["YEAR"].between(*STUDY_YEARS)]
-    # Moi panel: (cot truc tiep, cot gian tiep, nhan)
     measures = [("DEATHS_DIRECT", "DEATHS_INDIRECT", "Người chết"), ("INJURIES_DIRECT", "INJURIES_INDIRECT", "Người bị thương")]
     columns = [c for direct, indirect, _ in measures for c in (direct, indirect)]
 
@@ -531,7 +470,6 @@ def plot_casualties(data=None, output_path: Path = FIGURES_DIR / "eda_06_casualt
 
 
 def run_initial_eda() -> None:
-    """Ham dieu phoi toan bo luong EDA du lieu tho va xuat bao cao chat luong."""
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 
     print(f"[TV1 - EDA] Bat dau kham pha du lieu tho tu: {RAW_DIR.resolve()}")
@@ -552,7 +490,6 @@ def run_initial_eda() -> None:
         plot_casualties(raw["noaa"], output_path=FIGURES_DIR / "eda_06_casualties.png"),
     ]
 
-    # Script khong hien thi bieu do -> dong figure de giai phong bo nho
     for fig in figures:
         plt.close(fig)
 

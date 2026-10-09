@@ -1,20 +1,3 @@
-"""
-Script to rebuild IDV_Nhom17.docx with:
-1. New Chapter 3: Mô hình hóa và phân rã các bảng dữ liệu (Data Modeling & Schema Splitting)
-   - Lý do phải tách (khử dư thừa, tránh bất thường cập nhật, chuẩn hóa Star Schema 3NF)
-   - Sử dụng gì để tách và tách từ những tập dữ liệu nào (Python Pandas src/04_split_tables.py từ master_clean, DINS, ICS-209, Demographics, Census)
-   - Đặc tả tổng quan 5 bảng: dim_cause.csv, dim_county.csv, dim_date.csv, fact_fire_incident.csv, fact_structure_damage.csv
-   - Công dụng từng bảng và mục đích phục vụ Tableau (Data Relationships, tránh Cartesian duplicate, hỗ trợ LOD expressions)
-2. Chapter 4 (Thiết kế Dashboard):
-   - Không sử dụng bảng mà viết thành các dòng có cấu trúc
-   - Chừa khung placeholder rõ ràng để dán hình ảnh cho 3 Dashboard, 10 Sheet và 4 Thẻ KPI
-   - Calculated fields viết thành dòng, không dùng bảng
-3. Chapter 5 (Khai phá Insight & Storytelling):
-   - Không dùng bảng, viết thành dòng phân tích đối chiếu
-   - Chừa khung placeholder dán hình ảnh sau mỗi Story Point (Point 1, Point 2, Point 3)
-4. Giữ nguyên 7 biểu đồ EDA và ML đã kết xuất từ dự án
-5. Danh mục 8 chương cập nhật đồng bộ lên Mục lục ở đầu tài liệu.
-"""
 
 import sys
 from pathlib import Path

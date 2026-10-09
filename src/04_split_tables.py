@@ -1,20 +1,3 @@
-"""
-Module: src/04_split_tables.py
-Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy rừng California (2006–2025)
-Người phụ trách: Thành viên 2 - Kỹ sư Mô hình Dữ liệu (Data Modeling Engineer)
-Mục đích:
-    - Đọc dữ liệu đã làm sạch từ `data/clean/master_clean.csv` (hoặc `data/interim/master_rules_cleaned.csv`).
-    - Phân rã dữ liệu thành 6 bảng Dimension và Fact theo mô hình hình sao (Star Schema, tối thiểu 3NF):
-        1. dim_date: Thứ bậc thời gian đầy đủ 2006–2025 (7.305 ngày).
-        2. dim_county: 58 Hạt California kèm mã FIPS, diện tích, dân số chuẩn điều tra.
-        3. dim_cause: 19 mã nguyên nhân CAL FIRE phân nhóm Tự nhiên / Con người.
-        4. fact_fire_incident: Bảng fact trung tâm (7.235 vụ cháy FRAP, >= 5.000 dòng).
-        5. fact_structure_damage: Bảng fact mở rộng lưu vết chi tiết công trình bị tàn phá (DINS + ICS-209).
-        6. fact_casualty_event: Thương vong NOAA theo từng vụ cháy (đã gộp trùng vùng dự báo) - phân tích số người chết theo năm.
-    - Tạo các khóa đại diện (Surrogate Keys) duy nhất, đảm bảo tính toàn vẹn tham chiếu 100% (Zero Orphan FKs).
-    - Xuất các tệp tin CSV tương ứng vào thư mục `data/tables/`.
-    - Xuất bảng tổng hợp thương vong theo năm `data/clean/casualties_by_year.csv` (20 dòng, 2006–2025).
-"""
 
 import sys
 from datetime import date, timedelta
@@ -26,7 +9,7 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 
-# 1. Dân số chính thức 58 Hạt California theo US Census Bureau 2020 (điền khuyết cho Demographics)
+# Dân số chính thức 58 Hạt California theo US Census Bureau 2020 
 CALIFORNIA_POPULATION_2020 = {
     "Alameda": 1682353, "Alpine": 1204, "Amador": 40474, "Butte": 211632,
     "Calaveras": 45292, "Colusa": 21839, "Contra Costa": 1165927, "Del Norte": 27743,
@@ -45,7 +28,7 @@ CALIFORNIA_POPULATION_2020 = {
     "Yolo": 216403, "Yuba": 81575
 }
 
-# 2. Bảng mã nguyên nhân CAL FIRE FRAP (1-19)
+# Bảng mã nguyên nhân CAL FIRE FRAP (1-19)
 CAUSE_DATA = [
     (1, 1, "Lightning", "Natural"),
     (2, 2, "Equipment Use", "Human"),
@@ -70,7 +53,6 @@ CAUSE_DATA = [
 
 
 def build_dim_date() -> pd.DataFrame:
-    """Tạo bảng chiều thời gian dim_date phủ đầy đủ giai đoạn 2006-01-01 đến 2025-12-31."""
     start_date = date(2006, 1, 1)
     end_date = date(2025, 12, 31)
     delta = timedelta(days=1)
@@ -110,7 +92,6 @@ def build_dim_date() -> pd.DataFrame:
 
 
 def build_dim_county(raw_demographics_path: Path) -> pd.DataFrame:
-    """Tạo bảng chiều 58 Hạt dim_county kèm mã FIPS, diện tích, dân số và 1 bản ghi Unknown."""
     demo = pd.read_csv(raw_demographics_path)
     counties = []
     for idx, row in demo.iterrows():
@@ -144,14 +125,12 @@ def build_dim_county(raw_demographics_path: Path) -> pd.DataFrame:
 
 
 def build_dim_cause() -> pd.DataFrame:
-    """Tạo bảng chiều nguyên nhân dim_cause theo chuẩn mã CAL FIRE."""
     df = pd.DataFrame(CAUSE_DATA, columns=["cause_id", "cause_code", "cause_name", "cause_group"])
     print(f"[TV2 - MODEL] Đã tạo dim_cause: {len(df):,} nguyên nhân.")
     return df
 
 
 def match_noaa_casualties(fires: pd.DataFrame, noaa_path: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Gắn thương vong NOAA (đã làm sạch ở 03_clean.py) vào vụ cháy FRAP lớn nhất cùng (năm, tên vụ cháy)."""
     if not noaa_path.exists():
         raise FileNotFoundError(f"Không tìm thấy {noaa_path}! Hãy chạy src/03_clean.py trước.")
     events = pd.read_csv(noaa_path, parse_dates=["begin_date"])
@@ -177,7 +156,6 @@ def match_noaa_casualties(fires: pd.DataFrame, noaa_path: Path) -> tuple[pd.Data
 
 
 def build_fact_casualty_event(events: pd.DataFrame) -> pd.DataFrame:
-    """Bảng fact thương vong: 1 dòng = 1 vụ cháy theo NOAA; incident_id NULL nếu không khớp FRAP."""
     df = events.reset_index(drop=True)
     return pd.DataFrame({
         "casualty_id": df.index + 1,
@@ -196,7 +174,6 @@ def build_fact_casualty_event(events: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_casualties_by_year(events: pd.DataFrame) -> pd.DataFrame:
-    """Tổng hợp thương vong NOAA theo năm (đủ 2006–2025, năm không có sự kiện = 0) kèm vụ cháy chết người nhiều nhất."""
     years = pd.Index(range(2006, 2026), name="year")
     yearly = events.groupby("year").agg(
         noaa_fire_events=("noaa_event_id", "size"),
@@ -215,7 +192,7 @@ def build_casualties_by_year(events: pd.DataFrame) -> pd.DataFrame:
         .drop_duplicates("year")
         .set_index("year")
     )
-    # NOAA không ghi tên vụ cháy (vd Redwood Valley 2017) -> ghi vùng dự báo để còn tra lại
+    # NOAA không ghi tên vụ cháy (vd Redwood Valley 2017)
     unnamed = "(không rõ tên) " + deadliest["zone_names"].str.title()
     yearly["deadliest_fire"] = deadliest["fire_name"].str.title().fillna(unnamed)
     yearly["deadliest_fire_deaths"] = deadliest["deaths_direct"].astype("Int64")
@@ -224,7 +201,6 @@ def build_casualties_by_year(events: pd.DataFrame) -> pd.DataFrame:
 
 
 def extract_fire_coordinates(dins_path: Path, ics_path: Path) -> dict:
-    """Tính toán tọa độ trung tâm (vĩ độ, kinh độ) cho các vụ cháy có ghi nhận kiểm kê."""
     coords = {}
     if dins_path.exists():
         dins = pd.read_csv(dins_path, usecols=["* Incident Name", "Incident Start Date", "Latitude", "Longitude"])
@@ -250,7 +226,6 @@ def extract_fire_coordinates(dins_path: Path, ics_path: Path) -> dict:
 
 
 def split_star_schema_tables() -> None:
-    """Tách master_rules_cleaned.csv / master_clean.csv thành các bảng Dimension và Fact."""
     tables_dir = Path("data/tables")
     tables_dir.mkdir(parents=True, exist_ok=True)
 
@@ -263,7 +238,6 @@ def split_star_schema_tables() -> None:
     print(f"[TV2 - MODEL] Nạp dữ liệu làm sạch từ: {clean_file.resolve()}")
     df = pd.read_csv(clean_file)
 
-    # 1. Tạo các bảng chiều (Dimension Tables)
     raw_dir = Path("data/raw/calfire")
     dim_date = build_dim_date()
     dim_county = build_dim_county(raw_dir / "California_Counties_Demographics.csv")
@@ -272,14 +246,12 @@ def split_star_schema_tables() -> None:
     county_map = dict(zip(dim_county["county_name"], dim_county["county_id"]))
     cause_map = dict(zip(dim_cause["cause_code"], dim_cause["cause_id"]))
 
-    # 2. Bổ sung thông tin thương vong và tọa độ cho bảng Fact chính
     df, noaa_events = match_noaa_casualties(df, Path("data/interim/noaa_casualties_cleaned.csv"))
     fire_coords = extract_fire_coordinates(
         raw_dir / "CAL_FIRE_Damage_Inspection_DINS.csv",
         raw_dir / "ICS209_California_Wildfires_2006_2012.csv"
     )
 
-    # 3. Tạo Fact 1: fact_fire_incident
     fact_fires = []
     fire_id_map = {}  # Map (year, fire_name) -> integer incident_id
 
@@ -333,11 +305,9 @@ def split_star_schema_tables() -> None:
     df_fact_fires = pd.DataFrame(fact_fires)
     assert len(df_fact_fires) >= 5000, f"Bảng fact_fire_incident chỉ có {len(df_fact_fires)} dòng, dưới mức tối thiểu 5000!"
 
-    # 4. Tạo Fact 2: fact_structure_damage (DINS 2013-2025 + ICS-209 2006-2012)
     fact_damage = []
     record_id = 1
 
-    # Nạp DINS
     dins_path = raw_dir / "CAL_FIRE_Damage_Inspection_DINS.csv"
     if dins_path.exists():
         dins = pd.read_csv(dins_path, usecols=[
@@ -379,7 +349,6 @@ def split_star_schema_tables() -> None:
             })
             record_id += 1
 
-    # Nạp ICS-209
     ics_path = raw_dir / "ICS209_California_Wildfires_2006_2012.csv"
     if ics_path.exists():
         ics = pd.read_csv(ics_path, usecols=[
@@ -419,7 +388,6 @@ def split_star_schema_tables() -> None:
     df_fact_damage = pd.DataFrame(fact_damage)
     df_fact_casualty = build_fact_casualty_event(noaa_events)
 
-    # 5. Xuất các bảng ra thư mục data/tables/ (an toàn khi tệp đang mở xem)
     def safe_to_csv(df: pd.DataFrame, target_path: Path, encoding: str = "utf-8"):
         try:
             df.to_csv(target_path, index=False, encoding=encoding)
@@ -444,7 +412,7 @@ def split_star_schema_tables() -> None:
     casualties_by_year = build_casualties_by_year(noaa_events)
     casualties_path = Path("data/clean/casualties_by_year.csv")
     casualties_path.parent.mkdir(parents=True, exist_ok=True)
-    safe_to_csv(casualties_by_year, casualties_path, encoding="utf-8-sig")  # BOM: Excel đọc đúng tiếng Việt
+    safe_to_csv(casualties_by_year, casualties_path, encoding="utf-8-sig")  
     print(f"[TV2 - MODEL] Xuất thương vong theo năm: {casualties_path} ({len(casualties_by_year)} năm, "
           f"{int(casualties_by_year['deaths_direct'].sum())} người chết trực tiếp)")
 

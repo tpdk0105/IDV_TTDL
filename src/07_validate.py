@@ -1,38 +1,13 @@
-"""
-Module: src/07_validate.py
-Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy rừng California (2006–2025)
-Người phụ trách: Thành viên 2 - Kỹ sư Mô hình Dữ liệu (Data Modeling Engineer)
-Mục đích:
-    - Kiểm thử tự động tính toàn vẹn và chất lượng của 5 bảng Star Schema CSV phục vụ trực tiếp cho Tableau:
-        1. Kiểm tra sự tồn tại và dung lượng của 5 bảng CSV trong data/tables/.
-        2. Kiểm tra toàn vẹn tham chiếu khóa ngoại (Zero Orphan Foreign Keys) giữa các bảng.
-        3. Kiểm tra số lượng bản ghi:
-           - Bảng fact trung tâm `fact_fire_incident` đạt tối thiểu 5.000 dòng.
-           - Bảng `fact_structure_damage` > 100.000 dòng.
-           - Bảng chiều `dim_county` = 59 hạt, `dim_cause` = 19, `dim_date` = 7.305 ngày.
-        4. Kiểm tra tính duy nhất (Uniqueness) của Primary Key trên toàn bộ 5 bảng.
-        5. Kiểm tra các ràng buộc miền giá trị:
-           - acres_burned >= 0, burned_area_ha >= 0, total_structures_destroyed >= 0, deaths >= 0
-           - year BETWEEN 2006 AND 2025
-           - latitude [32.0, 42.0], longitude [-125.0, -114.0] cho các bản ghi có tọa độ
-        6. Kiểm tra các cờ nhị phân (is_fire_season, is_outlier_ml, burned_area_is_imputed, cause_is_predicted) in {0, 1}.
-        7. Kiểm tra phạm vi thời gian nghiên cứu (Đủ 20 năm 2006–2025).
-    - Trả về mã thoát (exit code):
-        - 0: Đạt toàn bộ tiêu chuẩn barem đồ án.
-        - 1: Phát hiện vi phạm toàn vẹn dữ liệu.
-"""
 
 import sys
 from pathlib import Path
 import pandas as pd
 
-# Cấu hình UTF-8 cho console Windows
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 
 def run_check(title: str, check_func) -> bool:
-    """Thực thi một bước kiểm thử và in kết quả."""
     print(f"\n[*] Kiểm tra: {title}...")
     try:
         passed, msg = check_func()
@@ -48,15 +23,12 @@ def run_check(title: str, check_func) -> bool:
 
 
 def validate_star_schema_csv(tables_dir: Path = Path("data/tables")) -> bool:
-    """Thực hiện chuỗi kiểm thử toàn vẹn trên 5 file CSV của Star Schema."""
     print("=" * 80)
-    print("BỘ KIỂM THỬ TOÀN VẸN MÔ HÌNH STAR SCHEMA CSV (CHO TABLEAU WEB / PUBLIC)")
+    print("BỘ KIỂM THỬ TOÀN VẸN MÔ HÌNH STAR SCHEMA CSV")
     print(f"Thư mục nguồn: {tables_dir.resolve()}")
     print("=" * 80)
 
     all_passed = True
-
-    # 1. Kiểm tra tồn tại 5 bảng CSV
     required_files = {
         "dim_date": tables_dir / "dim_date.csv",
         "dim_county": tables_dir / "dim_county.csv",
@@ -75,32 +47,27 @@ def validate_star_schema_csv(tables_dir: Path = Path("data/tables")) -> bool:
     if not all_passed:
         return False
 
-    # Đọc dữ liệu
     df_date = pd.read_csv(required_files["dim_date"])
     df_county = pd.read_csv(required_files["dim_county"])
     df_cause = pd.read_csv(required_files["dim_cause"])
     df_fact = pd.read_csv(required_files["fact_fire_incident"])
     df_damage = pd.read_csv(required_files["fact_structure_damage"])
 
-    # 2. Kiểm tra toàn vẹn tham chiếu (Zero Orphan Foreign Keys)
+    # Kiểm tra toàn vẹn tham chiếu (Zero Orphan Foreign Keys)
     def check_referential_integrity():
         errors = []
-        # fact_fire_incident -> dim_date
         orphan_date = set(df_fact["date_id"]) - set(df_date["date_id"])
         if orphan_date:
             errors.append(f"fact_fire_incident chứa {len(orphan_date)} date_id không có trong dim_date")
 
-        # fact_fire_incident -> dim_county
         orphan_county = set(df_fact["county_id"]) - set(df_county["county_id"])
         if orphan_county:
             errors.append(f"fact_fire_incident chứa {len(orphan_county)} county_id không có trong dim_county")
 
-        # fact_fire_incident -> dim_cause
         orphan_cause = set(df_fact["cause_id"]) - set(df_cause["cause_id"])
         if orphan_cause:
             errors.append(f"fact_fire_incident chứa {len(orphan_cause)} cause_id không có trong dim_cause")
 
-        # fact_structure_damage -> fact_fire_incident
         orphan_inc = set(df_damage["incident_id"]) - set(df_fact["incident_id"])
         if orphan_inc:
             errors.append(f"fact_structure_damage chứa {len(orphan_inc)} incident_id không có trong fact_fire_incident")
@@ -111,7 +78,7 @@ def validate_star_schema_csv(tables_dir: Path = Path("data/tables")) -> bool:
 
     all_passed &= run_check("2. Toàn vẹn tham chiếu khóa ngoại (Referential Integrity)", check_referential_integrity)
 
-    # 3. Kiểm tra số lượng bản ghi
+    # Kiểm tra số lượng bản ghi
     def check_row_counts():
         counts = {
             "fact_fire_incident": len(df_fact),
@@ -133,7 +100,7 @@ def validate_star_schema_csv(tables_dir: Path = Path("data/tables")) -> bool:
 
     all_passed &= run_check("3. Số lượng bản ghi các bảng (Fact >= 5.000 dòng)", check_row_counts)
 
-    # 4. Kiểm tra tính duy nhất của Primary Keys
+    # Kiểm tra tính duy nhất của Primary Keys
     def check_pk_uniqueness():
         pks = [
             ("dim_date", df_date, "date_id"),
@@ -150,15 +117,13 @@ def validate_star_schema_csv(tables_dir: Path = Path("data/tables")) -> bool:
 
     all_passed &= run_check("4. Tính duy nhất của Primary Keys", check_pk_uniqueness)
 
-    # 5. Ràng buộc miền giá trị
+    # Ràng buộc miền giá trị
     def check_domain_constraints():
-        # acres_burned >= 0, burned_area_ha >= 0
         neg_acres = (df_fact["acres_burned"] < 0).sum()
         neg_ha = (df_fact["burned_area_ha"] < 0).sum()
         if neg_acres > 0 or neg_ha > 0:
             return False, f"Có {neg_acres + neg_ha} bản ghi diện tích cháy âm (< 0)!"
 
-        # thiệt hại >= 0
         neg_dmg = (df_fact["total_structures_destroyed"] < 0).sum() + (df_fact["deaths_direct"] < 0).sum()
         if neg_dmg > 0:
             return False, f"Có {neg_dmg} bản ghi thiệt hại hoặc thương vong mang giá trị âm!"
@@ -176,7 +141,7 @@ def validate_star_schema_csv(tables_dir: Path = Path("data/tables")) -> bool:
 
     all_passed &= run_check("5. Ràng buộc miền giá trị bảng fact_fire_incident", check_domain_constraints)
 
-    # 6. Cờ nhị phân
+    # Cờ nhị phân
     def check_binary_flags():
         for col in ["is_outlier_ml", "burned_area_is_imputed", "cause_is_predicted"]:
             if col in df_fact.columns:
@@ -193,7 +158,7 @@ def validate_star_schema_csv(tables_dir: Path = Path("data/tables")) -> bool:
 
     all_passed &= run_check("6. Giá trị cờ nhị phân (Binary Flags IN {0, 1})", check_binary_flags)
 
-    # 7. Phạm vi thời gian nghiên cứu
+    # Phạm vi thời gian nghiên cứu
     def check_time_range():
         years = df_date["year"].unique()
         min_year, max_year = years.min(), years.max()

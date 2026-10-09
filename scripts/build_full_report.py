@@ -1,6 +1,4 @@
-"""
-Script to rebuild IDV_Nhom17.docx with the complete, updated 7-chapter academic report.
-"""
+
 
 import sys
 from pathlib import Path

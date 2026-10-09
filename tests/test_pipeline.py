@@ -1,14 +1,10 @@
-"""
-Test suite for IDV_TTDL pipeline.
-Kiểm thử cấu trúc thư mục, quy chuẩn tập tin, Star Schema CSV và tính sẵn sàng của pipeline cho Tableau Web/Desktop.
-"""
+
 
 from pathlib import Path
 import pandas as pd
 
 
 def test_directory_structure():
-    """Kiểm tra các thư mục cốt lõi của dự án đã tồn tại."""
     required_dirs = [
         "data/raw",
         "data/interim",
@@ -31,7 +27,6 @@ def test_directory_structure():
 
 
 def test_required_docs_exist():
-    """Kiểm tra toàn bộ 10 tài liệu kỹ thuật bắt buộc trong docs/."""
     required_docs = [
         "docs/DATA_SOURCES.md",
         "docs/DATA_DICTIONARY.md",
@@ -49,7 +44,6 @@ def test_required_docs_exist():
 
 
 def test_team_task_files_exist():
-    """Kiểm tra các file phân công nhiệm vụ của 3 thành viên."""
     task_files = [
         "PROJECT_GUIDE.md",
         "team/README.md",
@@ -62,7 +56,6 @@ def test_team_task_files_exist():
 
 
 def test_src_pipeline_scripts_exist():
-    """Kiểm tra các script thực thi pipeline cốt lõi trong src/."""
     scripts = [
         "src/01_download.py",
         "src/02_eda.py",
@@ -75,7 +68,6 @@ def test_src_pipeline_scripts_exist():
 
 
 def test_star_schema_csv_files_exist():
-    """Kiểm tra 5 bảng CSV thuộc mô hình Star Schema trong data/tables/."""
     required_tables = [
         "data/tables/dim_date.csv",
         "data/tables/dim_county.csv",
@@ -90,7 +82,6 @@ def test_star_schema_csv_files_exist():
 
 
 def test_star_schema_referential_integrity_and_row_counts():
-    """Kiểm tra tính toàn vẹn khóa ngoại (Zero Orphan FK) và dòng thỏa mãn barem."""
     df_date = pd.read_csv("data/tables/dim_date.csv")
     df_county = pd.read_csv("data/tables/dim_county.csv")
     df_cause = pd.read_csv("data/tables/dim_cause.csv")

@@ -25,7 +25,6 @@ import urllib.request
 from pathlib import Path
 from datetime import datetime
 
-# Thiết lập UTF-8 cho console
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
@@ -223,12 +222,10 @@ def generate_manifest() -> None:
             f"| `{fname}` | {meta['source']} | {meta['desc']} | {size:,} bytes (~{size_mb} MB) | `{sha256}` |"
         )
 
-    # Ghi manifest.json
     manifest_json_path = DATA_RAW_DIR / "manifest.json"
     with open(manifest_json_path, "w", encoding="utf-8") as f:
         json.dump(manifest_dict, f, indent=2, ensure_ascii=False)
 
-    # Ghi MANIFEST.md
     manifest_md_path = DATA_RAW_DIR / "MANIFEST.md"
     with open(manifest_md_path, "w", encoding="utf-8") as f:
         f.write("# BẢN KIỂM KÊ DỮ LIỆU THÔ (RAW DATA MANIFEST)\n\n")

@@ -1,31 +1,3 @@
-"""
-Module: src/08_predictive_model.py
-Dự án: Nghiên cứu – phân tích tần suất và thiệt hại cháy rừng / thảm họa thiên nhiên (2006–2025)
-Người phụ trách: Thành viên 1 - Kỹ sư Dữ liệu & Học máy
-Mục đích:
-    - Dự báo 10 năm tới (2026–2035) bằng Hồi quy tuyến tính (Linear Regression, scikit-learn) cho 3 chỉ số theo năm:
-        1. `n_fires`   – số vụ cháy mỗi năm (thang gốc).
-        2. `area_ha`   – tổng diện tích cháy (huấn luyện trên log1p do phân phối lệch nặng).
-        3. `destroyed` – tổng số công trình bị phá hủy (huấn luyện trên log1p).
-    - Đánh giá bằng rolling origin (cửa sổ mở rộng): train đến năm t-1, dự báo năm t, với t = 2016..2025;
-      không chia ngẫu nhiên vì dữ liệu là chuỗi thời gian (xáo trộn = học từ tương lai, sai số bị đánh giá thấp).
-    - Chỉ số sai số: R², MAE, RMSE; so sánh với mô hình "đoán bằng trung bình quá khứ".
-    - Khoảng dự báo 95% (prediction interval) của hồi quy tuyến tính đơn.
-    - Cùng phương pháp, dự báo số vụ cháy mỗi năm theo nguyên nhân: 3 nhóm `cause_group`
-      (Human, Natural, Undetermined) và riêng nguyên nhân Vehicle (thuộc nhóm Human).
-      Natural huấn luyện trên log1p (thang gốc kéo dự báo 2035 về ~1 vụ), các chuỗi còn lại trên thang gốc.
-
-Đầu ra:
-    - `data/clean/forecast_results.csv`  : year, metric, actual, predicted, lower_95, upper_95, is_forecast (bàn giao TV2/TV3).
-    - `data/clean/forecast_metrics.csv`  : sai số rolling origin + độ dốc xu hướng của từng chỉ số.
-    - `data/clean/forecast_by_cause.csv` / `forecast_by_cause_metrics.csv` : như trên, cho từng nguyên nhân.
-    - `reports/figures/model_01_forecast.png` : điểm thực tế, đường xu hướng, dự báo + khoảng dự báo 95%.
-    - `reports/figures/model_02_metrics.png`  : độ dốc xu hướng, p-value / R², MAE so với mốc trung bình.
-    - `reports/figures/model_03_forecast_by_cause.png` / `model_04_cause_metrics.png` : như trên, theo nguyên nhân.
-
-Cách chạy (từ thư mục gốc dự án, sau src/03_clean.py):
-    python src/08_predictive_model.py
-"""
 
 import importlib.util
 import sys
@@ -41,7 +13,7 @@ from scipy import stats
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, r2_score, root_mean_squared_error
 
-# Dung lai ham dinh dang so kieu Viet Nam tu 02_eda.py (ten file bat dau bang so nen khong import thuong duoc)
+# Dung lai ham dinh dang so kieu Viet Nam tu 02_eda.py 
 _spec = importlib.util.spec_from_file_location("eda", Path(__file__).parent / "02_eda.py")
 eda = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(eda)
@@ -96,12 +68,10 @@ MAE_BAR_COLORS = ["#6BAED6", "#9ECAE1", "#4292C6", "#2171B5"]
 
 
 def load_data(path: Path = INPUT_PATH) -> pd.DataFrame:
-    """Doc bang vu chay da lam sach (giu county_fips dang chuoi de khong mat so 0 dau)."""
     return pd.read_csv(path, dtype={"county_fips": str}, parse_dates=["alarm_date", "cont_date"])
 
 
 def build_yearly(df: pd.DataFrame) -> pd.DataFrame:
-    """Gom theo nam: so vu chay, tong dien tich, tong cong trinh bi pha huy."""
     return (
         df.groupby("year")
         .agg(
@@ -114,7 +84,6 @@ def build_yearly(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_yearly_by_cause(df: pd.DataFrame) -> pd.DataFrame:
-    """Gom theo nam: so vu chay cua tung nhom nguyen nhan + rieng Vehicle (nam khong co vu nao = 0)."""
     years = pd.Index(sorted(df["year"].unique()), name="year")
     by_group = pd.crosstab(df["year"], df["cause_group"]).reindex(years, fill_value=0)
     by_group.columns = by_group.columns.str.lower()
@@ -123,18 +92,15 @@ def build_yearly_by_cause(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _fit(train: pd.DataFrame, target: str, use_log: bool) -> LinearRegression:
-    """Hoi quy target theo nam; chi so lech nang duoc huan luyen tren log1p."""
     y = np.log1p(train[target]) if use_log else train[target]
     return LinearRegression().fit(train[["year"]], y)
 
 
 def _to_original_scale(values, use_log: bool):
-    """Dua du bao tren thang log1p ve lai don vi goc."""
     return np.expm1(values) if use_log else values
 
 
 def evaluate_trend(yearly: pd.DataFrame, target: str, use_log: bool) -> dict:
-    """Rolling origin: train den nam t-1, du bao nam t (t = FIRST_TEST_YEAR..nam cuoi); tinh sai so tren thang goc."""
     preds, naive_preds, actuals = [], [], []
     for t in range(FIRST_TEST_YEAR, int(yearly["year"].max()) + 1):
         train = yearly[yearly["year"] < t]
@@ -156,7 +122,6 @@ def evaluate_trend(yearly: pd.DataFrame, target: str, use_log: bool) -> dict:
 
 
 def describe_trend(yearly: pd.DataFrame, target: str, use_log: bool) -> dict:
-    """Do doc xu huong tren du 20 nam va muc y nghia thong ke."""
     y = np.log1p(yearly[target]) if use_log else yearly[target]
     res = stats.linregress(yearly["year"], y)
     return {
@@ -171,7 +136,6 @@ def describe_trend(yearly: pd.DataFrame, target: str, use_log: bool) -> dict:
 
 
 def forecast_trend(yearly: pd.DataFrame, target: str, use_log: bool) -> pd.DataFrame:
-    """Huan luyen tren du cac nam co du lieu, du bao den het FORECAST_YEARS kem khoang du bao 95%."""
     x = yearly["year"].to_numpy()
     y_fit = np.log1p(yearly[target].to_numpy(dtype=float)) if use_log else yearly[target].to_numpy(dtype=float)
     model = _fit(yearly, target, use_log)
@@ -210,7 +174,6 @@ def _save_figure(fig: plt.Figure, output_path: Path, label: str) -> None:
 
 def plot_forecasts(forecast: pd.DataFrame, output_path: Path = FIGURE_PATH, targets: list = FORECAST_TARGETS,
                    title: str = "Dự báo hồi quy tuyến tính") -> plt.Figure:
-    """Moi chi so 1 bieu do: diem thuc te, duong xu huong / du bao, vung khoang du bao 95%."""
     fig, axes = plt.subplots(len(targets), 1, figsize=(12, 3.7 * len(targets)), sharex=True)
     last_year = forecast.loc[~forecast["is_forecast"], "year"].max()
 
@@ -255,7 +218,6 @@ def _style_metric_panel(ax: plt.Axes, title: str) -> None:
 
 
 def _plot_trend_panel(ax: plt.Axes, metrics: pd.DataFrame, labels: list[str]) -> None:
-    """Khung 1: do doc xu huong moi nam (thang log: %/nam, thang goc: vu/nam)."""
     bars = ax.barh(labels, metrics["trend_per_year"], color=COLOR_FORECAST, alpha=0.85, height=0.55)
     ax.axvline(0, color=COLOR_FIT, linestyle="--", linewidth=1)
     # Xu huong co the am (vd cháy do sét giam) -> truc mo ra ca 2 phia cua 0
@@ -276,7 +238,6 @@ def _plot_trend_panel(ax: plt.Axes, metrics: pd.DataFrame, labels: list[str]) ->
 
 
 def _plot_pvalue_panel(ax: plt.Axes, metrics: pd.DataFrame, labels: list[str]) -> None:
-    """Khung 2: p-value cua do doc; cam = co y nghia, xanh nhat = gan nguong (< 0,1), xam = khong co y nghia."""
     colors = [COLOR_ACTUAL if p < SIGNIFICANCE else (COLOR_BAND if p < 0.1 else COLOR_FIT) for p in metrics["p_value"]]
     bars = ax.bar(labels, metrics["p_value"], color=colors, alpha=0.85, width=0.5)
     ax.axhline(SIGNIFICANCE, color=COLOR_THRESHOLD, linestyle=":", linewidth=1.5,
@@ -296,7 +257,6 @@ def _plot_pvalue_panel(ax: plt.Axes, metrics: pd.DataFrame, labels: list[str]) -
 
 
 def _plot_mae_panel(ax: plt.Axes, metrics: pd.DataFrame, labels: list[str]) -> None:
-    """Khung 3: MAE mo hinh / MAE moc 'doan bang trung binh' (%); < 100% nghia la mo hinh tot hon moc."""
     relative_mae = (metrics["mae"] / metrics["mae_naive_mean"]) * 100
     bars = ax.bar(labels, relative_mae, color=MAE_BAR_COLORS, alpha=0.9, width=0.5)
     ax.axhline(100, color=COLOR_FIT, linestyle="--", linewidth=1.2, label="Mốc so sánh: đoán bằng trung bình (100%)")
@@ -313,7 +273,6 @@ def _plot_mae_panel(ax: plt.Axes, metrics: pd.DataFrame, labels: list[str]) -> N
 
 def plot_model_metrics(metrics: pd.DataFrame, output_path: Path = METRICS_FIGURE_PATH,
                        title: str = "Tổng hợp các thông số đánh giá mô hình hồi quy tuyến tính (2006–2025)") -> plt.Figure:
-    """Truc quan hoa cac thong so danh gia mo hinh: do doc xu huong, p-value / R2 va so sanh sai so MAE."""
     fig, (ax_trend, ax_pvalue, ax_mae) = plt.subplots(1, 3, figsize=(5 * len(metrics), 4.5))
     labels = [METRIC_AXIS_LABELS.get(m, m) for m in metrics["metric"]]
 
@@ -328,7 +287,6 @@ def plot_model_metrics(metrics: pd.DataFrame, output_path: Path = METRICS_FIGURE
 
 
 def _run_targets(yearly: pd.DataFrame, targets: list, forecast_path: Path, metrics_path: Path):
-    """Danh gia (rolling origin), du bao 10 nam cho tung chi so trong targets, xuat 2 file CSV va in tom tat."""
     forecasts, metrics = [], []
     for target, use_log, _ in targets:
         metrics.append({**describe_trend(yearly, target, use_log), **evaluate_trend(yearly, target, use_log)})
@@ -359,7 +317,6 @@ def _run_targets(yearly: pd.DataFrame, targets: list, forecast_path: Path, metri
 
 
 def run_predictive_models() -> pd.DataFrame:
-    """Du bao 3 chi so tong (so vu, dien tich, cong trinh) va xuat ket qua cho TV2 / TV3."""
     yearly = build_yearly(load_data())
     print(f"[TV1 - MODEL] Du lieu theo nam: {yearly['year'].min()}-{yearly['year'].max()} ({len(yearly)} nam)")
     forecast, metrics = _run_targets(yearly, FORECAST_TARGETS, FORECAST_PATH, METRICS_PATH)
@@ -369,10 +326,8 @@ def run_predictive_models() -> pd.DataFrame:
 
 
 def run_cause_forecasts() -> pd.DataFrame:
-    """Du bao so vu chay moi nam theo nguyen nhan (Human, Natural, Undetermined, Vehicle)."""
     df = load_data()
     yearly = build_yearly_by_cause(df)
-    # Moi vu chay thuoc dung 1 nhom -> tong 3 nhom phai bang tong so vu
     assert yearly[["human", "natural", "undetermined"]].sum(axis=1).eq(df.groupby("year").size().to_numpy()).all()
     print(f"\n[TV1 - MODEL] So vu chay theo nguyen nhan: {yearly['year'].min()}-{yearly['year'].max()}")
     forecast, metrics = _run_targets(yearly, CAUSE_TARGETS, CAUSE_FORECAST_PATH, CAUSE_METRICS_PATH)

@@ -1,9 +1,3 @@
-# ==============================================================================
-# Pipeline Execution Script for Windows PowerShell
-# Project: Global Wildfire & Natural Disasters (2006-2025)
-# Sequence: 01_download -> 02_eda -> 03_clean -> 08_predictive_model ->
-#           04_split_tables -> 05_build_db -> 06_export_json -> 07_validate
-# ==============================================================================
 
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host " STARTING DATA PIPELINE: IDV_TTDL (2006-2025)" -ForegroundColor Cyan
