@@ -279,6 +279,58 @@ def plot_missing_values(data=None, output_path: Path = FIGURES_DIR / "eda_01_mis
     return fig
 
 
+def plot_distributions_raw(data=None, output_path: Path = FIGURES_DIR / "eda_02_distributions_raw.png") -> plt.Figure:
+    """Ve Histogram dien tich chay tren thang tuyen tinh (truoc log) de thay do lech phai."""
+    # data: dict tu add_derived_columns(); None -> tu doc
+    data = data if data is not None else add_derived_columns(load_raw_data())
+    perimeters = data["perimeters"]
+
+    # Cung tap du lieu voi plot_distributions() de so sanh truoc / sau log
+    area = perimeters.loc[perimeters["Year"].between(*STUDY_YEARS), "burned_area_ha"]
+    area = area[area > 0]
+    median, mean, p95 = area.median(), area.mean(), area.quantile(0.95)
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+    # (a) Toan bo mien gia tri: gan nhu moi vu don vao cot dau tien, duoi keo dai toi vai tram nghin ha
+    ax = axes[0]
+    ax.hist(area, bins=60, color=COLOR_FIRE_MID, edgecolor="white")
+    ax.axvline(MEGAFIRE_HA, color=COLOR_FIRE_EXTREME, linestyle=":", linewidth=1.2)
+    ax.text(MEGAFIRE_HA, 0.97, f" siêu đám cháy\n ≥ {vn_number(MEGAFIRE_HA)} ha", transform=ax.get_xaxis_transform(),
+            va="top", fontsize=8, color=COLOR_FIRE_EXTREME)
+    stats = (f"Độ lệch (skewness) = {vn_number(area.skew(), 1)}\n"
+             f"Trung bình = {vn_number(mean)} ha\n"
+             f"Trung vị = {vn_number(median)} ha\n"
+             f"Lớn nhất = {vn_number(area.max())} ha\n"
+             f"{vn_number((area < 100).mean() * 100, 1)}% số vụ < 100 ha")
+    ax.text(0.97, 0.80, stats, transform=ax.transAxes, ha="right", va="top", fontsize=9,
+            bbox=dict(boxstyle="round", facecolor="white", edgecolor=COLOR_NEUTRAL))
+    ax.set_title(f"(a) Toàn bộ {vn_number(len(area))} vụ — thang tuyến tính", loc="left", fontsize=11)
+    ax.set_xlabel("Diện tích cháy, ha")
+    ax.set_ylabel("Số vụ cháy")
+
+    # (b) Phong to 95% vu nho nhat: van lech phai du da cat duoi
+    ax = axes[1]
+    ax.hist(area[area <= p95], bins=60, color=COLOR_FIRE_LIGHT, edgecolor="white")
+    ax.axvline(median, color=COLOR_NEUTRAL, linestyle="--", linewidth=1)
+    ax.text(median, 0.97, f" trung vị {vn_number(median)} ha", transform=ax.get_xaxis_transform(), va="top", fontsize=8)
+    ax.axvline(mean, color=COLOR_FIRE_HIGH, linestyle="--", linewidth=1)
+    ax.text(mean, 0.88, f" trung bình {vn_number(mean)} ha", transform=ax.get_xaxis_transform(), va="top", fontsize=8,
+            color=COLOR_FIRE_HIGH)
+    ax.set_title(f"(b) Phóng to 95% vụ nhỏ nhất (≤ {vn_number(p95)} ha)", loc="left", fontsize=11)
+    ax.set_xlabel("Diện tích cháy, ha")
+
+    for ax in axes:
+        ax.xaxis.set_major_formatter(VN_TICK_FORMATTER)
+        ax.yaxis.set_major_formatter(VN_TICK_FORMATTER)
+        _hide_top_right_spines(ax)
+
+    _set_suptitle(fig, "Trước biến đổi log: diện tích cháy lệch phải cực mạnh, trung bình bị vài siêu đám cháy kéo lên")
+    fig.tight_layout()
+    _save_figure(fig, output_path, "bieu do phan phoi truoc log")
+    return fig
+
+
 def plot_distributions(data=None, output_path: Path = FIGURES_DIR / "eda_02_distributions.png") -> plt.Figure:
     """Ve bieu do phan phoi Histogram/KDE cua dien tich chay tren thang log."""
     # data: dict tu add_derived_columns(); None -> tu doc
@@ -436,34 +488,42 @@ def plot_temporal_trends(data=None, output_path: Path = FIGURES_DIR / "eda_05_te
 
 
 def plot_casualties(data=None, output_path: Path = FIGURES_DIR / "eda_06_casualties.png", top_n: int = 3) -> plt.Figure:
-    """Ve so nguoi chet / bi thuong truc tiep theo nam (NOAA), tach phan bi dem trung giua cac vung du bao."""
+    """Ve so nguoi chet / bi thuong (truc tiep + gian tiep) theo nam (NOAA), tach phan bi dem trung giua cac vung du bao."""
     # data: DataFrame NOAA tho; None -> tu doc
     noaa = data if data is not None else load_raw_data()["noaa"]
     noaa = noaa[noaa["YEAR"].between(*STUDY_YEARS)]
-    measures = {"DEATHS_DIRECT": "Người chết trực tiếp", "INJURIES_DIRECT": "Người bị thương trực tiếp"}
+    # Moi panel: (cot truc tiep, cot gian tiep, nhan)
+    measures = [("DEATHS_DIRECT", "DEATHS_INDIRECT", "Người chết"), ("INJURIES_DIRECT", "INJURIES_INDIRECT", "Người bị thương")]
+    columns = [c for direct, indirect, _ in measures for c in (direct, indirect)]
 
     # 1 vu chay lan qua nhieu vung du bao -> nhieu dong lap lai cung so thuong vong; gop giong 03_clean.py
     events = noaa.groupby(["EPISODE_ID", noaa_fire_key(noaa).rename("fire_key")]).agg(
-        YEAR=("YEAR", "first"), **{c: (c, "max") for c in measures}
+        YEAR=("YEAR", "first"), **{c: (c, "max") for c in columns}
     ).reset_index()
-    raw_by_year = noaa.groupby("YEAR")[list(measures)].sum().reindex(STUDY_YEAR_RANGE, fill_value=0)
-    merged_by_year = events.groupby("YEAR")[list(measures)].sum().reindex(STUDY_YEAR_RANGE, fill_value=0)
+    raw_by_year = noaa.groupby("YEAR")[columns].sum().reindex(STUDY_YEAR_RANGE, fill_value=0)
+    merged_by_year = events.groupby("YEAR")[columns].sum().reindex(STUDY_YEAR_RANGE, fill_value=0)
 
     fig, axes = plt.subplots(2, 1, figsize=(13, 8), sharex=True)
-    for ax, (col, label) in zip(axes, measures.items()):
-        merged, raw = merged_by_year[col], raw_by_year[col]
-        ax.bar(STUDY_YEAR_RANGE, merged, color=COLOR_FIRE_HIGH, label="Sau khi gộp trùng")
+    for ax, (direct_col, indirect_col, label) in zip(axes, measures):
+        direct, indirect = merged_by_year[direct_col], merged_by_year[indirect_col]
+        merged = direct + indirect
+        raw = raw_by_year[direct_col] + raw_by_year[indirect_col]
+        # Cot chong 3 lop: truc tiep -> gian tiep (dinh = tong sau gop) -> phan bi dem trung (dinh = du lieu tho)
+        ax.bar(STUDY_YEAR_RANGE, direct, color=COLOR_FIRE_HIGH, label="Trực tiếp (sau gộp trùng)")
+        ax.bar(STUDY_YEAR_RANGE, indirect, bottom=direct, color=COLOR_FIRE_EXTREME, label="Gián tiếp (sau gộp trùng)")
         ax.bar(STUDY_YEAR_RANGE, raw - merged, bottom=merged, color=COLOR_FIRE_LIGHT,
                label="Bị đếm trùng (1 vụ ghi ở nhiều vùng dự báo)")
 
-        # Nhan top_n nam: gia tri sau gop + vu chay lon nhat trong nam (neu tach duoc ten)
+        # Nhan top_n nam theo tong: tong (so truc tiep) + vu chay co tong thuong vong lon nhat (neu tach duoc ten)
+        year_events = events.assign(total=events[direct_col] + events[indirect_col])
         for year, value in merged.nlargest(top_n).items():
-            top = events[events["YEAR"] == year].nlargest(1, col).iloc[0]
-            name = "" if top["fire_key"].startswith("_EVENT_") else f"\n{top['fire_key'].title()} {vn_number(top[col])}"
-            ax.annotate(f"{vn_number(value)}{name}", xy=(year, raw.at[year]), xytext=(0, 3),
-                        textcoords="offset points", ha="center", fontsize=8)
+            top = year_events[year_events["YEAR"] == year].nlargest(1, "total").iloc[0]
+            name = "" if top["fire_key"].startswith("_EVENT_") else f"\n{top['fire_key'].title()} {vn_number(top['total'])}"
+            ax.annotate(f"{vn_number(value)} ({vn_number(direct.at[year])} TT){name}", xy=(year, raw.at[year]),
+                        xytext=(0, 3), textcoords="offset points", ha="center", fontsize=8)
         ax.set_ylabel("Người")
-        ax.set_title(f"{label}: {vn_number(merged.sum())} người sau khi gộp trùng (dữ liệu thô ghi {vn_number(raw.sum())})",
+        ax.set_title(f"{label}: {vn_number(direct.sum())} trực tiếp + {vn_number(indirect.sum())} gián tiếp = "
+                     f"{vn_number(merged.sum())} sau khi gộp trùng (dữ liệu thô ghi {vn_number(raw.sum())}; TT = trực tiếp)",
                      loc="left", fontsize=11)
         ax.set_ylim(0, raw.max() * 1.25)  # chua cho nhan 2 dong tren cot cao nhat
         _hide_top_right_spines(ax)
@@ -497,9 +557,10 @@ def run_initial_eda() -> None:
     print("[TV1 - EDA] Tong quan 5 tap du lieu tho:")
     summarize_all_files(raw)
 
-    print("[TV1 - EDA] Khoi tao 6 bieu do tinh (Matplotlib, Seaborn) theo barem do an IDV...")
+    print("[TV1 - EDA] Khoi tao 7 bieu do tinh (Matplotlib, Seaborn) theo barem do an IDV...")
     figures = [
         plot_missing_values(raw, output_path=FIGURES_DIR / "eda_01_missing_values.png"),
+        plot_distributions_raw(data, output_path=FIGURES_DIR / "eda_02_distributions_raw.png"),
         plot_distributions(data, output_path=FIGURES_DIR / "eda_02_distributions.png"),
         plot_outlier_boxplots(build_structures_destroyed(data), output_path=FIGURES_DIR / "eda_03_outliers_boxplot.png"),
         plot_correlation_heatmap(build_fire_features(data), output_path=FIGURES_DIR / "eda_04_correlation_heatmap.png"),
