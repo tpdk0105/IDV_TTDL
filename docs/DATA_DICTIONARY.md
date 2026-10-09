@@ -35,7 +35,7 @@ Tập dữ liệu sau làm sạch và tích hợp `data/clean/master_clean.csv` 
 | `duration_days` | Float | [0, 365] ngày | Có | Thời gian đám cháy hoành hành | Hiệu số giữa `cont_date` và `alarm_date`; ngoài [0, 365] coi là lỗi nhập liệu $\to$ `NULL` |
 | `county` | String | Tên ngắn 58 Hạt, khớp Demographics `CDT_NAME_SHORT` (vd: `Butte`, `Los Angeles`) | Có | Tên Hạt (County) tại California nơi xảy ra cháy | Ưu tiên DINS `County` / ICS-209 `POO_COUNTY`; còn thiếu thì suy từ Hạt phổ biến nhất của `unit_id`. 840 vụ `NULL` |
 | `county_fips` | String | 5 chữ số (vd: `06007` cho Butte) | Có | Mã định danh địa lý FIPS chuẩn Hoa Kỳ | Tra cứu từ `California_Counties_Demographics` |
-| `county_population` | Integer | $\ge 0$ người | Có | Dân số của Hạt theo điều tra Census | ⚠️ Cột `CENSUS_POPULATION` trong `California_Counties_Demographics` trống 100% $\to$ hiện toàn bộ `NULL`, cần nguồn dân số khác |
+| `county_population` | Integer | $\ge 0$ người | Có | Dân số của Hạt theo điều tra Census | ⚠️ Cột `CENSUS_POPULATION` trong `California_Counties_Demographics` trống 100% $\to$ `NULL` trong dữ liệu sạch; `dim_county.census_population` lấy dân số US Census 2020 (`04_split_tables.py`) |
 | `county_area_sqmi` | Float | $\ge 0.0$ dặm vuông | Có | Tổng diện tích tự nhiên của Hạt | Lấy từ `California_Counties_Demographics` |
 | `unit_id` | String | Mã đơn vị CAL FIRE / USFS (vd: `BTU`, `LNU`, `MVU`, `LAC`) | Có | Mã đơn vị tác chiến quản lý địa bàn đám cháy | Lấy từ FRAP `Unit ID` (Khóa 3) |
 | `agency` | String | `CDF`, `USF`, `CCO`, `BLM`, `NPS`, `LRA`, `FWS`, `DOD`, `BIA`, `OTH` | Có | Cơ quan quản lý đám cháy | Lấy từ FRAP `Agency` (polygon lớn nhất) |
@@ -44,7 +44,7 @@ Tập dữ liệu sau làm sạch và tích hợp `data/clean/master_clean.csv` 
 | `cause_group` | String | `Natural`, `Human`, `Undetermined` | Không | Nhóm nguyên nhân phân loại lớn | Mã 1, 17 (Lightning, Volcanic) $\to$ Natural; mã 9, 14 (Miscellaneous, Unknown) $\to$ Undetermined; còn lại $\to$ Human |
 | `acres_burned` | Float | $\ge 0.0$ Acres (mẫu Anh) | Không | Diện tích rừng bị thiêu rụi (Acres) | Lấy từ FRAP `GIS Calculated Acres` |
 | `burned_area_ha` | Float | $\ge 0.0$ Hecta (ha) | Không | Diện tích quy đổi chuẩn quốc tế ($1 \text{ acre} \approx 0.404686 \text{ ha}$) | Tính toán từ `acres_burned` |
-| `burned_area_is_imputed` | Boolean | `True`, `False` | Không | Cờ xác định diện tích được điền bởi mô hình ML (KNN/Iterative) | Đánh dấu độ tin cậy dữ liệu |
+| `burned_area_is_imputed` | Boolean | `True`, `False` | Không | Cờ xác định diện tích được điền bởi mô hình ML (KNN/Iterative) | ⚠️ **Chưa triển khai** (`03b_ml_clean.py` chưa có) — hiện luôn `False` |
 | `structure_id` | String | Định dạng `DINS-XXXXX` | Có | Mã định danh công trình tài sản kiểm kê | Lấy từ DINS `GlobalID` |
 | `structure_type` | String | `Single Family`, `Commercial`, `Outbuilding`... | Có | Loại công trình kiến trúc bị ảnh hưởng | Lấy từ DINS `StructureType` |
 | `damage_level` | String | `Destroyed (>50%)`, `Major (26-50%)`, `Minor`... | Có | Cấp độ hư hại của công trình | Lấy từ DINS `* Damage` |
@@ -56,9 +56,9 @@ Tập dữ liệu sau làm sạch và tích hợp `data/clean/master_clean.csv` 
 | `injuries_direct` | Integer | $\ge 0$ người | Có | Số người bị thương trực tiếp | NOAA Casualties, đã gộp trùng vùng dự báo (2006–2025: 792 người) |
 | `latitude` | Float | [32.0, 42.0] | Có | Vĩ độ tọa độ tâm vụ cháy / công trình | Kiểm tra phạm vi Bang California |
 | `longitude` | Float | [-125.0, -114.0] | Có | Kinh độ tọa độ tâm vụ cháy / công trình | Kiểm tra phạm vi Bang California |
-| `is_outlier_ml` | Boolean | `True`, `False` | Không | Cờ phát hiện bất thường bởi Isolation Forest & LOF | Phân tích ngoại lai ML trên log diện tích |
-| `outlier_score` | Float | Số thực (Điểm bất thường) | Có | Điểm số ngoại lai do Isolation Forest tính | Điểm càng âm mức bất thường càng cao |
-| `cause_is_predicted` | Boolean | `True`, `False` | Không | Cờ xác định nguyên nhân được dự đoán bởi Random Forest | Gán True khi xác suất $\ge 0.7$ |
+| `is_outlier_ml` | Boolean | `True`, `False` | Không | Cờ phát hiện bất thường bởi Isolation Forest & LOF | ⚠️ **Chưa triển khai** — hiện luôn `False` |
+| `outlier_score` | Float | Số thực (Điểm bất thường) | Có | Điểm số ngoại lai do Isolation Forest tính | ⚠️ **Chưa triển khai** — hiện luôn `0` |
+| `cause_is_predicted` | Boolean | `True`, `False` | Không | Cờ xác định nguyên nhân được dự đoán bởi Random Forest | ⚠️ **Chưa triển khai** — hiện luôn `False`; nguyên nhân không rõ được gộp vào `Undetermined` |
 
 ### 2.1. Bảng thương vong NOAA `data/tables/fact_casualty_event.csv`
 1 dòng = 1 vụ cháy theo NOAA (897 dòng), đã gộp các dòng của cùng 1 vụ bị ghi lặp ở nhiều vùng dự báo. Hiện chỉ có ở dạng CSV, chưa nạp vào `database.sqlite`.

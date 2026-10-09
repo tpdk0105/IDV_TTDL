@@ -24,7 +24,7 @@ Dự án tập trung nghiên cứu, làm sạch, mô hình hóa và trực quan 
 5. **California Counties Demographics**: 58 Hạt của California kèm diện tích dặm vuông và dân số điều tra Census, phục vụ phân tích theo không gian và chuẩn hóa tỷ lệ thiệt hại trên đầu người.
 
 ### Điểm nổi bật về kỹ thuật:
-- **Kỹ thuật dữ liệu vững chắc (Python Pipeline)**: Tự động tải từ các nguồn dữ liệu uy tín $\to$ làm sạch quy tắc $\to$ làm sạch thông minh bằng **Học máy (Isolation Forest, LOF, MICE/KNN)** $\to$ cam kết tập dữ liệu sạch đạt $\ge 5.000$ dòng.
+- **Kỹ thuật dữ liệu vững chắc (Python Pipeline)**: Tự động tải từ các nguồn dữ liệu uy tín $\to$ làm sạch quy tắc $\to$ làm sạch thông minh bằng **Học máy (Isolation Forest, LOF, MICE/KNN)** *(chưa triển khai)* $\to$ cam kết tập dữ liệu sạch đạt $\ge 5.000$ dòng.
 - **Mô hình hóa chuẩn hình sao (Star Schema $\ge 3$ bảng)**: Tách dữ liệu đạt chuẩn tối thiểu 3NF (`dim_county`, `dim_cause`, `dim_date`, `fact_fire_incident`, `fact_structure_damage`), nạp vào SQLite với toàn bộ hệ thống ràng buộc toàn vẹn tham chiếu (PK, FK, CHECK, UNIQUE, NOT NULL).
 - **Trực quan hóa chuyên nghiệp trên Tableau Public**:
   - **10 Biểu đồ chuyên sâu (Worksheets)**: Thuộc 9 loại biểu đồ khác nhau, phân chia theo tỷ lệ 2/4/4 cho 3 thành viên.
@@ -90,7 +90,7 @@ IDV_TTDL/
 │   ├── 01_download.py         # Thu thập dữ liệu thô (TV1)
 │   ├── 02_eda.py              # Khám phá dữ liệu và thống kê thiếu (TV1)
 │   ├── 03_clean.py            # Làm sạch theo quy tắc (TV1)
-│   ├── 03b_ml_clean.py        # Làm sạch bằng học máy Isolation Forest & MICE (TV1)
+│   ├── 03b_ml_clean.py        # Làm sạch bằng học máy Isolation Forest & MICE (TV1) — chưa triển khai
 │   ├── 04_split_tables.py     # Tách bảng Star Schema chuẩn 3NF (TV2)
 │   ├── 05_build_db.py         # Nạp CSDL database.sqlite kích hoạt FK (TV2)
 │   ├── 07_validate.py         # Kiểm thử tự động toàn vẹn tham chiếu và CHECK (TV2)

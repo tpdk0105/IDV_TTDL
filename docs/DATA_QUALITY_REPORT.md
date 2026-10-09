@@ -35,10 +35,10 @@ Số liệu tính trên phạm vi dự án (FRAP 2006–2025: 7.342 dòng; ICS-2
 | `structures_destroyed` | ICS-209 `STR_DESTROYED_TOTAL`; DINS `* Damage` | 0 / 1.127 (ICS); 0 / 132.522 (DINS) | 0,0 | Thấp | Hợp nhất ICS-209 (2006–2012) + DINS (2013–2025). Vụ FRAP không khớp → 0 (không có ghi nhận phá hủy) |
 | `damage_property_usd` | NOAA `DAMAGE_PROPERTY` | 270 / 993 | 27,2 | **Cao** | Thêm 536 dòng = `$0` (54,0%) — cần quyết định `$0` là "không thiệt hại" hay "không ghi nhận". Chỉ 187 sự kiện có giá trị > 0 |
 | `deaths_direct` / `injuries_direct` | NOAA `DEATHS_DIRECT`, `INJURIES_DIRECT` | 0 / 993 | 0,0 | Thấp | Đầy đủ nhưng **bị đếm trùng**: dữ liệu thô cộng ra 255 chết, 887 bị thương trực tiếp (+12 chết, +261 bị thương gián tiếp); sau khi gộp trùng vùng dự báo còn **207 / 792** (+10 / +261), xem mục 4 |
-| `cause_name` / `cause_code` | FRAP `Cause` | 0 / 7.342 (trống) — nhưng **2.381 mã 14 "Unknown"** | 0,0 (thực tế **32,4%** không rõ) | **TB–Cao** | Coi mã 14 là thiếu → dự đoán bằng Random Forest (`cause_is_predicted`) |
+| `cause_name` / `cause_code` | FRAP `Cause` | 0 / 7.342 (trống) — nhưng **2.381 mã 14 "Unknown"** | 0,0 (thực tế **32,4%** không rõ) | **TB–Cao** | Coi mã 14 là thiếu → `03_clean.py` gộp mã 9, 14 và ô trống vào nhóm `Undetermined`, không suy đoán nguyên nhân. Dự đoán bằng Random Forest (`cause_is_predicted`) là bước mở rộng **chưa triển khai** |
 | `latitude` / `longitude` | DINS `Latitude`/`Longitude`; ICS-209 `POO_LATITUDE`/`POO_LONGITUDE`; NOAA `BEGIN_LAT`/`BEGIN_LON` | DINS 0; ICS-209 9 / 1.127; **NOAA 993 / 993** | 0,0 / 0,8 / **100** | Thấp (DINS) – Cao (NOAA) | Tất cả tọa độ có giá trị đều nằm trong Bounding Box California. NOAA không có tọa độ → ghép theo Hạt/thời gian |
 | `alarm_date` / `containment_date` | FRAP `Alarm Date`, `Containment Date` | 19 / 7.342; 104 / 7.342 | 0,3 / 1,4 | Thấp | Thời gian dập lửa < 0 hoặc > 365 ngày coi là lỗi nhập liệu → NULL (109 / 7.235 vụ không tính được) |
-| `county_population` | Demographics `CENSUS_POPULATION` | **58 / 58** | **100** | **Cao** | Cột trống hoàn toàn — **không thể** lấy dân số Hạt từ file này như `DATA_DICTIONARY.md` mô tả. Cần nguồn khác (Census API / DOF E-1) |
+| `county_population` | Demographics `CENSUS_POPULATION` | **58 / 58** | **100** | **Cao** | Cột trống hoàn toàn — **không thể** lấy dân số Hạt từ file này. `03_clean.py` giữ NULL; `04_split_tables.py` bổ sung dân số US Census 2020 (`CALIFORNIA_POPULATION_2020`) vào `dim_county` |
 
 **Các cột trống hoàn toàn nên loại bỏ khi làm sạch**: NOAA có 21 cột trống 100% (nhóm `TOR_*`, `FLOOD_CAUSE`, `MAGNITUDE`, `CATEGORY`, `END_LOCATION`…, vốn dành cho lốc xoáy / lũ); ICS-209 có 8 cột trống 100% (vd `INCIDENT_DESCRIPTION`, `FATALITIES_PUBLIC`, `PEAK_EVACUATIONS`); Demographics có 3 cột (`PRIMARY_DOMAIN`, `CENSUS_POPULATION`, `OFFSHORE`). Trong FRAP, `Complex ID` / `Complex Name` thiếu ~97% là bình thường (đa số vụ cháy không thuộc tổ hợp).
 
@@ -64,7 +64,7 @@ Số liệu tính trên phạm vi dự án (FRAP 2006–2025: 7.342 dòng; ICS-2
 ![Boxplot công trình bị phá hủy](../reports/figures/eda_03_outliers_boxplot.png)
 
 - **Nhà cửa bị phá hủy (structures_destroyed)**: Tổng **77.596** công trình (ICS-209 7.206 + DINS 70.390) trên 500 vụ có phá hủy. 75% số vụ phá hủy < 40 công trình, nhưng **10% vụ lớn nhất chiếm 90,8%** tổng số, và riêng 3 vụ **Camp 2018 (18.804), Eaton 2025 (9.419), Palisades 2025 (6.845)** chiếm **45,2%**.
-  - Ngưỡng Tukey 1,5×IQR trên thang gốc gắn cờ 83 vụ (quá nhiều do phân phối lệch); trên thang log chỉ còn **10 vụ** (DINS 4, ICS-209 6) — đúng các siêu thảm họa. → Isolation Forest nên chạy trên `log1p`. Đây là sự kiện thật: **gắn cờ, không xóa**.
+  - Ngưỡng Tukey 1,5×IQR trên thang gốc gắn cờ 83 vụ (quá nhiều do phân phối lệch); trên thang log chỉ còn **10 vụ** (DINS 4, ICS-209 6) — đúng các siêu thảm họa. → Isolation Forest nên chạy trên `log1p`. Đây là sự kiện thật: **không xóa**; `03_clean.py` giữ nguyên các vụ này. Cờ `is_outlier_ml` **chưa được tính** (hiện luôn = 0) vì `03b_ml_clean.py` chưa triển khai.
 
 ![Correlation heatmap](../reports/figures/eda_04_correlation_heatmap.png)
 
@@ -91,9 +91,9 @@ Số liệu tính trên phạm vi dự án (FRAP 2006–2025: 7.342 dòng; ICS-2
 | 1 | Tên vụ cháy không đồng nhất giữa nguồn (`CMPLX`/`COMPLEX`, hậu tố `FIRE`/`INCIDENT`) | Ghép thô theo (năm, tên) chỉ khớp 92,5% công trình; sau chuẩn hóa Khóa 1 đạt **95,3%** (73.911 / 77.596) | `03_clean.py` – Khóa 1 |
 | 2 | Vụ trùng tên cùng năm khác địa bàn (CAMP 2018 BTU/SLU) | Gán sai thiệt hại và thời gian dập lửa | `03_clean.py` – Khóa 3 |
 | 3 | 1 vụ cháy = nhiều polygon FRAP | Đếm trùng số vụ | `03_clean.py` – gộp theo (năm, tên, Unit ID) |
-| 4 | `Cause` = 14 (Unknown) chiếm 32,4% | Phân tích căn nguyên thiếu 1/3 dữ liệu | `03b_ml_clean.py` – Random Forest |
+| 4 | `Cause` = 14 (Unknown) chiếm 32,4% | Phân tích căn nguyên thiếu 1/3 dữ liệu | `03_clean.py` – gộp vào `Undetermined`; Random Forest trong `03b_ml_clean.py` (chưa triển khai) |
 | 5 | `DAMAGE_PROPERTY` trống 27,2% + `$0` 54,0% | Thiệt hại USD thiếu nghiêm trọng | Không dùng – NOAA chỉ lấy thương vong; tài sản dùng DINS + ICS-209 |
-| 6 | `CENSUS_POPULATION` trống 100% | Không tính được mật độ / thiệt hại theo đầu người | Bổ sung nguồn dân số khác |
+| 6 | `CENSUS_POPULATION` trống 100% | Không tính được mật độ / thiệt hại theo đầu người | `04_split_tables.py` – dân số US Census 2020 trong `dim_county` |
 | 7 | 109 dòng DINS trùng logic | Đếm dư công trình bị phá hủy | `03_clean.py` – khử trùng |
 | 8 | 32 cột trống 100% (NOAA 21, ICS-209 8, Demographics 3) | Làm nặng dữ liệu, không có thông tin | `03_clean.py` – loại cột |
 | 9 | NOAA ghi lặp thương vong khi 1 vụ cháy lan qua nhiều vùng dự báo | Người chết bị thổi lên 255 thay vì 207 | `03_clean.py` – bước 9b, gộp theo (`EPISODE_ID`, tên vụ cháy) |

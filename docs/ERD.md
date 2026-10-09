@@ -11,8 +11,8 @@ Mô hình dữ liệu được thiết kế nhằm phục vụ truy vấn phân 
 - **Bảng Fact Trung Tâm 1**: `fact_fire_incident` (lưu vết **7.342 vụ cháy rừng lịch sử California 2006–2025** từ CAL FIRE FRAP: diện tích Acres/ha, thời gian kéo dài, tọa độ, nguyên nhân, số nhà bị phá hủy liên tục 20 năm, thương vong NOAA).
 - **Bảng Fact Mở Rộng 2**: `fact_structure_damage` (lưu vết chi tiết hơn 133.000 bản ghi kiểm kê công trình nhà ở, thương mại bị thiêu hại được **hợp nhất liên tục 20 năm: Giai đoạn 2006–2012 từ USDA Forest Service ICS-209 và Giai đoạn 2013–2025 từ CAL FIRE DINS**, liên kết $N - 1$ với `fact_fire_incident` qua `incident_id`).
 - **Bảng Fact Thương Vong 3** (chỉ CSV, chưa nạp vào SQLite): `fact_casualty_event` (897 vụ cháy theo NOAA, đã gộp trùng vùng dự báo: 207 người chết, 792 người bị thương trực tiếp 2006–2025), liên kết `dim_date` qua `date_id` và `fact_fire_incident` qua `incident_id` (NULL nếu không khớp). Tổng hợp theo năm ở `data/clean/casualties_by_year.csv`.
-- **Các Bảng Dimension**: `dim_county` (58 Hạt California kèm dân số, diện tích), `dim_cause` (bảng mã nguyên nhân CAL FIRE), `dim_date` (thứ bậc thời gian: ngày, tháng, quý, năm, mùa cao điểm cháy rừng).
-- **Cột cờ kiểm soát chất lượng**: Các cờ ML (`is_outlier_ml`, `burned_area_is_imputed`, `cause_is_predicted`) được bảo toàn trực tiếp trong bảng fact để hỗ trợ tính năng lọc dữ liệu gốc/ước lượng trên Dashboard.
+- **Các Bảng Dimension**: `dim_county` (58 Hạt California kèm dân số US Census 2020, diện tích), `dim_cause` (bảng mã nguyên nhân CAL FIRE), `dim_date` (thứ bậc thời gian: ngày, tháng, quý, năm, mùa cao điểm cháy rừng).
+- **Cột cờ kiểm soát chất lượng**: Các cờ ML (`is_outlier_ml`, `burned_area_is_imputed`, `cause_is_predicted`) được bảo toàn trực tiếp trong bảng fact để hỗ trợ tính năng lọc dữ liệu gốc/ước lượng trên Dashboard. ⚠️ Bước làm sạch ML (`03b_ml_clean.py`) **chưa triển khai** nên hiện các cờ này luôn = 0.
 
 ---
 
@@ -70,7 +70,7 @@ erDiagram
         integer deaths_direct "Thương vong sinh mạng (NOAA)"
         integer injuries_direct "Số người bị thương (NOAA)"
         integer is_outlier_ml "DEFAULT 0, CHECK (is_outlier_ml IN (0, 1))"
-        real outlier_score "Anomaly score from Isolation Forest"
+        real outlier_score "Anomaly score from Isolation Forest (chua trien khai)"
         integer burned_area_is_imputed "DEFAULT 0, CHECK (burned_area_is_imputed IN (0, 1))"
         integer cause_is_predicted "DEFAULT 0, CHECK (cause_is_predicted IN (0, 1))"
     }
