@@ -141,7 +141,7 @@
 * **Trend Line Model**: Tab Analytics $\to$ Kéo **Trend Line** $\to$ Linear $\to$ Bỏ chọn *Allow a trend line per color* $\to$ Bật *Show confidence bands* (95%).
 * **Phương trình hồi quy**:
   $$\log_{10}(\text{Công trình phá hủy}) = 0{,}433436 \times \log_{10}(\text{Diện tích}) - 0{,}377417$$
-  * $R^2 = 0{,}356$ (Cao gấp 13 lần so với hồi quy số gốc $R^2 = 0{,}026$).
+  * $R^2 = 0{,}374$ (Cao gấp 14 lần so với hồi quy số gốc $R^2 = 0{,}026$).
   * $p\text{-value} < 0{,}0001$, $t\text{-value} = 14{,}658$.
 * **Diễn giải & Dự báo**: Khi diện tích cháy tăng 10 lần, số công trình bị phá hủy tăng khoảng 2,7 lần. Dự báo: Đám cháy 1.000 mẫu $\approx 8$ công trình; 10.000 mẫu $\approx 23$ công trình; 100.000 mẫu $\approx 62$ công trình bị phá hủy.
 

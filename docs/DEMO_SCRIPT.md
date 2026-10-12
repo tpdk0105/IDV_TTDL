@@ -125,7 +125,7 @@ Tạo ấn tượng học thuật mạnh mẽ, làm rõ quy mô dữ liệu sạ
 ## ⏱️ PHÚT 4:30 – 6:00 | STORY 1 – POINT 3: CĂN NGUYÊN BÙNG PHÁT & HỒI QUY DỰ BÁO (DASHBOARD D3)
 
 ### 📌 Tiêu đề Story Point 3:
-> *"Sét đánh dễ tạo siêu đám cháy ở vùng hẻo lánh, nhưng hoạt động con người chiếm 64% các vụ đã rõ nguyên nhân và đe dọa trực tiếp khu dân cư. Mô hình hồi quy log-log (R² = 0,356) chứng minh diện tích tăng 10 lần thì tổn thất tăng ~2,71 lần."*
+> *"Sét đánh dễ tạo siêu đám cháy ở vùng hẻo lánh, nhưng hoạt động con người chiếm 64% các vụ đã rõ nguyên nhân và đe dọa trực tiếp khu dân cư. Mô hình hồi quy log-log (R² = 0,374) chứng minh diện tích tăng 10 lần thì tổn thất tăng ~2,79 lần."*
 
 ### 🎙️ Lời thoại trình bày:
 > *"Chuyển tiếp đến **Story Point 3** tại Dashboard D3, chúng ta tiến hành giải mã: **Đâu là nguồn gốc kích hoạt và mối tương quan giữa quy mô đám cháy với mức độ tàn phá tài sản?**
@@ -140,9 +140,9 @@ Tạo ấn tượng học thuật mạnh mẽ, làm rõ quy mô dữ liệu sạ
 >
 > Để hoàn thiện năng lực phân tích định lượng, nhóm đã xây dựng **Sheet 08 (Scatter Plot Hồi quy tuyến tính Log-Log)**:
 > - Nếu chạy hồi quy trên số liệu gốc, hệ số xác định chỉ đạt $R^2 = 0.026$ do phân phối lệch phải cực đoan.
-> - Nhóm đã áp dụng **phép biến đổi Logarit cơ số 10 trên cả hai trục**, nâng hệ số $R^2$ lên **0.356 (tăng gấp 13 lần khả năng giải thích)**, kiểm định $t = 14.658$, $p < 0.0001$ cực kỳ có ý nghĩa thống kê.
-> - Phương trình hồi quy: $\log_{10}(\text{Destroyed}) = 0.433436 \times \log_{10}(\text{Acres}) - 0.377417$.
-> 👉 **Insight định lượng**: Khi diện tích cháy tăng gấp 10 lần, số công trình bị phá hủy sẽ tăng trung bình **2,71 lần** ($10^{0.433} \approx 2.71$). Đây là công cụ đắc lực giúp lực lượng cứu hộ dự báo nhanh thiệt hại tài sản ngay khi vệ tinh đo được diện tích đám cháy."*
+> - Nhóm đã áp dụng **phép biến đổi Logarit cơ số 10 trên cả hai trục**, nâng hệ số $R^2$ lên **0.374 (tăng gấp 14 lần khả năng giải thích)**, kiểm định $t = 15.254$, $p < 0.0001$ cực kỳ có ý nghĩa thống kê.
+> - Phương trình hồi quy: $\log_{10}(\text{Destroyed}) = 0.445429 \times \log_{10}(\text{Acres}) - 0.419530$.
+> 👉 **Insight định lượng**: Khi diện tích cháy tăng gấp 10 lần, số công trình bị phá hủy sẽ tăng trung bình **2,79 lần** ($10^{0.445} \approx 2.79$). Đây là công cụ đắc lực giúp lực lượng cứu hộ dự báo nhanh thiệt hại tài sản ngay khi vệ tinh đo được diện tích đám cháy."*
 
 ### 🖱️ Thao tác trực tiếp trên màn hình:
 1. Tại **Sheet 04 (Donut Chart)**: Nhấp chuột vào lát cắt màu đỏ **Human (Con người)**.
@@ -216,7 +216,7 @@ Tạo ấn tượng học thuật mạnh mẽ, làm rõ quy mô dữ liệu sạ
 > **Trả lời**: *"Dạ thưa Thầy Cô, chương trình thanh tra thiệt hại DINS (Damage Inspection) của CAL FIRE chỉ chính thức được thể chế hóa và thu thập số hóa sau thảm họa cháy Rim Fire năm 2013. Nếu chỉ dùng DINS, phân tích của chúng em sẽ bị khuyết mất 7 năm (2006–2012). Nhóm đã nghiên cứu và kết hợp với dữ liệu kiểm kê liên bang ICS-209-PLUS của Bộ Nông nghiệp Hoa Kỳ (USDA) và NIFC. Hai bộ dữ liệu này được ánh xạ và chuẩn hóa cột `structures_destroyed`, giúp toàn bộ chuỗi thời gian 20 năm liên tục không bị đứt đoạn, bảo đảm tính toàn vẹn 20/20 năm của nghiên cứu."*
 
 ### ❓ Câu hỏi 2: Tại sao ở biểu đồ hồi quy Sheet 08 nhóm phải dùng biến đổi Log-Log?
-> **Trả lời**: *"Dạ thưa Thầy Cô, phân phối của diện tích cháy và số công trình bị phá hủy đều có độ lệch phải cực kỳ nặng (Skewness > 14, Kurtosis > 280). Đa số các vụ cháy có diện tích nhỏ và thiệt hại 0 nhà, trong khi một vài siêu đám cháy như Camp Fire có diện tích hàng trăm nghìn mẫu và phá hủy gần 19.000 ngôi nhà. Nếu chạy hồi quy tuyến tính trên thang đo gốc, các điểm ngoại lai này sẽ làm lệch hoàn toàn đường hồi quy và hệ số $R^2$ chỉ đạt 0.026. Khi chuyển đổi $\log_{10}$, dữ liệu được kéo về dạng phân phối gần chuẩn, tuyến tính hóa mối quan hệ phi tuyến, giúp $R^2$ đạt 0.356 (tăng gấp 13 lần khả năng giải thích) và $p < 0.0001$."*
+> **Trả lời**: *"Dạ thưa Thầy Cô, phân phối của diện tích cháy và số công trình bị phá hủy đều có độ lệch phải cực kỳ nặng (Skewness > 14, Kurtosis > 280). Đa số các vụ cháy có diện tích nhỏ và thiệt hại 0 nhà, trong khi một vài siêu đám cháy như Camp Fire có diện tích hàng trăm nghìn mẫu và phá hủy gần 19.000 ngôi nhà. Nếu chạy hồi quy tuyến tính trên thang đo gốc, các điểm ngoại lai này sẽ làm lệch hoàn toàn đường hồi quy và hệ số $R^2$ chỉ đạt 0.026. Khi chuyển đổi $\log_{10}$, dữ liệu được kéo về dạng phân phối gần chuẩn, tuyến tính hóa mối quan hệ phi tuyến, giúp $R^2$ đạt 0.374 (tăng gấp 14 lần khả năng giải thích) và $p < 0.0001$."*
 
 ### ❓ Câu hỏi 3: Trên Dashboard D4, dải phễu xanh có ý nghĩa gì và tại sao cận trên diện tích lại lên tới hơn 4,5 triệu ha?
 > **Trả lời**: *"Dạ thưa Thầy Cô, dải phễu xanh biểu thị Khoảng tin cậy dự báo 95% (95% Prediction Interval). Nó không chỉ đưa ra một giá trị trung bình điểm, mà chỉ ra biên độ dao động có thể xảy ra trong tương lai. Đối với diện tích cháy rừng California, biến số phụ thuộc rất lớn vào các năm xảy ra hiện tượng khí hậu cực đoan La Niña gây khô hạn kéo dài (như năm 2020 đã từng cháy gần 1,7 triệu ha). Cận trên 4,56 triệu ha là kịch bản rủi ro khí hậu cực hạn (Worst-case Scenario) nhằm cảnh báo các nhà hoạch định ngân sách phải chuẩn bị kịch bản cứu trợ khẩn cấp."*
@@ -238,7 +238,7 @@ Tạo ấn tượng học thuật mạnh mẽ, làm rõ quy mô dữ liệu sạ
 | **Tỷ lệ nhà ở dân sinh** | **64% tổng số công trình** | Nhà 1 hộ: 36.057 căn (52%) |
 | **Căn nguyên con người** | **64% trong các vụ đã rõ nguyên nhân** | Máy móc (762), Xe (488), Phóng hỏa (363) |
 | **Nghịch lý sấm sét** | **11,9% vụ do sét $\ge$ 5.000 mẫu** | Gấp 4 lần tỷ lệ 3% của con người |
-| **Mô hình Hồi quy Log-Log** | **$R^2 = 0.356$, $p < 0.0001$** | Diện tích tăng 10 lần $\to$ Thiệt hại tăng 2,71 lần |
+| **Mô hình Hồi quy Log-Log** | **$R^2 = 0.374$, $p < 0.0001$** | Diện tích tăng 10 lần $\to$ Thiệt hại tăng 2,79 lần |
 | **Dự báo 2035 (Số vụ)** | **515 [251 – 780] vụ/năm** | Tăng 42% so với quá khứ |
 | **Dự báo 2035 (Diện tích)** | **425.612 ha [39.667 – 4.566.518 ha]** | Cận trên 4,5 triệu ha |
 | **Dự báo 2035 (Công trình)** | **7.041 [65 – 751.461] công trình** | Tăng từ 370 lên 7.041 căn/năm |

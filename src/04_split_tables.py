@@ -1,4 +1,5 @@
 
+import importlib.util
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -7,6 +8,11 @@ import pandas as pd
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
+
+# Dung chung bang sua ten vu chay voi 03_clean.py de DINS / ICS-209 tro dung vu FRAP
+_spec = importlib.util.spec_from_file_location("clean", Path(__file__).parent / "03_clean.py")
+clean = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(clean)
 
 
 # Dân số chính thức 58 Hạt California theo US Census Bureau 2020 
@@ -200,6 +206,11 @@ def build_casualties_by_year(events: pd.DataFrame) -> pd.DataFrame:
     return yearly.reset_index()
 
 
+def apply_name_aliases(years: pd.Series, names: pd.Series) -> pd.Series:
+    aliased = pd.Series(list(zip(years, names)), index=names.index).map(clean.DAMAGE_NAME_ALIASES)
+    return aliased.fillna(names)
+
+
 def extract_fire_coordinates(dins_path: Path, ics_path: Path) -> dict:
     coords = {}
     if dins_path.exists():
@@ -207,7 +218,7 @@ def extract_fire_coordinates(dins_path: Path, ics_path: Path) -> dict:
         dins = dins.dropna(subset=["Latitude", "Longitude"])
         dins = dins[dins["Latitude"].between(32.0, 42.0) & dins["Longitude"].between(-125.0, -114.0)]
         dins["year"] = pd.to_datetime(dins["Incident Start Date"], format="%m/%d/%Y %I:%M:%S %p", errors="coerce").dt.year
-        dins["norm_name"] = dins["* Incident Name"].str.upper().str.strip()
+        dins["norm_name"] = apply_name_aliases(dins["year"], dins["* Incident Name"].str.upper().str.strip())
         agg = dins.groupby(["year", "norm_name"]).agg(lat=("Latitude", "median"), lon=("Longitude", "median")).reset_index()
         for _, r in agg.iterrows():
             coords[(int(r["year"]), r["norm_name"])] = (round(float(r["lat"]), 5), round(float(r["lon"]), 5))
@@ -216,7 +227,7 @@ def extract_fire_coordinates(dins_path: Path, ics_path: Path) -> dict:
         ics = pd.read_csv(ics_path, usecols=["START_YEAR", "INCIDENT_NAME", "POO_LATITUDE", "POO_LONGITUDE"])
         ics = ics.dropna(subset=["POO_LATITUDE", "POO_LONGITUDE"])
         ics = ics[ics["POO_LATITUDE"].between(32.0, 42.0) & ics["POO_LONGITUDE"].between(-125.0, -114.0)]
-        ics["norm_name"] = ics["INCIDENT_NAME"].str.upper().str.strip()
+        ics["norm_name"] = apply_name_aliases(ics["START_YEAR"], ics["INCIDENT_NAME"].str.upper().str.strip())
         for _, r in ics.iterrows():
             key = (int(r["START_YEAR"]), r["norm_name"])
             if key not in coords:
@@ -315,7 +326,7 @@ def split_star_schema_tables() -> None:
             "* Structure Type", "* Damage", "Latitude", "Longitude"
         ])
         dins["year"] = pd.to_datetime(dins["Incident Start Date"], format="%m/%d/%Y %I:%M:%S %p", errors="coerce").dt.year
-        dins["norm_name"] = dins["* Incident Name"].str.upper().str.strip()
+        dins["norm_name"] = apply_name_aliases(dins["year"], dins["* Incident Name"].str.upper().str.strip())
 
         for _, row in dins.iterrows():
             yr = row["year"]
@@ -356,7 +367,7 @@ def split_star_schema_tables() -> None:
             "STR_DESTROYED_TOTAL", "STR_DAMAGED_TOTAL", "POO_LATITUDE", "POO_LONGITUDE"
         ])
         ics = ics[(ics["STR_DESTROYED_TOTAL"] > 0) | (ics["STR_DAMAGED_TOTAL"] > 0)]
-        ics["norm_name"] = ics["INCIDENT_NAME"].str.upper().str.strip()
+        ics["norm_name"] = apply_name_aliases(ics["START_YEAR"], ics["INCIDENT_NAME"].str.upper().str.strip())
 
         for _, row in ics.iterrows():
             yr = int(row["START_YEAR"])
