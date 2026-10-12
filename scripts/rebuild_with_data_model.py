@@ -1118,8 +1118,8 @@ def build_chapter_4(doc):
     add_bullet_point(doc, "Scatter Plot tích hợp Đường hồi quy tuyến tính log-log (Barem Dự báo 0.5 đ).", "Loại biểu đồ: ")
     add_bullet_point(doc, "Dashboard D3 (Căn nguyên bùng phát & Mô hình hồi quy dự báo).", "Vị trí tích hợp: ")
     add_bullet_point(doc, "Columns: [Log Diện tích]. Rows: [Log Công trình phá hủy]. Detail: [incident_id]. Marks: Circle, Color = [cause_group], Opacity = 75%. Tab Analytics -> Trend Line Linear -> Bỏ Allow per color -> Bật Show confidence bands (95%).", "Cấu hình trục & Marks: ")
-    add_bullet_point(doc, "Mô hình hồi quy (391 quan sát): log10(Destroyed) = 0.445429 * log10(Acres) - 0.419530 (R² = 0.374, t = 15.254, p < 0.0001). Hồi quy số gốc chỉ đạt R² = 0.026.", "Số liệu kiểm tra chuẩn: ")
-    add_bullet_point(doc, "Biến đổi log giúp tăng 14 lần khả năng giải thích. Khi diện tích cháy tăng gấp 10 lần, số công trình bị phá hủy tăng trung bình 2,79 lần. Dự báo: 1.000 mẫu ≈ 8 công trình; 10.000 mẫu ≈ 23 công trình; 100.000 mẫu ≈ 64 công trình.", "Ý nghĩa khoa học: ")
+    add_bullet_point(doc, "Mô hình hồi quy (391 quan sát): log10(Destroyed) = 0.433444 * log10(Acres) - 0.377448 (R² = 0.356, t = 14.658, p < 0.0001). Hồi quy số gốc chỉ đạt R² = 0.026.", "Số liệu kiểm tra chuẩn: ")
+    add_bullet_point(doc, "Biến đổi log giúp tăng 13 lần khả năng giải thích. Khi diện tích cháy tăng gấp 10 lần, số công trình bị phá hủy tăng trung bình 2,71 lần. Dự báo: 1.000 mẫu ≈ 8 công trình; 10.000 mẫu ≈ 23 công trình; 100.000 mẫu ≈ 62 công trình.", "Ý nghĩa khoa học: ")
     add_image_placeholder(doc, "SHEET 08 - SCATTER PLOT HỒI QUY TUYẾN TÍNH LOG-LOG", "Dán ảnh chụp màn hình Worksheet Sheet 08 (08_Scatter_Regression) từ Tableau vào khung này")
 
     # Sheet 9
@@ -1292,7 +1292,7 @@ def build_chapter_5(doc):
     )
     add_bullet_point(
         doc,
-        "Mô hình hồi quy log-log trên Sheet 08 hoàn thiện câu chuyện với năng lực lượng hóa mối quan hệ: log10(Destroyed) = 0.445429 * log10(Acres) - 0.419530 (R² = 0.374). Khi diện tích tăng 10 lần, thiệt hại tăng bình quân 2,79 lần, cho phép cơ quan chức năng ước tính nhanh mức độ tàn phá tài sản ngay khi diện tích đám cháy được xác định từ vệ tinh.",
+        "Mô hình hồi quy log-log trên Sheet 08 hoàn thiện câu chuyện với năng lực lượng hóa mối quan hệ: log10(Destroyed) = 0.433444 * log10(Acres) - 0.377448 (R² = 0.356). Khi diện tích tăng 10 lần, thiệt hại tăng bình quân 2,71 lần, cho phép cơ quan chức năng ước tính nhanh mức độ tàn phá tài sản ngay khi diện tích đám cháy được xác định từ vệ tinh.",
         "Khả năng lượng hóa dự báo thiệt hại: "
     )
     add_image_placeholder(
@@ -1344,7 +1344,7 @@ def build_chapter_5(doc):
     )
     add_bullet_point(
         doc,
-        "Nghịch lý căn nguyên: Sét đánh tự nhiên có xác suất tạo thành siêu đám cháy cao gấp 4 lần do khởi phát ở vùng xa xôi hiểm trở. Ngược lại, con người chiếm 64% các vụ đã rõ nguyên nhân và bùng phát sát khu dân cư nên gây ra hầu hết các thảm họa về người và của. Mô hình hồi quy log-log (R² = 0.374) cho thấy diện tích tăng 10 lần thì thiệt hại tăng 2,79 lần.",
+        "Nghịch lý căn nguyên: Sét đánh tự nhiên có xác suất tạo thành siêu đám cháy cao gấp 4 lần do khởi phát ở vùng xa xôi hiểm trở. Ngược lại, con người chiếm 64% các vụ đã rõ nguyên nhân và bùng phát sát khu dân cư nên gây ra hầu hết các thảm họa về người và của. Mô hình hồi quy log-log (R² = 0.356) cho thấy diện tích tăng 10 lần thì thiệt hại tăng 2,71 lần.",
         "Insight cốt lõi Dashboard D3: "
     )
     add_bullet_point(
@@ -1391,12 +1391,12 @@ def build_chapter_6(doc):
     )
     add_bullet_point(doc, "log10(Destroyed) = β1 * log10(Acres) + β0", "Dạng hàm hồi quy log-log: ")
     add_body_paragraph(doc, "Kết quả huấn luyện và kiểm định mô hình trên 391 sự cố cháy có ghi nhận thiệt hại tài sản:")
-    add_bullet_point(doc, "log10(Destroyed) = 0.445429 * log10(Acres) - 0.419530", "Phương trình hồi quy log-log: ")
-    add_bullet_point(doc, "Hệ số xác định R² = 0.374, tăng gấp 14 lần khả năng giải thích so với hồi quy số gốc (R² = 0.026).", "Độ phù hợp của mô hình (R²): ")
-    add_bullet_point(doc, "Kiểm định t-test cho hệ số góc: t = 15.254, p-value < 0.0001 (Bác bỏ giả thuyết H0 ở mức ý nghĩa 99.9%); Sai số chuẩn StdErr = 0.02920. Hệ số chặn: t = -4.203, p-value < 0.0001, StdErr = 0.09982.", "Kiểm định thống kê: ")
-    add_bullet_point(doc, "Khi diện tích cháy tăng gấp 10 lần, số công trình bị phá hủy tăng trung bình khoảng 2,79 lần (10^0.445 ≈ 2.79). Công thức dự phóng nhanh: Đám cháy 1.000 mẫu ≈ 8 công trình; 10.000 mẫu ≈ 23 công trình; 100.000 mẫu ≈ 64 công trình bị phá hủy.", "Diễn giải ý nghĩa dự báo: ")
-    add_bullet_point(doc, "Dữ liệu là các vụ cháy độc lập (dữ liệu cắt ngang, không phải chuỗi thời gian) nên mô hình được đánh giá bằng kiểm định chéo 5-fold xáo trộn ngẫu nhiên. R² ngoài mẫu trên thang log đạt 0.366, gần như bằng R² khi huấn luyện trên toàn bộ dữ liệu (0.374), chứng tỏ mô hình không bị quá khớp. Sai số tuyệt đối trung bình trên thang log10 là 0.572, tương ứng dự báo lệch trung bình khoảng 3,7 lần so với thực tế, tốt hơn mốc so sánh bỏ qua diện tích cháy (lệch khoảng 5,2 lần).", "Kiểm định chéo 5-fold: ")
-    add_bullet_point(doc, "Khoảng dự báo 95% rất rộng (ví dụ đám cháy 100.000 mẫu Anh: từ khoảng 3 đến 1.556 công trình). Các thảm họa cháy lan vào khu dân cư như Camp 2018 (18.804 công trình) hay Eaton 2025 (9.419 công trình) vượt xa dự báo, vì số công trình bị phá hủy còn phụ thuộc vào mật độ dân cư - yếu tố mô hình một biến chưa xét đến. Các giá trị dự phóng là trung vị (10^dự báo log), không phải trung bình cộng.", "Hạn chế: ")
+    add_bullet_point(doc, "log10(Destroyed) = 0.433444 * log10(Acres) - 0.377448", "Phương trình hồi quy log-log: ")
+    add_bullet_point(doc, "Hệ số xác định R² = 0.356, tăng gấp 13 lần khả năng giải thích so với hồi quy số gốc (R² = 0.026).", "Độ phù hợp của mô hình (R²): ")
+    add_bullet_point(doc, "Kiểm định t-test cho hệ số góc: t = 14.658, p-value < 0.0001 (Bác bỏ giả thuyết H0 ở mức ý nghĩa 99.9%); Sai số chuẩn StdErr = 0.02957. Hệ số chặn: t = -3.742, p-value = 0.0002, StdErr = 0.10087.", "Kiểm định thống kê: ")
+    add_bullet_point(doc, "Khi diện tích cháy tăng gấp 10 lần, số công trình bị phá hủy tăng trung bình khoảng 2,71 lần (10^0.433 ≈ 2.71). Công thức dự phóng nhanh: Đám cháy 1.000 mẫu ≈ 8 công trình; 10.000 mẫu ≈ 23 công trình; 100.000 mẫu ≈ 62 công trình bị phá hủy.", "Diễn giải ý nghĩa dự báo: ")
+    add_bullet_point(doc, "Dữ liệu là các vụ cháy độc lập (dữ liệu cắt ngang, không phải chuỗi thời gian) nên mô hình được đánh giá bằng kiểm định chéo 5-fold xáo trộn ngẫu nhiên. R² ngoài mẫu trên thang log đạt 0.348, gần như bằng R² khi huấn luyện trên toàn bộ dữ liệu (0.356), chứng tỏ mô hình không bị quá khớp. Sai số tuyệt đối trung bình trên thang log10 là 0.575, tương ứng dự báo lệch trung bình khoảng 3,8 lần so với thực tế, tốt hơn mốc so sánh bỏ qua diện tích cháy (lệch khoảng 5,2 lần).", "Kiểm định chéo 5-fold: ")
+    add_bullet_point(doc, "Khoảng dự báo 95% rất rộng (ví dụ đám cháy 100.000 mẫu Anh: từ khoảng 2 đến 1.565 công trình). Các thảm họa cháy lan vào khu dân cư như Camp 2018 (18.804 công trình) hay Eaton 2025 (9.419 công trình) vượt xa dự báo, vì số công trình bị phá hủy còn phụ thuộc vào mật độ dân cư - yếu tố mô hình một biến chưa xét đến. Các giá trị dự phóng là trung vị (10^dự báo log), không phải trung bình cộng.", "Hạn chế: ")
 
     add_academic_figure(
         doc,
@@ -1502,7 +1502,7 @@ def build_chapter_7(doc):
     add_bullet_point(doc, "Giới thiệu đề tài cháy rừng California 2006–2025, tính cấp thiết và quy mô 5 bộ dữ liệu thô (vượt 157.000 dòng). Nêu bật việc xử lý đứt gãy DINS bằng ICS-209-PLUS và chuẩn hóa 207 tử vong NOAA.", "Phút 00:00 – 01:00 (Mở đầu & Bối cảnh): ")
     add_bullet_point(doc, "Trình diễn Story Point 1 nhúng Dashboard D1. Chỉ ra 4 thẻ KPI vĩ mô, giải thích hiện tượng mùa cháy nở rộng ra 2 đầu mùa (+70% T4-T5, +73% T10) và sự bùng nổ của các năm cực đoan đỏ rực sau 2017 trên Diverging Bar.", "Phút 01:00 – 02:30 (Chu kỳ thời gian & Mùa vụ): ")
     add_bullet_point(doc, "Chuyển sang Story Point 2 nhúng Dashboard D2. Thao tác tương tác nhấp chọn Hạt Butte và Los Angeles trên Bản đồ để lọc chéo Treemap và Bar chart. Chứng minh quy luật Pareto 80/20: 7 Hạt chịu 82% tổng thiệt hại nhà cửa toàn bang.", "Phút 02:30 – 04:00 (Không gian địa lý & Pareto 80/20): ")
-    add_bullet_point(doc, "Chuyển sang Story Point 3 nhúng Dashboard D3. Trình diễn Highlight Action từ Donut sang Heatmap và Scatter plot. Phân tích nghịch lý tự nhiên (sét đánh dễ tạo siêu đám cháy) vs con người (chiếm 64% vụ gây thiệt hại gần đô thị). Giải thích mô hình hồi quy log-log R² = 0.374.", "Phút 04:00 – 05:00 (Căn nguyên & Mô hình hồi quy): ")
+    add_bullet_point(doc, "Chuyển sang Story Point 3 nhúng Dashboard D3. Trình diễn Highlight Action từ Donut sang Heatmap và Scatter plot. Phân tích nghịch lý tự nhiên (sét đánh dễ tạo siêu đám cháy) vs con người (chiếm 64% vụ gây thiệt hại gần đô thị). Giải thích mô hình hồi quy log-log R² = 0.356.", "Phút 04:00 – 05:00 (Căn nguyên & Mô hình hồi quy): ")
     add_bullet_point(doc, "Chuyển sang Story Point 4 nhúng Dashboard D4. Trình diễn 3 biểu đồ dự báo xu thế 10 năm F1, F2, F3 có dải tin cậy 95%. Nhấn mạnh dự phóng năm 2035 đạt 515 vụ và thiệt hại 7.041 căn nhà/năm, kết luận 3 khuyến nghị chính sách và kết thúc phần trình bày.", "Phút 05:00 – 06:00 (Dự báo 10 năm & Khuyến nghị chính sách): ")
 
     add_section_heading(doc, "7.4. Liên Kết Video Demo Chính Thức, Video Backup Tóm Tắt & Kho Lưu Trữ GitHub")
@@ -1541,7 +1541,7 @@ def build_chapter_8(doc):
     )
     add_bullet_point(
         doc,
-        "Triển khai thành công mô hình hồi quy tuyến tính log-log giữa diện tích và công trình (R² = 0.374) cùng hệ thống dự báo chuỗi thời gian 10 năm (2026–2035) có dải tin cậy 95% cho 3 chỉ số Metric, đáp ứng trọn vẹn barem dự báo nâng cao.",
+        "Triển khai thành công mô hình hồi quy tuyến tính log-log giữa diện tích và công trình (R² = 0.356) cùng hệ thống dự báo chuỗi thời gian 10 năm (2026–2035) có dải tin cậy 95% cho 3 chỉ số Metric, đáp ứng trọn vẹn barem dự báo nâng cao.",
         "4. Mô hình học máy dự báo có giá trị thực tiễn: "
     )
 
@@ -1597,7 +1597,7 @@ def build_chapter_8(doc):
         ["4. Trực quan hóa cơ bản (8 biểu đồ)", "2.0 đ", "Đầy đủ các dạng biểu đồ chuẩn, đẹp, rõ ràng", "Thiết kế 10 sheet cơ bản & nâng cao + 2 sheet thương vong: Line, Area, Map, Donut, Bar, Heatmap, Treemap, Diverging...", "2.0 / 2.0 đ"],
         ["5. Thiết kế Dashboard tương tác", "1.5 đ", "≥ 2 dashboards, bố cục chuẩn, filter đa cấp", "Xây dựng 4 Dashboards chuyên đề (D1, D2, D3, D4), chuẩn 1366x768, lọc chéo 2 chiều, Drill-down, Viz-in-Tooltip.", "1.5 / 1.5 đ"],
         ["6. Data Storytelling & Insight", "1.0 đ", "Có Tableau Story logic, khai phá insight sâu", "Tableau Story 4 Story Points dẫn dắt 4 hồi tự sự, bóc tách quy luật Pareto 80/20, mùa cháy dài ra và căn nguyên con người.", "1.0 / 1.0 đ"],
-        ["7. Mô hình học máy dự báo", "0.5 đ", "Thuật toán dự báo có kiểm định khoa học", "Mô hình hồi quy tuyến tính log-log R² = 0.374 và mô hình chuỗi thời gian 10 năm 2026–2035 kiểm định Rolling Origin.", "0.5 / 0.5 đ"],
+        ["7. Mô hình học máy dự báo", "0.5 đ", "Thuật toán dự báo có kiểm định khoa học", "Mô hình hồi quy tuyến tính log-log R² = 0.356 và mô hình chuỗi thời gian 10 năm 2026–2035 kiểm định Rolling Origin.", "0.5 / 0.5 đ"],
         ["8. Trực quan hóa kết quả dự báo", "0.5 đ", "Tích hợp đường dự báo/dải tin cậy lên visual", "Scatter Sheet 08 tích hợp trend line log-log 95% CI; Dashboard D4 dựng 3 biểu đồ F1, F2, F3 có dải phễu tin cậy 95%.", "0.5 / 0.5 đ"],
         ["9. Báo cáo Word & Video Demo", "1.0 đ", "Báo cáo chuẩn học thuật, video rõ ràng", "Báo cáo IDV_Nhom17.docx 8 chương công phu, chuẩn IEEE, kèm video demo 5–7 phút và kho lưu trữ GitHub công khai.", "1.0 / 1.0 đ"],
         ["TỔNG ĐIỂM ĐÁNH GIÁ", "10.0 đ", "Đáp ứng trọn vẹn và vượt chuẩn mọi tiêu chí", "Hệ thống hoàn chỉnh 100%, sẵn sàng bảo vệ và chuyển giao ứng dụng.", "10.0 / 10.0 đ"]

@@ -893,7 +893,7 @@ def build_chapter_3(doc):
     )
     add_bullet_point(
         doc,
-        "Columns: [Log Diện tích]. Rows: [Log Công trình phá hủy]. Detail: [incident_id]. Marks: Circle, Color: [cause_group]. Kích hoạt Trend Line tuyến tính kèm dải tin cậy 95%. Phương trình: log10(Destroyed) = 0.445429 * log10(Acres) - 0.419530 (R² = 0.374, p < 0.0001). Ý nghĩa: Khi diện tích tăng 10 lần, số nhà bị phá hủy tăng 2,79 lần.",
+        "Columns: [Log Diện tích]. Rows: [Log Công trình phá hủy]. Detail: [incident_id]. Marks: Circle, Color: [cause_group]. Kích hoạt Trend Line tuyến tính kèm dải tin cậy 95%. Phương trình: log10(Destroyed) = 0.433444 * log10(Acres) - 0.377448 (R² = 0.356, p < 0.0001). Ý nghĩa: Khi diện tích tăng 10 lần, số nhà bị phá hủy tăng 2,71 lần.",
         "Sheet 05 (08_Scatter_Regression): "
     )
     add_bullet_point(
@@ -1139,22 +1139,22 @@ def build_chapter_5(doc):
     )
     add_body_paragraph(
         doc,
-        "log10(structures_destroyed) = 0.445429 * log10(acres_burned) - 0.419530",
+        "log10(structures_destroyed) = 0.433444 * log10(acres_burned) - 0.377448",
         bold_prefix="Phương trình hồi quy thực nghiệm: "
     )
     add_body_paragraph(
         doc,
-        "Các chỉ số thống kê của mô hình đạt mức rất ấn tượng: Hệ số xác định R² = 0.374 (mô hình giải thích được 37,4% phương sai thiệt hại công trình, cao gấp hơn 14 lần so với mô hình hồi quy trên thang số gốc R² = 0.026), thống kê t = 15.254 và p-value < 0.0001 khẳng định mối tương quan có ý nghĩa thống kê tuyệt đối."
+        "Các chỉ số thống kê của mô hình đạt mức rất ấn tượng: Hệ số xác định R² = 0.356 (mô hình giải thích được 35,6% phương sai thiệt hại công trình, cao gấp hơn 13 lần so với mô hình hồi quy trên thang số gốc R² = 0.026), thống kê t = 14.658 và p-value < 0.0001 khẳng định mối tương quan có ý nghĩa thống kê tuyệt đối."
     )
     add_body_paragraph(
         doc,
-        "Ý nghĩa dự báo thực tiễn: Hệ số góc 0.445429 chỉ ra rằng khi quy mô diện tích một đám cháy tăng gấp 10 lần (1 bậc logarit), số công trình kiến trúc bị phá hủy sẽ tăng trung bình khoảng 2,79 lần (10^0.4454). Từ phương trình này, bảng giá trị dự phóng điểm cho các cấp quy mô đám cháy được xác lập:"
+        "Ý nghĩa dự báo thực tiễn: Hệ số góc 0.433444 chỉ ra rằng khi quy mô diện tích một đám cháy tăng gấp 10 lần (1 bậc logarit), số công trình kiến trúc bị phá hủy sẽ tăng trung bình khoảng 2,71 lần (10^0.4334). Từ phương trình này, bảng giá trị dự phóng điểm cho các cấp quy mô đám cháy được xác lập:"
     )
     add_bullet_point(doc, "Đám cháy quy mô 1.000 mẫu Anh (~400 ha) dự báo phá hủy trung bình: ~8 công trình kiến trúc.", "Đám cháy cấp trung bình: ")
     add_bullet_point(doc, "Đám cháy quy mô 10.000 mẫu Anh (~4.000 ha) dự báo phá hủy trung bình: ~23 công trình kiến trúc.", "Đám cháy lớn: ")
-    add_bullet_point(doc, "Siêu đám cháy 100.000 mẫu Anh (~40.000 ha) dự báo phá hủy trung bình: ~64 công trình kiến trúc.", "Siêu đám cháy Megafire: ")
-    add_body_paragraph(doc, "Dữ liệu là các vụ cháy độc lập (dữ liệu cắt ngang, không phải chuỗi thời gian) nên mô hình được đánh giá bằng kiểm định chéo 5-fold xáo trộn ngẫu nhiên. R² ngoài mẫu trên thang log đạt 0.366, gần như bằng R² khi huấn luyện trên toàn bộ dữ liệu (0.374), chứng tỏ mô hình không bị quá khớp. Sai số tuyệt đối trung bình trên thang log10 là 0.572, tương ứng dự báo lệch trung bình khoảng 3,7 lần so với thực tế, tốt hơn mốc so sánh bỏ qua diện tích cháy (lệch khoảng 5,2 lần).")
-    add_body_paragraph(doc, "Khoảng dự báo 95% rất rộng (ví dụ đám cháy 100.000 mẫu Anh: từ khoảng 3 đến 1.556 công trình). Các thảm họa cháy lan vào khu dân cư như Camp 2018 (18.804 công trình) hay Eaton 2025 (9.419 công trình) vượt xa dự báo, vì số công trình bị phá hủy còn phụ thuộc vào mật độ dân cư - yếu tố mô hình một biến chưa xét đến. Các giá trị dự phóng là trung vị (10^dự báo log), không phải trung bình cộng.", bold_prefix="Hạn chế: ")
+    add_bullet_point(doc, "Siêu đám cháy 100.000 mẫu Anh (~40.000 ha) dự báo phá hủy trung bình: ~62 công trình kiến trúc.", "Siêu đám cháy Megafire: ")
+    add_body_paragraph(doc, "Dữ liệu là các vụ cháy độc lập (dữ liệu cắt ngang, không phải chuỗi thời gian) nên mô hình được đánh giá bằng kiểm định chéo 5-fold xáo trộn ngẫu nhiên. R² ngoài mẫu trên thang log đạt 0.348, gần như bằng R² khi huấn luyện trên toàn bộ dữ liệu (0.356), chứng tỏ mô hình không bị quá khớp. Sai số tuyệt đối trung bình trên thang log10 là 0.575, tương ứng dự báo lệch trung bình khoảng 3,8 lần so với thực tế, tốt hơn mốc so sánh bỏ qua diện tích cháy (lệch khoảng 5,2 lần).")
+    add_body_paragraph(doc, "Khoảng dự báo 95% rất rộng (ví dụ đám cháy 100.000 mẫu Anh: từ khoảng 2 đến 1.565 công trình). Các thảm họa cháy lan vào khu dân cư như Camp 2018 (18.804 công trình) hay Eaton 2025 (9.419 công trình) vượt xa dự báo, vì số công trình bị phá hủy còn phụ thuộc vào mật độ dân cư - yếu tố mô hình một biến chưa xét đến. Các giá trị dự phóng là trung vị (10^dự báo log), không phải trung bình cộng.", bold_prefix="Hạn chế: ")
 
     add_academic_figure(
         doc,
@@ -1210,7 +1210,7 @@ def build_chapter_5(doc):
     )
     add_bullet_point(
         doc,
-        "Trên biểu đồ phân tán Bubble Scatter (Sheet 08 của Dashboard D3), nhóm nhúng trực tiếp đường hồi quy tuyến tính Log-Log động. Khi người dùng hover chuột vào bất kỳ điểm vụ cháy nào hoặc vào chính đường Trend Line, hệ thống lập tức hiển thị công thức phương trình, hệ số R² = 0.374, giá trị p-value và khoảng dự báo độ tin cậy 95%.",
+        "Trên biểu đồ phân tán Bubble Scatter (Sheet 08 của Dashboard D3), nhóm nhúng trực tiếp đường hồi quy tuyến tính Log-Log động. Khi người dùng hover chuột vào bất kỳ điểm vụ cháy nào hoặc vào chính đường Trend Line, hệ thống lập tức hiển thị công thức phương trình, hệ số R² = 0.356, giá trị p-value và khoảng dự báo độ tin cậy 95%.",
         "3. Đường Trend Line hồi quy Log-Log động trên Sheet 08 - Dashboard D3: "
     )
 
@@ -1373,7 +1373,7 @@ def build_chapter_7(doc):
     )
     add_bullet_point(
         doc,
-        "Huấn luyện thành công mô hình Hồi quy tuyến tính dự phóng chuỗi thời gian 10 năm (2026–2035) bằng phương pháp Rolling Origin chống rò rỉ dữ liệu; mô hình Log-Log với R² = 0.374; và tích hợp trực quan hóa đường Forecast kèm dải tin cậy 95% trực tiếp lên Dashboard.",
+        "Huấn luyện thành công mô hình Hồi quy tuyến tính dự phóng chuỗi thời gian 10 năm (2026–2035) bằng phương pháp Rolling Origin chống rò rỉ dữ liệu; mô hình Log-Log với R² = 0.356; và tích hợp trực quan hóa đường Forecast kèm dải tin cậy 95% trực tiếp lên Dashboard.",
         "Tích hợp mô hình dự báo học máy vào trực quan hóa: "
     )
 
