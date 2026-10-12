@@ -79,7 +79,7 @@ IDV_TTDL/
 ├── data/                      # Dữ liệu qua các công đoạn (không commit file > 90MB)
 │   ├── raw/calfire/           # Dữ liệu gốc 5 bảng chính thức (đủ 20 năm) + MANIFEST.md
 │   ├── interim/               # master_rules_cleaned.csv (sau làm sạch quy tắc)
-│   ├── clean/                 # master_clean.csv (sau làm sạch ML, >= 5.000 dòng) + forecast_results.csv + casualties_by_year.csv
+│   ├── clean/                 # master_clean.csv (sau làm sạch ML, >= 5.000 dòng) + forecast_results.csv + damage_model_*.csv + casualties_by_year.csv
 │   └── tables/                # Các bảng Star Schema CSV + database.sqlite
 ├── notebooks/                 # Jupyter Notebooks thực hiện EDA và kiểm thử ML
 ├── sql/                       # Mã nguồn CSDL SQLite
@@ -94,7 +94,7 @@ IDV_TTDL/
 │   ├── 04_split_tables.py     # Tách bảng Star Schema chuẩn 3NF (TV2)
 │   ├── 05_build_db.py         # Nạp CSDL database.sqlite kích hoạt FK (TV2)
 │   ├── 07_validate.py         # Kiểm thử tự động toàn vẹn tham chiếu và CHECK (TV2)
-│   └── 08_predictive_model.py # Huấn luyện mô hình Linear Regression trên Python (TV1)
+│   └── 08_predictive_model.py # Linear Regression: dự báo 10 năm theo năm + log-log diện tích → công trình phá hủy (TV1)
 ├── tests/                     # Bộ kiểm thử pytest
 │   └── test_pipeline.py
 ├── docs/                      # Hồ sơ tài liệu kỹ thuật hoàn chỉnh

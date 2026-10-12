@@ -220,7 +220,6 @@ def report_damage_match(matched: pd.DataFrame, damage: pd.DataFrame) -> None:
              f"{int((~found).sum())} vu thiet hai khong tim thay trong FRAP")
 
     top_unmatched = matched[~found].nlargest(10, "structures_destroyed")
-    print("[TV1 - CLEAN] 10 vu thiet hai lon nhat chua khop (ghi vao CLEANING_LOG):")
     print(top_unmatched[[*FIRE_KEY, "structures_destroyed", "damage_source"]].to_string(index=False))
 
 
@@ -327,7 +326,6 @@ def clean_noaa(noaa: pd.DataFrame) -> pd.DataFrame:
 
 def clean_by_rules() -> pd.DataFrame:
     CLEANING_LOG.clear()
-    print("[TV1 - CLEAN] Bat dau lam sach du lieu theo quy tac...")
     raw = eda.load_raw_data()
     n_raw = sum(len(df) for df in raw.values())
     log_step("0. Nap du lieu tho", n_raw, n_raw, f"{len(raw)} file tu {eda.RAW_DIR}")
@@ -346,10 +344,7 @@ def clean_by_rules() -> pd.DataFrame:
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     fires.to_csv(OUTPUT_PATH, index=False, encoding="utf-8")
-    print(f"[TV1 - CLEAN] Da xuat {len(fires):,} vu chay x {fires.shape[1]} cot -> {OUTPUT_PATH}")
     casualties.to_csv(NOAA_OUTPUT_PATH, index=False, encoding="utf-8")
-    print(f"[TV1 - CLEAN] Da xuat {len(casualties):,} su kien thuong vong NOAA -> {NOAA_OUTPUT_PATH}")
-    print("\n[TV1 - CLEAN] Bang nhat ky (dan vao docs/CLEANING_LOG.md):")
     print(log_as_markdown())
     return fires
 

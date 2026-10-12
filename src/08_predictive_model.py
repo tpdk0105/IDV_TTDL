@@ -12,8 +12,9 @@ import pandas as pd
 from scipy import stats
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, r2_score, root_mean_squared_error
+from sklearn.model_selection import KFold
 
-# Dung lai ham dinh dang so kieu Viet Nam tu 02_eda.py 
+# Dung lai ham dinh dang so kieu Viet Nam tu 02_eda.py
 _spec = importlib.util.spec_from_file_location("eda", Path(__file__).parent / "02_eda.py")
 eda = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(eda)
@@ -23,6 +24,10 @@ FORECAST_PATH = Path("data/clean/forecast_results.csv")
 METRICS_PATH = Path("data/clean/forecast_metrics.csv")
 FIGURE_PATH = Path("reports/figures/model_01_forecast.png")
 METRICS_FIGURE_PATH = Path("reports/figures/model_02_metrics.png")
+DAMAGE_METRICS_PATH = Path("data/clean/damage_model_metrics.csv")
+DAMAGE_CURVE_PATH = Path("data/clean/damage_model_curve.csv")
+DAMAGE_FIGURE_PATH = Path("reports/figures/model_05_damage_loglog.png")
+DAMAGE_CV_FIGURE_PATH = Path("reports/figures/model_06_damage_cv.png")
 CAUSE_FORECAST_PATH = Path("data/clean/forecast_by_cause.csv")
 CAUSE_METRICS_PATH = Path("data/clean/forecast_by_cause_metrics.csv")
 CAUSE_FIGURE_PATH = Path("reports/figures/model_03_forecast_by_cause.png")
@@ -32,6 +37,11 @@ FIRST_TEST_YEAR = 2016                # rolling origin: du bao lan luot 2016..20
 FORECAST_YEARS = range(2026, 2036)    # 10 nam tuong lai
 CONFIDENCE = 0.95
 SIGNIFICANCE = 0.05                   # nguong p-value
+
+# Mo hinh log-log: du lieu cat ngang (tung vu chay) -> K-fold xao tron, khong can rolling origin
+CV_FOLDS = 5
+RANDOM_STATE = 42
+CURVE_ACRES = [100, 1_000, 10_000, 100_000, 1_000_000]  # cac moc dien tich de tra cuu nhanh
 
 # (ten cot, co huan luyen tren log1p khong, nhan hien thi)
 FORECAST_TARGETS = [
@@ -65,6 +75,7 @@ COLOR_BAND = "#9ECAE1"
 COLOR_LABEL = "#084594"
 COLOR_THRESHOLD = "#B2182B"
 MAE_BAR_COLORS = ["#6BAED6", "#9ECAE1", "#4292C6", "#2171B5"]
+TEXT_BOX = {"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "none", "alpha": 0.85}
 
 
 def load_data(path: Path = INPUT_PATH) -> pd.DataFrame:
@@ -91,6 +102,16 @@ def build_yearly_by_cause(df: pd.DataFrame) -> pd.DataFrame:
     return by_group.assign(vehicle=vehicle).reset_index()[["year", *[t for t, _, _ in CAUSE_TARGETS]]]
 
 
+def build_damage(df: pd.DataFrame) -> pd.DataFrame:
+    # Chi cac vu co pha huy cong trinh: log10(0) khong xac dinh
+    damage = df.loc[df["structures_destroyed"] > 0,
+                    ["incident_id", "year", "fire_name", "acres_burned", "structures_destroyed"]].copy()
+    assert (damage["acres_burned"] > 0).all(), "dien tich chay phai > 0 de lay log"
+    damage["log_acres"] = np.log10(damage["acres_burned"])
+    damage["log_destroyed"] = np.log10(damage["structures_destroyed"])
+    return damage.reset_index(drop=True)
+
+
 def _fit(train: pd.DataFrame, target: str, use_log: bool) -> LinearRegression:
     y = np.log1p(train[target]) if use_log else train[target]
     return LinearRegression().fit(train[["year"]], y)
@@ -98,6 +119,17 @@ def _fit(train: pd.DataFrame, target: str, use_log: bool) -> LinearRegression:
 
 def _to_original_scale(values, use_log: bool):
     return np.expm1(values) if use_log else values
+
+
+def _prediction_interval(x: np.ndarray, y: np.ndarray, model: LinearRegression, x0: np.ndarray):
+    # Khoang du bao cua hoi quy tuyen tinh don: rong dan khi x0 cang xa trung tam du lieu
+    n = len(x)
+    pred = model.intercept_ + model.coef_[0] * x0
+    residuals = y - (model.intercept_ + model.coef_[0] * x)
+    residual_std = np.sqrt((residuals ** 2).sum() / (n - 2))
+    std_error = residual_std * np.sqrt(1 + 1 / n + (x0 - x.mean()) ** 2 / ((x - x.mean()) ** 2).sum())
+    t_critical = stats.t.ppf((1 + CONFIDENCE) / 2, df=n - 2)
+    return pred, pred - t_critical * std_error, pred + t_critical * std_error
 
 
 def evaluate_trend(yearly: pd.DataFrame, target: str, use_log: bool) -> dict:
@@ -141,17 +173,7 @@ def forecast_trend(yearly: pd.DataFrame, target: str, use_log: bool) -> pd.DataF
     model = _fit(yearly, target, use_log)
 
     all_years = pd.DataFrame({"year": list(x) + list(FORECAST_YEARS)})
-    pred = model.predict(all_years[["year"]])
-
-    # Khoang du bao cua hoi quy tuyen tinh don: rong dan khi nam cang xa trung tam du lieu
-    n = len(x)
-    residuals = y_fit - model.predict(yearly[["year"]])
-    residual_std = np.sqrt((residuals ** 2).sum() / (n - 2))
-    x0 = all_years["year"].to_numpy()
-    std_error = residual_std * np.sqrt(1 + 1 / n + (x0 - x.mean()) ** 2 / ((x - x.mean()) ** 2).sum())
-    t_critical = stats.t.ppf((1 + CONFIDENCE) / 2, df=n - 2)
-    lower, upper = pred - t_critical * std_error, pred + t_critical * std_error
-
+    pred, lower, upper = _prediction_interval(x, y_fit, model, all_years["year"].to_numpy())
     pred, lower, upper = (_to_original_scale(v, use_log) for v in (pred, lower, upper))
 
     result = all_years.assign(
@@ -166,10 +188,118 @@ def forecast_trend(yearly: pd.DataFrame, target: str, use_log: bool) -> pd.DataF
     return result[["year", "metric", "actual", "predicted", "lower_95", "upper_95", "is_forecast"]]
 
 
+def describe_damage(damage: pd.DataFrame) -> dict:
+    res = stats.linregress(damage["log_acres"], damage["log_destroyed"])
+    return {
+        "n_fires": len(damage),
+        "slope": res.slope,
+        "slope_stderr": res.stderr,
+        "slope_t": res.slope / res.stderr,
+        "intercept": res.intercept,
+        "intercept_stderr": res.intercept_stderr,
+        "intercept_t": res.intercept / res.intercept_stderr,
+        "r2_fit_all": res.rvalue ** 2,
+        "p_value": res.pvalue,
+        # Dien tich gap 10 lan -> so cong trinh pha huy gap 10^slope lan
+        "multiplier_per_10x_area": 10 ** res.slope,
+    }
+
+
+def evaluate_damage(damage: pd.DataFrame) -> tuple[dict, pd.Series]:
+    oof_log = pd.Series(np.nan, index=damage.index)
+    naive_log = pd.Series(np.nan, index=damage.index)
+    for train_idx, test_idx in KFold(CV_FOLDS, shuffle=True, random_state=RANDOM_STATE).split(damage):
+        train, test = damage.iloc[train_idx], damage.iloc[test_idx]
+        model = LinearRegression().fit(train[["log_acres"]], train["log_destroyed"])
+        oof_log.iloc[test_idx] = model.predict(test[["log_acres"]])
+        naive_log.iloc[test_idx] = train["log_destroyed"].mean()  # moc so sanh: bo qua dien tich
+
+    actual = damage["structures_destroyed"]
+    # 10^du bao log = trung vi (khong phai trung binh) so cong trinh o dien tich do
+    predicted, naive = 10 ** oof_log, 10 ** naive_log
+    metrics = {
+        "cv_folds": CV_FOLDS,
+        "r2_cv_log": r2_score(damage["log_destroyed"], oof_log),
+        "mae_cv_log": mean_absolute_error(damage["log_destroyed"], oof_log),
+        "mae_cv_log_naive": mean_absolute_error(damage["log_destroyed"], naive_log),
+        "median_ae_cv": float((actual - predicted).abs().median()),
+        "median_ae_cv_naive": float((actual - naive).abs().median()),
+        "mae_cv": mean_absolute_error(actual, predicted),
+        "rmse_cv": root_mean_squared_error(actual, predicted),
+    }
+    return metrics, predicted
+
+
+def damage_curve(damage: pd.DataFrame, acres) -> pd.DataFrame:
+    x, y = damage["log_acres"].to_numpy(), damage["log_destroyed"].to_numpy()
+    model = LinearRegression().fit(x.reshape(-1, 1), y)
+    pred, lower, upper = _prediction_interval(x, y, model, np.log10(np.asarray(acres, dtype=float)))
+    return pd.DataFrame({
+        "acres_burned": acres,
+        "predicted_destroyed": 10 ** pred,
+        # Mo hinh chi hoc tren cac vu co pha huy -> can duoi it nhat 1 cong trinh
+        "lower_95": np.clip(10 ** lower, 1, None),
+        "upper_95": 10 ** upper,
+    })
+
+
 def _save_figure(fig: plt.Figure, output_path: Path, label: str) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=150, bbox_inches="tight")
-    print(f"[TV1 - MODEL] Da luu {label} -> {output_path}")
+
+
+def _style_loglog(ax: plt.Axes) -> None:
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.xaxis.set_major_formatter(eda.VN_TICK_FORMATTER)
+    ax.yaxis.set_major_formatter(eda.VN_TICK_FORMATTER)
+    ax.spines[["top", "right"]].set_visible(False)
+
+
+def plot_damage_fit(damage: pd.DataFrame, output_path: Path = DAMAGE_FIGURE_PATH) -> plt.Figure:
+    fig, ax = plt.subplots(figsize=(10, 6))
+    line = damage_curve(damage, np.logspace(damage["log_acres"].min(), damage["log_acres"].max(), 200))
+    ax.fill_between(line["acres_burned"], line["lower_95"], line["upper_95"], color=COLOR_BAND, alpha=0.35,
+                    label=f"Khoảng dự báo {CONFIDENCE:.0%}")
+    ax.scatter(damage["acres_burned"], damage["structures_destroyed"], color=COLOR_ACTUAL, alpha=0.45, s=14,
+               label="Vụ cháy thực tế")
+    ax.plot(line["acres_burned"], line["predicted_destroyed"], color=COLOR_FORECAST, linewidth=2.5,
+            label="Dự báo của mô hình")
+    for _, row in damage_curve(damage, CURVE_ACRES[1:4]).iterrows():
+        ax.annotate(f"{eda.vn_number(row['acres_burned'])} mẫu Anh\n≈ {eda.vn_number(row['predicted_destroyed'])} công trình",
+                    xy=(row["acres_burned"], row["predicted_destroyed"]), xytext=(-10, 28),
+                    textcoords="offset points", ha="right", fontsize=9, fontweight="bold", color=COLOR_LABEL,
+                    bbox=TEXT_BOX, arrowprops={"arrowstyle": "-", "color": COLOR_LABEL, "linewidth": 0.8})
+    _style_loglog(ax)
+    ax.set_xlabel("Diện tích cháy (mẫu Anh, thang log)")
+    ax.set_ylabel("Số công trình bị phá hủy (thang log)")
+    ax.legend(frameon=False, loc="upper left", fontsize=9)
+    ax.set_title("Diện tích cháy càng lớn, càng nhiều công trình bị phá hủy",
+                 fontsize=12, fontweight="bold", loc="left")
+    fig.tight_layout()
+    _save_figure(fig, output_path, "bieu do mo hinh log-log")
+    return fig
+
+
+def plot_damage_cv(damage: pd.DataFrame, metrics: dict, predicted: pd.Series,
+                   output_path: Path = DAMAGE_CV_FIGURE_PATH) -> plt.Figure:
+    # Diem cang sat duong cheo -> du bao ngoai mau cang dung
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.scatter(predicted, damage["structures_destroyed"], color=COLOR_FORECAST, alpha=0.45, s=14,
+               label="Vụ cháy")
+    x_lims = [float(predicted.min()) / 1.5, float(predicted.max()) * 2]
+    ax.plot(x_lims, x_lims, color=COLOR_FIT, linestyle="--", linewidth=1.2, label="Dự báo đúng bằng thực tế")
+    _style_loglog(ax)
+    ax.set_xlim(x_lims)
+    ax.set_ylim(0.7, float(damage["structures_destroyed"].max()) * 1.5)
+    ax.set_xlabel("Số công trình mô hình dự báo (thang log)")
+    ax.set_ylabel("Số công trình thực tế (thang log)")
+    ax.legend(frameon=False, loc="upper left", fontsize=9)
+    ax.set_title(f"Kiểm định chéo {CV_FOLDS}-fold: thực tế so với dự báo "
+                 f"(R² = {eda.vn_number(metrics['r2_cv_log'], 2)})", fontsize=12, fontweight="bold", loc="left")
+    fig.tight_layout()
+    _save_figure(fig, output_path, "bieu do kiem dinh cheo")
+    return fig
 
 
 def plot_forecasts(forecast: pd.DataFrame, output_path: Path = FIGURE_PATH, targets: list = FORECAST_TARGETS,
@@ -303,14 +433,10 @@ def _run_targets(yearly: pd.DataFrame, targets: list, forecast_path: Path, metri
     forecast_path.parent.mkdir(parents=True, exist_ok=True)
     forecast.to_csv(forecast_path, index=False, encoding="utf-8")
     metrics.to_csv(metrics_path, index=False, encoding="utf-8")
-    print(f"[TV1 - MODEL] Da xuat {len(forecast)} dong du bao -> {forecast_path}")
-    print(f"[TV1 - MODEL] Da xuat sai so -> {metrics_path}")
 
-    print(f"\n[TV1 - MODEL] Danh gia rolling origin ({FIRST_TEST_YEAR}-{yearly['year'].max()}, du bao 1 nam toi):")
     print(metrics[["metric", "trend_per_year", "trend_unit", "p_value", "r2", "mae", "rmse", "mae_naive_mean"]]
           .to_string(index=False, float_format=lambda v: f"{v:,.3f}"))
 
-    print(f"\n[TV1 - MODEL] Du bao {min(FORECAST_YEARS)} va {max(FORECAST_YEARS)}:")
     edge = forecast[forecast["year"].isin([min(FORECAST_YEARS), max(FORECAST_YEARS)])]
     print(edge.drop(columns=["actual", "is_forecast"]).to_string(index=False, float_format=lambda v: f"{v:,.0f}"))
     return forecast, metrics
@@ -323,6 +449,32 @@ def run_predictive_models() -> pd.DataFrame:
     plt.close(plot_forecasts(forecast))
     plt.close(plot_model_metrics(metrics))
     return forecast
+
+
+def run_damage_model() -> pd.DataFrame:
+    damage = build_damage(load_data())
+    summary = describe_damage(damage)
+    metrics, predicted = evaluate_damage(damage)
+    curve = damage_curve(damage, CURVE_ACRES)
+    assert (curve["lower_95"] <= curve["predicted_destroyed"]).all()
+    assert (curve["predicted_destroyed"] <= curve["upper_95"]).all()
+
+    DAMAGE_METRICS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame([{**summary, **metrics}]).to_csv(DAMAGE_METRICS_PATH, index=False, encoding="utf-8")
+    curve.to_csv(DAMAGE_CURVE_PATH, index=False, encoding="utf-8")
+
+    print(f"\n[TV1 - MODEL] Hoi quy log-log tren {summary['n_fires']} vu co pha huy cong trinh:")
+    print(f"  log10(destroyed) = {summary['slope']:.6f} * log10(acres) + {summary['intercept']:.6f}")
+    print(f"  R2 = {summary['r2_fit_all']:.3f}, t = {summary['slope_t']:.3f}, p = {summary['p_value']:.2e}, "
+          f"dien tich x10 -> cong trinh x{summary['multiplier_per_10x_area']:.2f}")
+    print(f"  {CV_FOLDS}-fold: R2 log = {metrics['r2_cv_log']:.3f}, MAE log = {metrics['mae_cv_log']:.3f} "
+          f"(moc {metrics['mae_cv_log_naive']:.3f}), median AE = {metrics['median_ae_cv']:.1f} "
+          f"(moc {metrics['median_ae_cv_naive']:.1f})")
+    print(curve.to_string(index=False, float_format=lambda v: f"{v:,.1f}"))
+
+    plt.close(plot_damage_fit(damage))
+    plt.close(plot_damage_cv(damage, metrics, predicted))
+    return curve
 
 
 def run_cause_forecasts() -> pd.DataFrame:
@@ -339,4 +491,5 @@ def run_cause_forecasts() -> pd.DataFrame:
 
 if __name__ == "__main__":
     run_predictive_models()
+    run_damage_model()
     run_cause_forecasts()

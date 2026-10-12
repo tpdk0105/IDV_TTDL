@@ -1118,7 +1118,7 @@ def build_chapter_4(doc):
     add_bullet_point(doc, "Scatter Plot tích hợp Đường hồi quy tuyến tính log-log (Barem Dự báo 0.5 đ).", "Loại biểu đồ: ")
     add_bullet_point(doc, "Dashboard D3 (Căn nguyên bùng phát & Mô hình hồi quy dự báo).", "Vị trí tích hợp: ")
     add_bullet_point(doc, "Columns: [Log Diện tích]. Rows: [Log Công trình phá hủy]. Detail: [incident_id]. Marks: Circle, Color = [cause_group], Opacity = 75%. Tab Analytics -> Trend Line Linear -> Bỏ Allow per color -> Bật Show confidence bands (95%).", "Cấu hình trục & Marks: ")
-    add_bullet_point(doc, "Mô hình hồi quy (391 quan sát): log10(Destroyed) = 0.433436 * log10(Acres) - 0.377417 (R² = 0.356, t = 14.658, p < 0.0001). Hồi quy số gốc chỉ đạt R² = 0.026.", "Số liệu kiểm tra chuẩn: ")
+    add_bullet_point(doc, "Mô hình hồi quy (391 quan sát): log10(Destroyed) = 0.433444 * log10(Acres) - 0.377448 (R² = 0.356, t = 14.658, p < 0.0001). Hồi quy số gốc chỉ đạt R² = 0.026.", "Số liệu kiểm tra chuẩn: ")
     add_bullet_point(doc, "Biến đổi log giúp tăng 13 lần khả năng giải thích. Khi diện tích cháy tăng gấp 10 lần, số công trình bị phá hủy tăng trung bình 2,71 lần. Dự báo: 1.000 mẫu ≈ 8 công trình; 10.000 mẫu ≈ 23 công trình; 100.000 mẫu ≈ 62 công trình.", "Ý nghĩa khoa học: ")
     add_image_placeholder(doc, "SHEET 08 - SCATTER PLOT HỒI QUY TUYẾN TÍNH LOG-LOG", "Dán ảnh chụp màn hình Worksheet Sheet 08 (08_Scatter_Regression) từ Tableau vào khung này")
 
@@ -1292,7 +1292,7 @@ def build_chapter_5(doc):
     )
     add_bullet_point(
         doc,
-        "Mô hình hồi quy log-log trên Sheet 08 hoàn thiện câu chuyện với năng lực lượng hóa mối quan hệ: log10(Destroyed) = 0.433436 * log10(Acres) - 0.377417 (R² = 0.356). Khi diện tích tăng 10 lần, thiệt hại tăng bình quân 2,71 lần, cho phép cơ quan chức năng ước tính nhanh mức độ tàn phá tài sản ngay khi diện tích đám cháy được xác định từ vệ tinh.",
+        "Mô hình hồi quy log-log trên Sheet 08 hoàn thiện câu chuyện với năng lực lượng hóa mối quan hệ: log10(Destroyed) = 0.433444 * log10(Acres) - 0.377448 (R² = 0.356). Khi diện tích tăng 10 lần, thiệt hại tăng bình quân 2,71 lần, cho phép cơ quan chức năng ước tính nhanh mức độ tàn phá tài sản ngay khi diện tích đám cháy được xác định từ vệ tinh.",
         "Khả năng lượng hóa dự báo thiệt hại: "
     )
     add_image_placeholder(
@@ -1391,10 +1391,28 @@ def build_chapter_6(doc):
     )
     add_bullet_point(doc, "log10(Destroyed) = β1 * log10(Acres) + β0", "Dạng hàm hồi quy log-log: ")
     add_body_paragraph(doc, "Kết quả huấn luyện và kiểm định mô hình trên 391 sự cố cháy có ghi nhận thiệt hại tài sản:")
-    add_bullet_point(doc, "log10(Destroyed) = 0.433436 * log10(Acres) - 0.377417", "Phương trình hồi quy log-log: ")
+    add_bullet_point(doc, "log10(Destroyed) = 0.433444 * log10(Acres) - 0.377448", "Phương trình hồi quy log-log: ")
     add_bullet_point(doc, "Hệ số xác định R² = 0.356, tăng gấp 13 lần khả năng giải thích so với hồi quy số gốc (R² = 0.026).", "Độ phù hợp của mô hình (R²): ")
     add_bullet_point(doc, "Kiểm định t-test cho hệ số góc: t = 14.658, p-value < 0.0001 (Bác bỏ giả thuyết H0 ở mức ý nghĩa 99.9%); Sai số chuẩn StdErr = 0.02957. Hệ số chặn: t = -3.742, p-value = 0.0002, StdErr = 0.10087.", "Kiểm định thống kê: ")
     add_bullet_point(doc, "Khi diện tích cháy tăng gấp 10 lần, số công trình bị phá hủy tăng trung bình khoảng 2,71 lần (10^0.433 ≈ 2.71). Công thức dự phóng nhanh: Đám cháy 1.000 mẫu ≈ 8 công trình; 10.000 mẫu ≈ 23 công trình; 100.000 mẫu ≈ 62 công trình bị phá hủy.", "Diễn giải ý nghĩa dự báo: ")
+    add_bullet_point(doc, "Dữ liệu là các vụ cháy độc lập (dữ liệu cắt ngang, không phải chuỗi thời gian) nên mô hình được đánh giá bằng kiểm định chéo 5-fold xáo trộn ngẫu nhiên. R² ngoài mẫu trên thang log đạt 0.348, gần như bằng R² khi huấn luyện trên toàn bộ dữ liệu (0.356), chứng tỏ mô hình không bị quá khớp. Sai số tuyệt đối trung bình trên thang log10 là 0.575, tương ứng dự báo lệch trung bình khoảng 3,8 lần so với thực tế, tốt hơn mốc so sánh bỏ qua diện tích cháy (lệch khoảng 5,2 lần).", "Kiểm định chéo 5-fold: ")
+    add_bullet_point(doc, "Khoảng dự báo 95% rất rộng (ví dụ đám cháy 100.000 mẫu Anh: từ khoảng 2 đến 1.565 công trình). Các thảm họa cháy lan vào khu dân cư như Camp 2018 (18.804 công trình) hay Eaton 2025 (9.419 công trình) vượt xa dự báo, vì số công trình bị phá hủy còn phụ thuộc vào mật độ dân cư - yếu tố mô hình một biến chưa xét đến. Các giá trị dự phóng là trung vị (10^dự báo log), không phải trung bình cộng.", "Hạn chế: ")
+
+    add_academic_figure(
+        doc,
+        "reports/figures/model_05_damage_loglog.png",
+        "Hình 6.1. Hồi quy tuyến tính log-log giữa diện tích cháy và số công trình bị phá hủy, kèm khoảng dự báo 95%",
+        "Mỗi điểm là một trong 391 vụ cháy có phá hủy công trình; đường xanh là dự báo của mô hình, vùng xanh nhạt là khoảng dự báo 95%",
+        5.8
+    )
+
+    add_academic_figure(
+        doc,
+        "reports/figures/model_06_damage_cv.png",
+        "Hình 6.2. Kiểm định chéo 5-fold: số công trình thực tế so với số công trình mô hình dự báo ngoài mẫu",
+        "Điểm càng gần đường chéo nét đứt thì dự báo càng sát thực tế; các điểm cao phía trên là những thảm họa phá hủy cả khu dân cư",
+        5.0
+    )
 
     add_sub_heading(doc, "6.1.2. Mô hình Hồi quy Tuyến tính/Exponential Dự Báo Chuỗi Thời Gian 10 Năm (2026–2035) & Rolling Origin")
     add_body_paragraph(
@@ -1407,14 +1425,14 @@ def build_chapter_6(doc):
     add_academic_figure(
         doc,
         "reports/figures/model_01_forecast.png",
-        "Hình 6.1. Dự phóng xu thế biến động diện tích cháy rừng California 10 năm (2026–2035) bằng mô hình Hồi quy tuyến tính kèm dải tin cậy 95%",
+        "Hình 6.3. Dự phóng xu thế biến động diện tích cháy rừng California 10 năm (2026–2035) bằng mô hình Hồi quy tuyến tính kèm dải tin cậy 95%",
         "Dải tin cậy mở rộng phản ánh độ bất định khí hậu ngày càng tăng trong tương lai",
         5.8
     )
     add_academic_figure(
         doc,
         "reports/figures/model_02_metrics.png",
-        "Hình 6.2. Đánh giá sai số kiểm định mô hình (MSE, RMSE, MAE, R²) qua các nếp gấp thời gian Rolling Origin",
+        "Hình 6.4. Đánh giá sai số kiểm định mô hình (MSE, RMSE, MAE, R²) qua các nếp gấp thời gian Rolling Origin",
         "Kiểm định Walk-forward xác nhận mô hình không bị quá khớp (Overfitting) trên dữ liệu thời gian",
         5.8
     )

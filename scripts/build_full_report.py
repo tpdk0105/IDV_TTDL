@@ -893,7 +893,7 @@ def build_chapter_3(doc):
     )
     add_bullet_point(
         doc,
-        "Columns: [Log Diện tích]. Rows: [Log Công trình phá hủy]. Detail: [incident_id]. Marks: Circle, Color: [cause_group]. Kích hoạt Trend Line tuyến tính kèm dải tin cậy 95%. Phương trình: log10(Destroyed) = 0.433436 * log10(Acres) - 0.377417 (R² = 0.356, p < 0.0001). Ý nghĩa: Khi diện tích tăng 10 lần, số nhà bị phá hủy tăng 2,71 lần.",
+        "Columns: [Log Diện tích]. Rows: [Log Công trình phá hủy]. Detail: [incident_id]. Marks: Circle, Color: [cause_group]. Kích hoạt Trend Line tuyến tính kèm dải tin cậy 95%. Phương trình: log10(Destroyed) = 0.433444 * log10(Acres) - 0.377448 (R² = 0.356, p < 0.0001). Ý nghĩa: Khi diện tích tăng 10 lần, số nhà bị phá hủy tăng 2,71 lần.",
         "Sheet 05 (08_Scatter_Regression): "
     )
     add_bullet_point(
@@ -1135,11 +1135,11 @@ def build_chapter_5(doc):
     add_sub_heading(doc, "5.1.3. Mô hình Hồi quy Tuyến tính Log-Log Giữa Quy Mô Diện Tích & Tổn Thất Công Trình")
     add_body_paragraph(
         doc,
-        "Để giải mã mối quan hệ giữa quy mô đám cháy và mức độ tàn phá tài sản trên từng sự kiện đơn lẻ, nhóm xây dựng mô hình hồi quy tuyến tính kép logarit (Log-Log Regression) trên tập 500 vụ cháy có ghi nhận thiệt hại:"
+        "Để giải mã mối quan hệ giữa quy mô đám cháy và mức độ tàn phá tài sản trên từng sự kiện đơn lẻ, nhóm xây dựng mô hình hồi quy tuyến tính kép logarit (Log-Log Regression) trên tập 391 vụ cháy có ít nhất 1 công trình bị phá hủy (log10(0) không xác định nên các vụ không có thiệt hại được loại khỏi mô hình):"
     )
     add_body_paragraph(
         doc,
-        "log10(structures_destroyed) = 0.433436 * log10(acres_burned) - 0.377417",
+        "log10(structures_destroyed) = 0.433444 * log10(acres_burned) - 0.377448",
         bold_prefix="Phương trình hồi quy thực nghiệm: "
     )
     add_body_paragraph(
@@ -1148,11 +1148,29 @@ def build_chapter_5(doc):
     )
     add_body_paragraph(
         doc,
-        "Ý nghĩa dự báo thực tiễn: Hệ số góc 0.433436 chỉ ra rằng khi quy mô diện tích một đám cháy tăng gấp 10 lần (1 bậc logarit), số công trình kiến trúc bị phá hủy sẽ tăng trung bình khoảng 2,71 lần (10^0.4334). Từ phương trình này, bảng giá trị dự phóng điểm cho các cấp quy mô đám cháy được xác lập:"
+        "Ý nghĩa dự báo thực tiễn: Hệ số góc 0.433444 chỉ ra rằng khi quy mô diện tích một đám cháy tăng gấp 10 lần (1 bậc logarit), số công trình kiến trúc bị phá hủy sẽ tăng trung bình khoảng 2,71 lần (10^0.4334). Từ phương trình này, bảng giá trị dự phóng điểm cho các cấp quy mô đám cháy được xác lập:"
     )
     add_bullet_point(doc, "Đám cháy quy mô 1.000 mẫu Anh (~400 ha) dự báo phá hủy trung bình: ~8 công trình kiến trúc.", "Đám cháy cấp trung bình: ")
     add_bullet_point(doc, "Đám cháy quy mô 10.000 mẫu Anh (~4.000 ha) dự báo phá hủy trung bình: ~23 công trình kiến trúc.", "Đám cháy lớn: ")
     add_bullet_point(doc, "Siêu đám cháy 100.000 mẫu Anh (~40.000 ha) dự báo phá hủy trung bình: ~62 công trình kiến trúc.", "Siêu đám cháy Megafire: ")
+    add_body_paragraph(doc, "Dữ liệu là các vụ cháy độc lập (dữ liệu cắt ngang, không phải chuỗi thời gian) nên mô hình được đánh giá bằng kiểm định chéo 5-fold xáo trộn ngẫu nhiên. R² ngoài mẫu trên thang log đạt 0.348, gần như bằng R² khi huấn luyện trên toàn bộ dữ liệu (0.356), chứng tỏ mô hình không bị quá khớp. Sai số tuyệt đối trung bình trên thang log10 là 0.575, tương ứng dự báo lệch trung bình khoảng 3,8 lần so với thực tế, tốt hơn mốc so sánh bỏ qua diện tích cháy (lệch khoảng 5,2 lần).")
+    add_body_paragraph(doc, "Khoảng dự báo 95% rất rộng (ví dụ đám cháy 100.000 mẫu Anh: từ khoảng 2 đến 1.565 công trình). Các thảm họa cháy lan vào khu dân cư như Camp 2018 (18.804 công trình) hay Eaton 2025 (9.419 công trình) vượt xa dự báo, vì số công trình bị phá hủy còn phụ thuộc vào mật độ dân cư - yếu tố mô hình một biến chưa xét đến. Các giá trị dự phóng là trung vị (10^dự báo log), không phải trung bình cộng.", bold_prefix="Hạn chế: ")
+
+    add_academic_figure(
+        doc,
+        "reports/figures/model_05_damage_loglog.png",
+        "Hình 5.3. Hồi quy tuyến tính log-log giữa diện tích cháy và số công trình bị phá hủy, kèm khoảng dự báo 95%",
+        "Mỗi điểm là một trong 391 vụ cháy có phá hủy công trình; đường xanh là dự báo của mô hình, vùng xanh nhạt là khoảng dự báo 95%",
+        5.8
+    )
+
+    add_academic_figure(
+        doc,
+        "reports/figures/model_06_damage_cv.png",
+        "Hình 5.4. Kiểm định chéo 5-fold: số công trình thực tế so với số công trình mô hình dự báo ngoài mẫu",
+        "Điểm càng gần đường chéo nét đứt thì dự báo càng sát thực tế; các điểm cao phía trên là những thảm họa phá hủy cả khu dân cư",
+        5.0
+    )
 
     add_sub_heading(doc, "5.1.4. Mô hình Phân Lớp Rủi Ro Thảm Họa (Logistic Regression / Risk Classification)")
     add_body_paragraph(
