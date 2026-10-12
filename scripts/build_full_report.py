@@ -1113,7 +1113,7 @@ def build_chapter_5(doc):
     )
     add_body_paragraph(
         doc,
-        "Kết quả đánh giá chỉ ra rằng: Số vụ cháy có xu hướng tăng đều bình quân ~7,87 vụ mỗi năm (p-value = 0.055, có ý nghĩa thống kê ở mức tiệm cận 5%). Đặc biệt, tốc độ gia tăng số lượng công trình bị phá hủy đạt mức đáng báo động +10,68%/năm trên thang logarit, phản ánh sự mở rộng không ngừng của các khu đô thị vào vùng bìa rừng dễ cháy."
+        "Kết quả đánh giá chỉ ra rằng: Số vụ cháy có xu hướng tăng đều bình quân ~7,87 vụ mỗi năm (p-value = 0.055, có ý nghĩa thống kê ở mức tiệm cận 5%). Đặc biệt, tốc độ gia tăng số lượng công trình bị phá hủy đạt mức đáng báo động +10,68%/năm trên thang logarit, phản ánh sự mở rộng không ngừng của các khu đô thị vào vùng bìa rừng dễ cháy, dù xu thế này chưa có ý nghĩa thống kê (p = 0.151). Lưu ý: MAE rolling origin của cả 3 chỉ số đều lớn hơn mốc dự báo bằng trung bình, do biến động giữa các năm lớn hơn nhiều so với xu thế tuyến tính dài hạn; vì vậy đường dự phóng 2026–2035 chỉ nên đọc như xu hướng tham khảo kèm dải tin cậy 95%."
     )
 
     add_academic_figure(

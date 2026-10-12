@@ -159,7 +159,7 @@ Tạo ấn tượng học thuật mạnh mẽ, làm rõ quy mô dữ liệu sạ
 
 ### 🎙️ Lời thoại trình bày:
 > *"Kính thưa Thầy Cô, sau khi nhìn lại quá khứ và giải mã hiện tại, chúng ta bước sang **Story thứ 2: `Year Fire Trend Forecast`** nhúng trực tiếp **Dashboard D4 (Dự báo xu thế 10 năm tới 2026–2035)**.  
-> Để đáp ứng trọn vẹn tiêu chí barem môn học về Mô hình dự báo chuỗi thời gian, nhóm đã triển khai thuật toán trên Python với kiểm định **Rolling Origin (Walk-forward 5 folds)** và trực quan hóa kết quả lên Tableau với **dải độ tin cậy 95% (Prediction Interval)**.
+> Để đáp ứng trọn vẹn tiêu chí barem môn học về Mô hình dự báo chuỗi thời gian, nhóm đã triển khai thuật toán trên Python với kiểm định **Rolling Origin (Walk-forward, 10 lần dự báo 2016–2025)** và trực quan hóa kết quả lên Tableau với **dải độ tin cậy 95% (Prediction Interval)**.
 >
 > 1. **Sheet F1 (Dự báo Số vụ cháy hàng năm - Dual-Axis Area & Circle Points)**:
 >    - Đường xu thế tuyến tính màu xám dốc lên rõ rệt. Dải phễu màu xanh nhạt thể hiện khoảng biến thiên 95%.

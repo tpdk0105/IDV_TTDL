@@ -389,7 +389,7 @@ def build_table_of_contents(doc):
         ("CHƯƠNG 6: MÔ HÌNH HỌC MÁY DỰ BÁO XU THẾ & TÍCH HỢP TRỰC QUAN HÓA", 46, 1),
         ("6.1. Cơ Sở Lý Thuyết & Xây Dựng Thuật Toán Dự Báo Trên Python", 46, 2),
         ("6.1.1. Mô hình Hồi quy Tuyến tính Log-Log Giữa Diện Tích & Tổn Thất Công Trình", 46, 3),
-        ("6.1.2. Mô hình Hồi quy Tuyến tính/Exponential Dự Báo Chuỗi Thời Gian 10 Năm (2026–2035) & Rolling Origin", 47, 3),
+        ("6.1.2. Mô hình Hồi quy Tuyến tính Dự Báo Chuỗi Thời Gian 10 Năm (2026–2035) & Rolling Origin", 47, 3),
         ("6.1.3. Mô hình Phân Lớp Cấp Độ Rủi Ro Thảm Họa (Risk Classification)", 48, 3),
         ("6.2. Tích Hợp Kết Quả Dự Báo Lên Dashboard Trực Quan Hóa (Barem 0.5 Điểm)", 49, 2),
         
@@ -1414,13 +1414,14 @@ def build_chapter_6(doc):
         5.0
     )
 
-    add_sub_heading(doc, "6.1.2. Mô hình Hồi quy Tuyến tính/Exponential Dự Báo Chuỗi Thời Gian 10 Năm (2026–2035) & Rolling Origin")
+    add_sub_heading(doc, "6.1.2. Mô hình Hồi quy Tuyến tính Dự Báo Chuỗi Thời Gian 10 Năm (2026–2035) & Rolling Origin")
     add_body_paragraph(
         doc,
-        "Nhóm xây dựng mô hình dự báo chuỗi thời gian 10 năm tới (2026–2035) cho cả 3 chỉ số Metric: Số vụ cháy (Hồi quy tuyến tính Linear), Diện tích cháy và Công trình bị phá hủy (Hồi quy hàm mũ Exponential trên trục Logarit). Để đánh giá độ tin cậy của mô hình mà không vi phạm tính thứ tự thời gian, nhóm áp dụng phương pháp kiểm định Rolling-origin (Walk-forward Cross Validation) với độ dịch chuyển 5 nếp gấp (5 folds):"
+        "Nhóm xây dựng mô hình dự báo chuỗi thời gian 10 năm tới (2026–2035) cho cả 3 chỉ số Metric: Số vụ cháy (Hồi quy tuyến tính Linear), Diện tích cháy và Công trình bị phá hủy (Hồi quy tuyến tính trên thang log1p, tương đương xu thế hàm mũ Exponential trên thang gốc). Để đánh giá độ tin cậy của mô hình mà không vi phạm tính thứ tự thời gian, nhóm áp dụng phương pháp kiểm định Rolling Origin (Walk-forward): huấn luyện trên 2006 đến năm (t-1) và dự báo năm t, với t chạy từ 2016 đến 2025 (10 lần kiểm định). Mốc so sánh là dự báo bằng trung bình các năm trước đó:"
     )
-    add_bullet_point(doc, "Sai số tuyệt đối trung bình MAE = 38.2 vụ/năm; Căn bậc hai sai số toàn phương trung bình RMSE = 45.6 vụ/năm.", "Chỉ số sai số dự báo: ")
-    add_bullet_point(doc, "Mô hình nắm bắt chính xác xu thế gia tăng dài hạn, dự phóng số vụ cháy trung bình hàng năm của California sẽ đạt mốc 515 vụ/năm vào năm 2035 [251 – 780 vụ].", "Xu thế dự phóng: ")
+    add_bullet_point(doc, "Số vụ cháy: MAE = 115,9 vụ/năm, RMSE = 138,3 vụ/năm (mốc trung bình: MAE = 111,7 vụ/năm). Diện tích cháy: MAE = 402.296 ha (mốc: 370.762 ha). Công trình bị phá hủy: MAE = 6.388 công trình (mốc: 5.929 công trình).", "Chỉ số sai số dự báo: ")
+    add_bullet_point(doc, "Số vụ cháy tăng trung bình +7,87 vụ/năm (p = 0,055, tiệm cận ngưỡng ý nghĩa 5%); dự phóng đạt 515 vụ/năm vào năm 2035 [251 – 780 vụ]. Xu thế của diện tích cháy (+2,28%/năm, p = 0,521) và công trình bị phá hủy (+10,68%/năm, p = 0,151) chưa có ý nghĩa thống kê.", "Xu thế dự phóng: ")
+    add_bullet_point(doc, "Sai số dự báo 1 năm tới của cả 3 chỉ số đều lớn hơn mốc trung bình, do biến động giữa các năm (hạn hán, gió Santa Ana, các thảm họa đơn lẻ) lớn hơn nhiều so với xu thế tuyến tính dài hạn. Vì vậy đường dự phóng 2026–2035 chỉ nên đọc như xu hướng tham khảo kèm dải tin cậy 95% rộng, không phải dự báo chính xác cho từng năm.", "Hạn chế: ")
     
     add_academic_figure(
         doc,
