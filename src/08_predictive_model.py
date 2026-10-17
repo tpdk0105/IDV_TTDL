@@ -20,7 +20,6 @@ from sklearn.model_selection import KFold, StratifiedKFold, cross_val_predict
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-# Dung lai ham dinh dang so kieu Viet Nam tu 02_eda.py
 _spec = importlib.util.spec_from_file_location("eda", Path(__file__).parent / "02_eda.py")
 eda = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(eda)
@@ -38,22 +37,18 @@ DAMAGE_CV_FIGURE_PATH = Path("reports/figures/model_04_damage_cv.png")
 
 CONFIDENCE = 0.95
 
-# Ca 2 mo hinh dung du lieu cat ngang (tung vu chay) -> kiem dinh cheo K-fold xao tron
 CV_FOLDS = 5
 RANDOM_STATE = 42
-CURVE_ACRES = [100, 1_000, 10_000, 100_000, 1_000_000]  # cac moc dien tich de tra cuu nhanh
+CURVE_ACRES = [100, 1_000, 10_000, 100_000, 1_000_000]
 
-# Phan loai nguyen nhan Human / Natural: hoc tren vu da biet nguyen nhan, ap dung cho nhom Undetermined.
-# Dia diem (don vi, hat) la bien manh nhat; cuoi tuan / ngay 4-7 / ngay trong nam khong cai thien AUC
 CLF_NUMERIC = ["log_acres", "log_duration"]
 CLF_CATEGORICAL = ["month", "unit_id", "county"]
 CLF_FEATURES = CLF_NUMERIC + CLF_CATEGORICAL
-CLF_THRESHOLD = 0.4          # nguong cho F1 cao nhat trong kiem dinh cheo
-CLF_TEMPORAL_SPLIT = 2015    # kiem tra theo thoi gian: hoc <= 2015, du bao 2016-2025
-CLF_MIN_CATEGORY = 20        # don vi / hat it hon 20 vu gop chung mot nhom
-CLF_TOP_UNITS = 5            # so don vi in ra moi phia (nghieng ve set / ve nguoi) khi chay
+CLF_THRESHOLD = 0.4
+CLF_TEMPORAL_SPLIT = 2015
+CLF_MIN_CATEGORY = 20
+CLF_TOP_UNITS = 5
 
-# Mau theo docs/COLOR_GUIDE.md
 COLOR_ACTUAL = "#D94801"
 COLOR_FIT = "#7F7F7F"
 COLOR_FORECAST = "#2171B5"
@@ -67,19 +62,16 @@ def load_data(path: Path = INPUT_PATH) -> pd.DataFrame:
 
 
 def build_cause_data(df: pd.DataFrame) -> pd.DataFrame:
-    # Can ngay bao chay de lay thang -> bo cac vu thieu alarm_date
     fires = df.dropna(subset=["alarm_date"]).copy()
     fires["month"] = fires["alarm_date"].dt.month.astype(str)
     fires["log_acres"] = np.log10(fires["acres_burned"].clip(lower=0.01))
-    fires["log_duration"] = np.log1p(fires["duration_days"])  # NaN -> dien trung vi trong pipeline
+    fires["log_duration"] = np.log1p(fires["duration_days"])
     fires["county"] = fires["county"].fillna("Unknown")
-    # 1 = Natural, 0 = Human, NaN = Undetermined (nhom can du doan)
     fires["is_natural"] = fires["cause_group"].map({"Natural": 1, "Human": 0})
     return fires[["incident_id", "year", "fire_name", "cause_group", "is_natural", *CLF_FEATURES]].reset_index(drop=True)
 
 
 def build_damage(df: pd.DataFrame) -> pd.DataFrame:
-    # Chi cac vu co pha huy cong trinh: log10(0) khong xac dinh
     damage = df.loc[df["structures_destroyed"] > 0,
                     ["incident_id", "year", "fire_name", "county", "cause_group", "acres_burned",
                      "burned_area_ha", "structures_destroyed", "structures_damaged"]].copy()
@@ -90,7 +82,6 @@ def build_damage(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _prediction_interval(x: np.ndarray, y: np.ndarray, model: LinearRegression, x0: np.ndarray):
-    # Khoang du bao cua hoi quy tuyen tinh don: rong dan khi x0 cang xa trung tam du lieu
     n = len(x)
     pred = model.intercept_ + model.coef_[0] * x0
     residuals = y - (model.intercept_ + model.coef_[0] * x)
@@ -112,7 +103,6 @@ def describe_damage(damage: pd.DataFrame) -> dict:
         "intercept_t": res.intercept / res.intercept_stderr,
         "r2_fit_all": res.rvalue ** 2,
         "p_value": res.pvalue,
-        # Dien tich gap 10 lan -> so cong trinh pha huy gap 10^slope lan
         "multiplier_per_10x_area": 10 ** res.slope,
     }
 
@@ -124,10 +114,9 @@ def evaluate_damage(damage: pd.DataFrame) -> tuple[dict, pd.Series]:
         train, test = damage.iloc[train_idx], damage.iloc[test_idx]
         model = LinearRegression().fit(train[["log_acres"]], train["log_destroyed"])
         oof_log.iloc[test_idx] = model.predict(test[["log_acres"]])
-        naive_log.iloc[test_idx] = train["log_destroyed"].mean()  # moc so sanh: bo qua dien tich
+        naive_log.iloc[test_idx] = train["log_destroyed"].mean()
 
     actual = damage["structures_destroyed"]
-    # 10^du bao log = trung vi (khong phai trung binh) so cong trinh o dien tich do
     predicted, naive = 10 ** oof_log, 10 ** naive_log
     metrics = {
         "cv_folds": CV_FOLDS,
@@ -149,7 +138,6 @@ def damage_curve(damage: pd.DataFrame, acres) -> pd.DataFrame:
     return pd.DataFrame({
         "acres_burned": acres,
         "predicted_destroyed": 10 ** pred,
-        # Mo hinh chi hoc tren cac vu co pha huy -> can duoi it nhat 1 cong trinh
         "lower_95": np.clip(10 ** lower, 1, None),
         "upper_95": 10 ** upper,
     })
@@ -169,14 +157,13 @@ def _classification_scores(y_true: np.ndarray, proba: np.ndarray, label: str) ->
         "evaluation": label,
         "n_fires": len(y_true),
         "auc": roc_auc_score(y_true, proba),
-        # 64% la Human -> accuracy de danh lua, can xem them balanced accuracy va F1
         "accuracy": accuracy_score(y_true, pred),
         "balanced_accuracy": balanced_accuracy_score(y_true, pred),
         "precision": precision_score(y_true, pred, zero_division=0),
         "recall": recall_score(y_true, pred),
         "f1": f1_score(y_true, pred),
         "natural_actual": int(y_true.sum()),
-        "natural_expected": float(proba.sum()),  # tong xac suat ~ so vu Natural neu xac suat hieu chinh tot
+        "natural_expected": float(proba.sum()),
     }
 
 
@@ -185,7 +172,6 @@ def evaluate_cause_classifier(known: pd.DataFrame) -> tuple[pd.DataFrame, np.nda
     cv = StratifiedKFold(CV_FOLDS, shuffle=True, random_state=RANDOM_STATE)
     oof = cross_val_predict(_cause_classifier(), X, y, cv=cv, method="predict_proba")[:, 1]
 
-    # Hoc qua khu, du bao cac nam sau: kiem tra mo hinh con dung khi du lieu troi theo thoi gian
     past = (known["year"] <= CLF_TEMPORAL_SPLIT).to_numpy()
     temporal = _cause_classifier().fit(X[past], y[past]).predict_proba(X[~past])[:, 1]
 
@@ -198,7 +184,6 @@ def evaluate_cause_classifier(known: pd.DataFrame) -> tuple[pd.DataFrame, np.nda
 
 
 def cause_odds_ratios(model: Pipeline) -> pd.DataFrame:
-    # Ty so odds > 1: nghieng ve Natural. Bien so: cho moi +1 do lech chuan
     names = model[0].get_feature_names_out()
     odds = pd.DataFrame({"feature": names, "odds_ratio": np.exp(model[-1].coef_[0])})
     odds["group"] = odds["feature"].str.extract(r"^(?:num|cat)__(log_acres|log_duration|month|unit_id|county)",
@@ -248,7 +233,6 @@ def plot_damage_fit(damage: pd.DataFrame, output_path: Path = DAMAGE_FIGURE_PATH
 
 def plot_damage_cv(damage: pd.DataFrame, metrics: dict, predicted: pd.Series,
                    output_path: Path = DAMAGE_CV_FIGURE_PATH) -> plt.Figure:
-    # Diem cang sat duong cheo -> du bao ngoai mau cang dung
     fig, ax = plt.subplots(figsize=(8, 6))
     ax.scatter(predicted, damage["structures_destroyed"], color=COLOR_FORECAST, alpha=0.45, s=14,
                label="Vụ cháy")
@@ -304,7 +288,6 @@ def plot_cause_classifier(known: pd.DataFrame, oof: np.ndarray, metrics: pd.Data
 def plot_cause_insights(predictions: pd.DataFrame, output_path: Path = CLF_INSIGHT_FIGURE_PATH) -> plt.Figure:
     fig, ax_year = plt.subplots(figsize=(12, 5.8))
 
-    # Thanh phan moi nam: da biet + uoc tinh cho nhom Undetermined (tong xac suat)
     und = predictions[predictions["cause_is_predicted"] == 1]
     by_year = pd.DataFrame({
         "Người (đã biết)": predictions[predictions["cause_group"] == "Human"].groupby("year").size(),
@@ -347,14 +330,12 @@ def run_cause_classifier() -> pd.DataFrame:
     metrics, oof = evaluate_cause_classifier(known)
     final = _cause_classifier().fit(known[CLF_FEATURES], known["is_natural"].astype(int))
 
-    # Vu da biet: xac suat ngoai mau (CV) de danh gia; vu Undetermined: mo hinh hoc tren toan bo vu da biet
     predictions = pd.concat([
         known.assign(p_natural=oof, p_source="cv_out_of_fold", cause_is_predicted=0),
         undetermined.assign(p_natural=final.predict_proba(undetermined[CLF_FEATURES])[:, 1],
                             p_source="final_model", cause_is_predicted=1),
     ], ignore_index=True)
     predictions["cause_predicted"] = np.where(predictions["p_natural"] >= CLF_THRESHOLD, "Natural", "Human")
-    # Khong ghi de nguyen nhan goc: du doan nam o cot rieng, danh dau bang cause_is_predicted
     predictions["prediction_correct"] = (predictions["cause_predicted"] == predictions["cause_group"]).where(
         predictions["cause_is_predicted"] == 0)
     assert len(predictions) == len(fires) and predictions["incident_id"].is_unique
@@ -372,7 +353,6 @@ def run_cause_classifier() -> pd.DataFrame:
           f"{(und['cause_predicted'] == 'Natural').sum()} vu gan nhan Natural")
     numeric = odds[odds["group"].isin(CLF_NUMERIC)].set_index("level")["odds_ratio"]
     print("  Ty so odds bien so (moi +1 do lech chuan):", numeric.round(2).to_dict())
-    # Don vi quan ly nghieng ve set / ve nguoi nhieu nhat (bo nhom gop "infrequent")
     units = odds[(odds["group"] == "unit_id") & ~odds["level"].str.startswith("infrequent")].set_index("level")
     print("  Don vi nghieng ve set nhat:", units["odds_ratio"].nlargest(CLF_TOP_UNITS).round(2).to_dict())
     print("  Don vi nghieng ve nguoi nhat:", units["odds_ratio"].nsmallest(CLF_TOP_UNITS).round(2).to_dict())
@@ -393,7 +373,6 @@ def run_damage_model() -> pd.DataFrame:
     DAMAGE_METRICS_PATH.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame([{**summary, **metrics}]).to_csv(DAMAGE_METRICS_PATH, index=False, encoding="utf-8")
     curve.to_csv(DAMAGE_CURVE_PATH, index=False, encoding="utf-8")
-    # Tung vu chay kem du bao cua mo hinh -> dung cho Tableau
     fitted = damage_curve(damage, damage["acres_burned"]).drop(columns="acres_burned")
     fires = pd.concat([damage, fitted], axis=1).assign(predicted_destroyed_cv=predicted)
     assert len(fires) == summary["n_fires"]

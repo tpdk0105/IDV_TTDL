@@ -11,9 +11,8 @@ _spec.loader.exec_module(eda)
 
 OUTPUT_PATH = Path("data/interim/master_rules_cleaned.csv")
 NOAA_OUTPUT_PATH = Path("data/interim/noaa_casualties_cleaned.csv")
-MIN_ROWS = 5000  # yeu cau cung cua barem
+MIN_ROWS = 5000
 
-# Bang ma nguyen nhan CAL FIRE FRAP (metadata FRAP fire perimeters)
 CAUSE_NAMES = {
     1: "Lightning", 2: "Equipment Use", 3: "Smoking", 4: "Campfire", 5: "Debris", 6: "Railroad",
     7: "Arson", 8: "Playing with Fire", 9: "Miscellaneous", 10: "Vehicle", 11: "Powerline",
@@ -23,7 +22,6 @@ CAUSE_NAMES = {
 NATURAL_CAUSES = {1, 17}
 UNDETERMINED_CAUSES = {9, 14}
 
-# Cot de nhan dien 1 cong trinh DINS bi kiem ke lap
 DINS_DUPLICATE_KEY = [
     "* Incident Name", "Incident Start Date", "* Street Number", "* Street Name", "* City",
     "* Structure Type", "Latitude", "Longitude",
@@ -32,10 +30,7 @@ DINS_DAMAGED_LEVELS = ["Affected (>0-10%)", "Minor (10-25%)", "Major (25-50%)"]
 
 FIRE_KEY = ["year", "fire_name", "unit_id"]
 UNNAMED_FIRE = "UNNAMED"
-# Nguon thiet hai ghi ten khac FRAP -> khop theo ten se gan nham sang vu cung ten khac.
-# (year, ten trong DINS/ICS-209) -> ten trong FRAP
 DAMAGE_NAME_ALIASES = {
-    # DINS "Redwood" 08/10/2017 (MEU) la vu REDWOOD VALLEY 36.523 acres, khong phai REDWOOD 14 acres ngay 20/09
     (2017, "REDWOOD"): "REDWOOD VALLEY",
 }
 STRUCTURE_COLUMNS = ["structures_destroyed", "structures_damaged"]
@@ -47,7 +42,6 @@ OUTPUT_COLUMNS = [
     *STRUCTURE_COLUMNS, "damage_source", "damage_match", "n_polygons", "frap_global_id",
 ]
 
-# NOAA: chi giu cot thiet hai ve nguoi
 NOAA_CASUALTY_COLUMNS = {
     "DEATHS_DIRECT": "deaths_direct", "DEATHS_INDIRECT": "deaths_indirect",
     "INJURIES_DIRECT": "injuries_direct", "INJURIES_INDIRECT": "injuries_indirect",
@@ -74,7 +68,6 @@ def clean_frap(frap: pd.DataFrame) -> pd.DataFrame:
     log_step("1. Loc nam 2006-2025 (FRAP)", n_raw, len(frap), "Bo vu truoc 2006 va 77 dong thieu Year")
 
     fires = merge_polygons(standardize_frap_columns(frap))
-    # Quy doi don vi, giu song song acres va ha
     fires["burned_area_ha"] = fires["acres_burned"] * eda.ACRE_TO_HA
     fires = null_invalid_duration(fires)
     return add_cause_columns(fires)
@@ -181,7 +174,6 @@ def clean_ics209(ics: pd.DataFrame, county_names: list[str]) -> pd.DataFrame:
         "structures_destroyed": ics["STR_DESTROYED_TOTAL"].fillna(0),
         "structures_damaged": ics["STR_DAMAGED_TOTAL"].fillna(0),
     })
-    # Giu vu co thiet hai; 1 vu co the co nhieu ban bao cao -> cong lai
     df = df[(df["structures_destroyed"] > 0) | (df["structures_damaged"] > 0)]
     return df.groupby(FIRE_KEY, as_index=False, dropna=False).agg(
         structures_destroyed=("structures_destroyed", "sum"),
@@ -200,15 +192,11 @@ def apply_damage_name_aliases(damage: pd.DataFrame) -> pd.DataFrame:
 
 def match_damage_to_fires(damage: pd.DataFrame, fires: pd.DataFrame) -> pd.DataFrame:
     damage = apply_damage_name_aliases(damage)
-    # Vu khong ten khong the doi chieu theo ten -> loai khoi ca 2 lan khop
     named = fires[fires["fire_name"] != UNNAMED_FIRE]
 
-    # Lan 1: khop chinh xac (year, fire_name, unit_id)
     matched = damage.merge(named[[*FIRE_KEY, "_fire_idx"]], on=FIRE_KEY, how="left", validate="m:1")
     matched["damage_match"] = np.where(matched["_fire_idx"].notna(), "exact", None)
 
-    # Lan 2: dong chua khop (thuong do nguon ghi ma don vi khac) -> vu lon nhat cung (year, fire_name).
-    # Neu ten la duy nhat trong nam thi gan chac chan; neu nhieu vu trung ten thi co the gan nham -> danh dau rieng
     largest = (
         named.sort_values("acres_burned", ascending=False)
         .groupby(["year", "fire_name"], as_index=False)
@@ -245,8 +233,6 @@ def attach_damage(fires: pd.DataFrame, damage: pd.DataFrame) -> pd.DataFrame:
     matched = match_damage_to_fires(damage, fires)
     report_damage_match(matched, damage)
 
-    # 1 vu chay lan qua nhieu Hat co the co nhieu ban ghi thiet hai (moi don vi 1 ban ghi, vd THOMAS 2017:
-    # Santa Barbara 53 + Ventura 1.038 nha) -> Hat / nguon / cach khop lay theo ban ghi pha huy nhieu nhat
     per_fire = matched[matched["_fire_idx"].notna()].sort_values(
         "structures_destroyed", ascending=False, kind="stable"
     ).groupby("_fire_idx").agg(
@@ -275,7 +261,7 @@ def attach_county(fires: pd.DataFrame, damage: pd.DataFrame, demographics: pd.Da
     counties = pd.DataFrame({
         "county": demographics["CDT_NAME_SHORT"],
         "county_fips": demographics["CENSUS_GEOID"].astype(int).astype(str).str.zfill(5),
-        "county_population": demographics["CENSUS_POPULATION"],  # trong 100% o file goc -> NULL, xem DATA_QUALITY_REPORT
+        "county_population": demographics["CENSUS_POPULATION"],
         "county_area_sqmi": demographics["AREA_SQMI"],
     })
     return fires.merge(counties, on="county", how="left", validate="m:1")
@@ -321,8 +307,6 @@ def clean_noaa(noaa: pd.DataFrame) -> pd.DataFrame:
              f"Bo DAMAGE_* (tai san lay tu DINS / ICS-209) va cot trong; "
              f"tach duoc ten vu chay o {int(df['fire_name'].notna().sum())} dong")
 
-    # 1 vu chay lan qua nhieu vung du bao -> nhieu dong lap lai cung so nguoi chet (vd Woolsey 2018: 5 dong x 3).
-    # Gop theo (EPISODE_ID, ten vu chay), lay max; dong khong tach duoc ten giu rieng
     casualty_cols = list(NOAA_CASUALTY_COLUMNS.values())
     events = df.groupby(["episode_id", "_fire_key"], sort=False).agg(
         noaa_event_id=("noaa_event_id", "min"),
