@@ -32,6 +32,12 @@ DINS_DAMAGED_LEVELS = ["Affected (>0-10%)", "Minor (10-25%)", "Major (25-50%)"]
 
 FIRE_KEY = ["year", "fire_name", "unit_id"]
 UNNAMED_FIRE = "UNNAMED"
+# Nguon thiet hai ghi ten khac FRAP -> khop theo ten se gan nham sang vu cung ten khac.
+# (year, ten trong DINS/ICS-209) -> ten trong FRAP
+DAMAGE_NAME_ALIASES = {
+    # DINS "Redwood" 08/10/2017 (MEU) la vu REDWOOD VALLEY 36.523 acres, khong phai REDWOOD 14 acres ngay 20/09
+    (2017, "REDWOOD"): "REDWOOD VALLEY",
+}
 STRUCTURE_COLUMNS = ["structures_destroyed", "structures_damaged"]
 
 OUTPUT_COLUMNS = [
@@ -184,7 +190,16 @@ def clean_ics209(ics: pd.DataFrame, county_names: list[str]) -> pd.DataFrame:
     ).assign(damage_source="USDA_ICS_209")
 
 
+def apply_damage_name_aliases(damage: pd.DataFrame) -> pd.DataFrame:
+    keys = pd.Series(list(zip(damage["year"], damage["fire_name"])), index=damage.index)
+    aliased = keys.map(DAMAGE_NAME_ALIASES)
+    log_step("6b. Sua ten vu chay khac FRAP (thiet hai)", len(damage), len(damage),
+             f"{int(aliased.notna().sum())} vu doi ten theo DAMAGE_NAME_ALIASES")
+    return damage.assign(fire_name=aliased.fillna(damage["fire_name"]))
+
+
 def match_damage_to_fires(damage: pd.DataFrame, fires: pd.DataFrame) -> pd.DataFrame:
+    damage = apply_damage_name_aliases(damage)
     # Vu khong ten khong the doi chieu theo ten -> loai khoi ca 2 lan khop
     named = fires[fires["fire_name"] != UNNAMED_FIRE]
 
@@ -230,7 +245,11 @@ def attach_damage(fires: pd.DataFrame, damage: pd.DataFrame) -> pd.DataFrame:
     matched = match_damage_to_fires(damage, fires)
     report_damage_match(matched, damage)
 
-    per_fire = matched[matched["_fire_idx"].notna()].groupby("_fire_idx").agg(
+    # 1 vu chay lan qua nhieu Hat co the co nhieu ban ghi thiet hai (moi don vi 1 ban ghi, vd THOMAS 2017:
+    # Santa Barbara 53 + Ventura 1.038 nha) -> Hat / nguon / cach khop lay theo ban ghi pha huy nhieu nhat
+    per_fire = matched[matched["_fire_idx"].notna()].sort_values(
+        "structures_destroyed", ascending=False, kind="stable"
+    ).groupby("_fire_idx").agg(
         structures_destroyed=("structures_destroyed", "sum"),
         structures_damaged=("structures_damaged", "sum"),
         damage_source=("damage_source", "first"),

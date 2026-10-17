@@ -7,7 +7,7 @@ Cập nhật toàn diện:
   - Tích hợp 4 Dashboards chuyên đề (D1, D2, D3, D4) và 15 Worksheets (gồm 14_Deaths, 15_Injuries, F1_So_vu, F2_Dien_tich, F3_Cong_trinh).
   - Tableau Story với 4 Story Points dẫn dắt 4 hồi tự sự.
   - Phân tích Insight chuyên sâu cho từng Dashboard và từng Story Point.
-  - Mô hình học máy dự báo 10 năm (2026-2035) log-log và chuỗi thời gian dải tin cậy 95%.
+  - Mô hình học máy: hồi quy logistic phân loại nguyên nhân cháy và hồi quy log-log có dải tin cậy 95%.
   - Nhúng đầy đủ 8 hình ảnh EDA & Model + khung dán ảnh cho 4 Dashboards, 15 Sheets, 4 Story Points.
 """
 
@@ -333,9 +333,9 @@ def build_table_of_contents(doc):
         ("CHƯƠNG 2: QUY TRÌNH TIỀN XỬ LÝ & KHÁM PHÁ DỮ LIỆU (EDA)", 6, 1),
         ("2.1. Đánh Giá Chất Lượng Dữ Liệu Ban Đầu (Data Quality Assessment)", 6, 2),
         ("2.2. Quy Trình Làm Sạch Theo Quy Tắc (Rule-based Cleaning)", 7, 2),
-        ("2.3. Ứng Dụng Học Máy (Machine Learning) Trong Làm Sạch Dữ Liệu", 8, 2),
-        ("2.3.1. Mô hình 1: Isolation Forest & LOF Phát Hiện Dị Biệt Ngoại Lai", 8, 3),
-        ("2.3.2. Mô hình 2: Điền Khuyết Thiếu Bằng Iterative Imputer (MICE)", 9, 3),
+        ("2.3. Xử Lý Ngoại Lai & Giá Trị Thiếu", 8, 2),
+        ("2.3.1. Phát Hiện Ngoại Lai Bằng Ngưỡng Tukey 1,5×IQR Trên Thang Logarit", 8, 3),
+        ("2.3.2. Xử Lý Giá Trị Thiếu Theo Quy Tắc (Không Điền Khuyết)", 9, 3),
         ("2.4. Phân Tích Khám Phá Dữ Liệu Tĩnh (Exploratory Data Analysis - EDA)", 9, 2),
         
         ("CHƯƠNG 3: MÔ HÌNH HÓA VÀ PHÂN RÃ CÁC BẢNG DỮ LIỆU (DATA MODELING & SCHEMA SPLITTING)", 13, 1),
@@ -348,7 +348,7 @@ def build_table_of_contents(doc):
         ("3.3.4. Bảng fact_fire_incident.csv - Bảng Sự Cố Trung Tâm (Fact Lõi)", 16, 3),
         ("3.3.5. Bảng fact_structure_damage.csv - Bảng Chi Tiết Tổn Thất Công Trình", 17, 3),
         ("3.3.6. Tệp casualties_by_year.csv - Dữ Liệu Tổng Hợp Thương Vong Nhân Mạng", 17, 3),
-        ("3.3.7. Tệp forecast_results.csv - Tập Dữ Liệu Kết Quả Mô Hình Dự Báo 2026–2035", 18, 3),
+        ("3.3.7. Tệp cause_classifier_predictions.csv - Kết Quả Mô Hình Phân Loại Nguyên Nhân Cháy", 18, 3),
         ("3.4. Mục Đích Phân Rã & Lợi Ích Vượt Trội Khi Trực Quan Hóa Trên Tableau", 18, 2),
         ("3.4.1. Thiết Lập Mô Hình Quan Hệ (Tableau Data Relationships / Noodle Model)", 19, 3),
         ("3.4.2. Quy Tắc Toàn Vẹn Tham Chiếu & Cảnh Báo Tránh Lệch Mã Hạt", 19, 3),
@@ -389,8 +389,7 @@ def build_table_of_contents(doc):
         ("CHƯƠNG 6: MÔ HÌNH HỌC MÁY DỰ BÁO XU THẾ & TÍCH HỢP TRỰC QUAN HÓA", 46, 1),
         ("6.1. Cơ Sở Lý Thuyết & Xây Dựng Thuật Toán Dự Báo Trên Python", 46, 2),
         ("6.1.1. Mô hình Hồi quy Tuyến tính Log-Log Giữa Diện Tích & Tổn Thất Công Trình", 46, 3),
-        ("6.1.2. Mô hình Hồi quy Tuyến tính Dự Báo Chuỗi Thời Gian 10 Năm (2026–2035) & Rolling Origin", 47, 3),
-        ("6.1.3. Mô hình Phân Lớp Cấp Độ Rủi Ro Thảm Họa (Risk Classification)", 48, 3),
+        ("6.1.2. Mô hình Hồi quy Logistic Phân Loại Nguyên Nhân Cháy (Con Người / Sét)", 47, 3),
         ("6.2. Tích Hợp Kết Quả Dự Báo Lên Dashboard Trực Quan Hóa (Barem 0.5 Điểm)", 49, 2),
         
         ("CHƯƠNG 7: HƯỚNG DẪN CÀI ĐẶT/SỬ DỤNG & LINK VIDEO DEMO", 51, 1),
@@ -595,8 +594,6 @@ def build_chapter_1(doc):
         ["structures_destroyed", "Integer", "DINS + ICS-209", "Tổng số công trình kiến trúc bị phá hủy hoàn toàn (>50%)."],
         ["structures_damaged", "Integer", "DINS + ICS-209", "Tổng số công trình kiến trúc bị hư hại một phần (1–50%)."],
         ["deaths_direct / injuries", "Integer", "NOAA NCEI", "Số ca tử vong trực tiếp và bị thương do hỏa hoạn gây ra (207 tử vong, 792 bị thương)."],
-        ["is_outlier_ml", "Boolean Flag", "Isolation Forest", "Cờ đánh dấu sự kiện ngoại lai cực đoan phát hiện bởi mô hình học máy."],
-        ["burned_area_is_imputed", "Boolean Flag", "MICE Imputer", "Cờ đánh dấu giá trị diện tích được điền khuyết bằng thuật toán MICE."]
     ]
     add_academic_table(
         doc,
@@ -658,33 +655,33 @@ def build_chapter_2(doc):
         "Mô-đun 'src/03_clean.py' thực thi quy trình làm sạch dữ liệu xác định (Deterministic Cleaning) theo 6 bước nghiêm ngặt:"
     )
     add_bullet_point(doc, "Lọc giới hạn thời gian chính xác từ ngày 01/01/2006 đến ngày 31/12/2025 theo trường Alarm Date. Loại bỏ các đám cháy ngoài phạm vi 20 năm.", "Bước 1 - Lọc thời gian: ")
-    add_bullet_point(doc, "Giải quyết triệt để 101 vụ cháy đa giác (Multipolygons) bằng cách nhóm (GROUP BY) theo mã sự cố và tên vụ cháy, cộng dồn diện tích GIS Acres thành diện tích tổng duy nhất.", "Bước 2 - Gộp đa giác diện tích: ")
-    add_bullet_point(doc, "Xây dựng khóa nhân tạo 3 cấp: [FIRE_NAME]_[YEAR]_[COUNTY]. Khóa liên hoàn này phân biệt hoàn hảo 497 vụ cháy trùng tên tại các hạt khác nhau trong cùng năm.", "Bước 3 - Khóa liên kết 3 cấp: ")
-    add_bullet_point(doc, "Chuẩn hóa tên 58 Hạt theo chuẩn FIPS và danh mục bưu chính California. Gán nhãn 'Unknown' có kiểm soát cho các vụ cháy giáp ranh bang lân cận.", "Bước 4 - Chuẩn hóa hành chính: ")
+    add_bullet_point(doc, "Gộp các polygon thuộc cùng một vụ cháy theo khóa (year, fire_name, unit_id): cộng dồn diện tích GIS Acres, lấy ngày báo cháy sớm nhất và ngày khống chế muộn nhất. Có 93 vụ gồm nhiều polygon, số dòng giảm từ 7.342 xuống 7.235; 38 vụ không tên được giữ riêng.", "Bước 2 - Gộp đa giác diện tích: ")
+    add_bullet_point(doc, "Ghép thiệt hại vào vụ cháy theo khóa 3 cấp (year, fire_name, unit_id); bản ghi chưa khớp được ghép theo (year, fire_name) và đánh dấu mức tin cậy trong cột damage_match (exact / name_year_unique / name_year_largest).", "Bước 3 - Khóa liên kết 3 cấp: ")
+    add_bullet_point(doc, "Lấy Hạt từ DINS / ICS-209; vụ còn thiếu được suy Hạt từ Hạt phổ biến nhất của đơn vị quản lý (unit_id), rồi ghép mã FIPS 5 số. 840 vụ không xác định được Hạt (FRAP không có tọa độ) được gán 'Unknown'.", "Bước 4 - Chuẩn hóa hành chính: ")
     add_bullet_point(doc, "Ghép nối dữ liệu thiệt hại công trình: DINS (2013–2025) kết hợp ICS-209-PLUS (2006–2012) vào bảng sự cố trung tâm, đạt 73.818 công trình bị phá hủy phủ kín 20 năm.", "Bước 5 - Hợp nhất thiệt hại công trình: ")
     add_bullet_point(doc, "Tích hợp thương vong NOAA: Lọc trùng vùng dự báo thời tiết, xác định chính xác 207 tử vong và 792 bị thương trên toàn bang.", "Bước 6 - Chuẩn hóa thương vong: ")
 
-    add_section_heading(doc, "2.3. Ứng Dụng Học Máy (Machine Learning) Trong Làm Sạch Dữ Liệu")
+    add_section_heading(doc, "2.3. Xử Lý Ngoại Lai & Giá Trị Thiếu")
     add_body_paragraph(
         doc,
-        "Để đáp ứng tiêu chuẩn barem môn học 'Ứng dụng mô hình học máy trong tiền xử lý / làm sạch dữ liệu (0.5 điểm)', nhóm nghiên cứu đã triển khai hai mô hình học máy tiên tiến trong quy trình làm sạch:"
+        "Sau bước làm sạch theo quy tắc, nhóm xử lý ngoại lai và giá trị thiếu theo nguyên tắc minh bạch: không xóa sự kiện có thật và không tự điền giá trị khi không có căn cứ."
     )
 
-    add_sub_heading(doc, "2.3.1. Mô hình 1: Isolation Forest & LOF Phát Hiện Dị Biệt Ngoại Lai")
+    add_sub_heading(doc, "2.3.1. Phát Hiện Ngoại Lai Bằng Ngưỡng Tukey 1,5×IQR Trên Thang Logarit")
     add_body_paragraph(
         doc,
-        "Thuật toán cây cô lập (Isolation Forest) kết hợp Local Outlier Factor (LOF) được huấn luyện trên không gian đa chiều (Diện tích cháy, Thời gian dập lửa, Số công trình phá hủy, Thương vong). Mô hình đã gán nhãn chính xác 73 sự kiện ngoại lai cực đoan (is_outlier_ml = 1) với Outlier Score > 0.65."
+        "Số công trình bị phá hủy có phân phối lệch phải cực nặng: trên thang số gốc, ngưỡng Tukey 1,5×IQR gắn cờ 83 vụ - quá nhiều vì phân phối lệch. Sau khi lấy logarit, ngưỡng này chỉ còn gắn cờ 10 vụ (DINS 4, ICS-209 6), đúng là các siêu thảm họa có thật như Camp 2018, Eaton 2025 và Palisades 2025."
     )
     add_callout(
         doc,
-        "Quyết định học thuật quan trọng: Nhóm nghiên cứu KHÔNG loại bỏ các điểm ngoại lai này khỏi tập dữ liệu. Các siêu đám cháy như Camp Fire (2018), August Complex (2020) hay Eaton Fire (2025) là những thực thể thiên tai có thật mang tính bước ngoặt của lịch sử bang California. Việc giữ lại và gắn cờ nhị phân 'is_outlier_ml' giúp bảo tồn tính chân thực lịch sử và cho phép người dùng bật/tắt bộ lọc ngoại lai linh hoạt trên Dashboard.",
+        "Quyết định học thuật quan trọng: Nhóm nghiên cứu KHÔNG loại bỏ các điểm ngoại lai này khỏi tập dữ liệu. Các siêu đám cháy như Camp Fire (2018), August Complex (2020) hay Eaton Fire (2025) là những thực thể thiên tai có thật mang tính bước ngoặt của lịch sử bang California, nên được giữ nguyên để bảo tồn tính chân thực của dữ liệu.",
         "NGUYÊN TẮC BẢO TỒN NGOẠI LAI THIÊN TAI:"
     )
 
-    add_sub_heading(doc, "2.3.2. Mô hình 2: Điền Khuyết Thiếu Bằng Iterative Imputer (MICE)")
+    add_sub_heading(doc, "2.3.2. Xử Lý Giá Trị Thiếu Theo Quy Tắc (Không Điền Khuyết)")
     add_body_paragraph(
         doc,
-        "Đối với 18 bản ghi bị khuyết thiếu diện tích cháy (acres_burned = NULL), nhóm áp dụng thuật toán MICE (Multivariate Imputation by Chained Equations / Bayesian Ridge Regression). Thuật toán ước lượng diện tích dựa trên mối tương quan lặp giữa thời gian dập lửa, số công trình thiệt hại và mật độ thảm thực vật của Hạt. Toàn bộ các dòng được điền khuyết đều được đánh dấu cờ kiểm toán 'burned_area_is_imputed = 1' để minh bạch hóa nguồn gốc dữ liệu."
+        "Diện tích cháy (acres_burned) không có giá trị thiếu nào. Thời gian dập lửa (duration_days) thiếu ở 109 vụ, trong đó 2 vụ bị đặt NULL vì ngày khống chế sớm hơn ngày báo cháy hoặc kéo dài quá 365 ngày; 840 vụ không xác định được Hạt (FRAP không có tọa độ) được gán Hạt 'Unknown'; 19 vụ thiếu ngày báo cháy; 3.084 vụ không xác định được nguyên nhân được gộp vào nhóm Undetermined. Các giá trị này được giữ ở trạng thái thiếu thay vì điền ước lượng, để không tạo ra số liệu không có căn cứ."
     )
 
     add_section_heading(doc, "2.4. Phân Tích Khám Phá Dữ Liệu Tĩnh (Exploratory Data Analysis - EDA)")
@@ -787,7 +784,7 @@ def build_chapter_3(doc):
     )
     add_bullet_point(
         doc,
-        "Chứa 7.235 bản ghi sự cố vụ cháy rừng giai đoạn 2006–2025 đã được chuẩn hóa 3 khóa liên hoàn, khử trùng lặp đa giác và gán nhãn các cờ học máy (is_outlier_ml, burned_area_is_imputed).",
+        "Chứa 7.235 bản ghi sự cố vụ cháy rừng giai đoạn 2006–2025 đã được chuẩn hóa 3 khóa liên hoàn, khử trùng lặp đa giác và ghép thiệt hại công trình 20 năm.",
         "Tập dữ liệu sự cố làm sạch trung tâm (master_clean.csv): "
     )
     add_bullet_point(
@@ -855,12 +852,13 @@ def build_chapter_3(doc):
     add_bullet_point(doc, "Khóa chính (PK): year.", "Ràng buộc toàn vẹn khóa: ")
     add_bullet_point(doc, "Phục vụ vẽ 2 biểu đồ thương vong Sheet 14 (Deaths by Year) và Sheet 15 (Injuries by Year), đồng thời cung cấp con số 207 ca tử vong cho thẻ KPI 4.", "Công dụng nghiệp vụ & Trực quan hóa: ")
 
-    # 7. forecast_results.csv
-    add_sub_heading(doc, "3.3.7. Tệp forecast_results.csv (Tập Dữ Liệu Kết Quả Mô Hình Dự Báo 2026–2035)")
-    add_bullet_point(doc, "Bảng kết quả mô hình học máy (Tích hợp chuỗi thực tế 2006–2025 và dự báo 2026–2035).", "Phân loại bảng: ")
-    add_bullet_point(doc, "90 dòng quan sát (30 năm × 3 chỉ số Metric).", "Quy mô quan sát: ")
-    add_bullet_point(doc, "9 cột thuộc tính ([Year], [Metric], [Actual], [Predicted], [Lower 95], [Upper 95], [Giai đoạn dự báo], [Giá trị chính], [Nhãn 2035]).", "Cấu trúc trường: ")
-    add_bullet_point(doc, "Cung cấp toàn bộ dữ liệu dựng dải tin cậy 95% và đường xu thế cho 3 biểu đồ dự báo Sheet F1, F2, F3 thuộc Dashboard D4.", "Công dụng nghiệp vụ & Trực quan hóa: ")
+    # 7. cause_classifier_predictions.csv
+    add_sub_heading(doc, "3.3.7. Tệp cause_classifier_predictions.csv (Kết Quả Mô Hình Phân Loại Nguyên Nhân Cháy)")
+    add_bullet_point(doc, "Bảng kết quả mô hình học máy (mỗi dòng là một vụ cháy kèm xác suất do sét dự đoán bởi Hồi quy logistic).", "Phân loại bảng: ")
+    add_bullet_point(doc, "7.216 dòng quan sát (toàn bộ vụ cháy có ngày báo cháy): 4.132 vụ đã biết nguyên nhân và 3.084 vụ Undetermined.", "Quy mô quan sát: ")
+    add_bullet_point(doc, "14 cột thuộc tính ([incident_id], [year], [fire_name], [cause_group], [log_acres], [log_duration], [month], [unit_id], [county], [p_natural], [p_source], [cause_is_predicted], [cause_predicted], [prediction_correct]).", "Cấu trúc trường: ")
+    add_bullet_point(doc, "Khóa chính (PK): incident_id, liên kết 1-1 với fact_fire_incident. Nguyên nhân gốc (cause_group) được giữ nguyên; nguyên nhân dự đoán nằm ở cột riêng và được đánh dấu bằng cờ cause_is_predicted = 1.", "Ràng buộc toàn vẹn khóa: ")
+    add_bullet_point(doc, "Cung cấp dữ liệu để trực quan hóa kết quả phân loại nguyên nhân: xác suất do sét theo đơn vị quản lý và số vụ cháy theo nguyên nhân sau khi phân bổ nhóm không rõ nguyên nhân.", "Công dụng nghiệp vụ & Trực quan hóa: ")
 
     add_section_heading(doc, "3.4. Mục Đích Phân Rã & Lợi Ích Vượt Trội Khi Trực Quan Hóa Trên Tableau")
     add_body_paragraph(
@@ -980,7 +978,7 @@ def build_chapter_4(doc):
     # D2
     add_bullet_point(
         doc,
-        "Bao gồm Sheet 03 (Bản đồ địa lý 2 lớp: Mật độ cháy Map kết hợp Bong bóng diện tích Circle); Sheet 09 (Combo Pareto Chart nhận diện 7 Hạt gánh chịu 82% thiệt hại nhà cửa); Sheet 05 (Horizontal Bar Chart xếp hạng Top N Hạt mất nhiều công trình nhất); Sheet 07 (Treemap 1 tầng phân bổ chi tiết các loại hình kiến trúc bị tàn phá).",
+        "Bao gồm Sheet 03 (Bản đồ địa lý 2 lớp: Mật độ cháy Map kết hợp Bong bóng diện tích Circle); Sheet 09 (Combo Pareto Chart nhận diện 7 Hạt gánh chịu 80% thiệt hại nhà cửa); Sheet 05 (Horizontal Bar Chart xếp hạng Top N Hạt mất nhiều công trình nhất); Sheet 07 (Treemap 1 tầng phân bổ chi tiết các loại hình kiến trúc bị tàn phá).",
         "Dashboard D2 - 'Không gian địa lý & Quy luật thiệt hại Pareto 80/20' (D2_Dia_Ly_Va_Pareto): "
     )
     add_image_placeholder(
@@ -1091,8 +1089,8 @@ def build_chapter_4(doc):
     add_bullet_point(doc, "Horizontal Bar Chart tích hợp tham số điều khiển động [Top N].", "Loại biểu đồ: ")
     add_bullet_point(doc, "Dashboard D2 (Không gian địa lý & Quy luật Pareto 80/20).", "Vị trí tích hợp: ")
     add_bullet_point(doc, "Rows: [county_name]. Columns: SUM([total_structures_destroyed]). Sort giảm dần. Filters: Lọc bỏ Unknown (Add to Context) + Filter Top [Top N] theo SUM(total_structures_destroyed). Màu đỏ đậm đồng nhất.", "Cấu hình trục & Marks: ")
-    add_bullet_point(doc, "Top 10 Hạt: Butte (23.834), Los Angeles (19.066), Sonoma (7.413), Lake (2.711), San Diego (2.553), Shasta (2.354), Napa (2.336), Santa Barbara (1.562), Santa Cruz (1.543), El Dorado (1.403).", "Số liệu kiểm tra chuẩn: ")
-    add_bullet_point(doc, "Riêng 2 Hạt dẫn đầu (Butte và Los Angeles) đã chiếm 58% tổng thiệt hại toàn bang. Butte chủ yếu do Camp Fire 2018 (18.804 nhà); Los Angeles do Eaton (9.419) và Palisades (6.845) năm 2025.", "Ý nghĩa khoa học: ")
+    add_bullet_point(doc, "Top 10 Hạt: Butte (22.523), Los Angeles (19.181), Sonoma (7.413), Lake (2.711), San Diego (2.553), Napa (2.336), Shasta (2.308), Santa Cruz (1.543), Ventura (1.370), Plumas (1.353).", "Số liệu kiểm tra chuẩn: ")
+    add_bullet_point(doc, "Riêng 2 Hạt dẫn đầu (Butte và Los Angeles) đã chiếm 56,5% tổng thiệt hại toàn bang. Butte chủ yếu do Camp Fire 2018 (18.804 nhà); Los Angeles do Eaton (9.419) và Palisades (6.845) năm 2025.", "Ý nghĩa khoa học: ")
     add_image_placeholder(doc, "SHEET 05 - BAR NGANG TOP N HẠT MẤT NHIỀU CÔNG TRÌNH NHẤT", "Dán ảnh chụp màn hình Worksheet Sheet 05 (05_Bar_Top_Counties) từ Tableau vào khung này")
 
     # Sheet 6
@@ -1118,8 +1116,8 @@ def build_chapter_4(doc):
     add_bullet_point(doc, "Scatter Plot tích hợp Đường hồi quy tuyến tính log-log (Barem Dự báo 0.5 đ).", "Loại biểu đồ: ")
     add_bullet_point(doc, "Dashboard D3 (Căn nguyên bùng phát & Mô hình hồi quy dự báo).", "Vị trí tích hợp: ")
     add_bullet_point(doc, "Columns: [Log Diện tích]. Rows: [Log Công trình phá hủy]. Detail: [incident_id]. Marks: Circle, Color = [cause_group], Opacity = 75%. Tab Analytics -> Trend Line Linear -> Bỏ Allow per color -> Bật Show confidence bands (95%).", "Cấu hình trục & Marks: ")
-    add_bullet_point(doc, "Mô hình hồi quy (391 quan sát): log10(Destroyed) = 0.433444 * log10(Acres) - 0.377448 (R² = 0.356, t = 14.658, p < 0.0001). Hồi quy số gốc chỉ đạt R² = 0.026.", "Số liệu kiểm tra chuẩn: ")
-    add_bullet_point(doc, "Biến đổi log giúp tăng 13 lần khả năng giải thích. Khi diện tích cháy tăng gấp 10 lần, số công trình bị phá hủy tăng trung bình 2,71 lần. Dự báo: 1.000 mẫu ≈ 8 công trình; 10.000 mẫu ≈ 23 công trình; 100.000 mẫu ≈ 62 công trình.", "Ý nghĩa khoa học: ")
+    add_bullet_point(doc, "Mô hình hồi quy (391 quan sát): log10(Destroyed) = 0.445429 * log10(Acres) - 0.419530 (R² = 0.374, t = 15.254, p < 0.0001). Hồi quy số gốc chỉ đạt R² = 0.026.", "Số liệu kiểm tra chuẩn: ")
+    add_bullet_point(doc, "Biến đổi log giúp tăng 14 lần khả năng giải thích. Khi diện tích cháy tăng gấp 10 lần, số công trình bị phá hủy tăng trung bình 2,79 lần. Dự báo: 1.000 mẫu ≈ 8 công trình; 10.000 mẫu ≈ 23 công trình; 100.000 mẫu ≈ 64 công trình.", "Ý nghĩa khoa học: ")
     add_image_placeholder(doc, "SHEET 08 - SCATTER PLOT HỒI QUY TUYẾN TÍNH LOG-LOG", "Dán ảnh chụp màn hình Worksheet Sheet 08 (08_Scatter_Regression) từ Tableau vào khung này")
 
     # Sheet 9
@@ -1127,8 +1125,8 @@ def build_chapter_4(doc):
     add_bullet_point(doc, "Combo Pareto Chart Dual-Axis (Bar + Cumulative % Line).", "Loại biểu đồ: ")
     add_bullet_point(doc, "Dashboard D2 (Không gian địa lý & Quy luật Pareto 80/20).", "Vị trí tích hợp: ")
     add_bullet_point(doc, "Columns: [county_name] (Sort giảm dần). Rows: SUM([total_structures_destroyed]) hai lần -> Dual Axis. Trục 2: Running Total + Percent of Total (Table across). Reference Line tại Parameter [Mốc 80%] (0.8).", "Cấu hình trục & Marks: ")
-    add_bullet_point(doc, "Số kiểm tra % tích lũy: Butte 32,3% -> Los Angeles 58,1% -> Sonoma 68,2% -> Lake 71,8% -> San Diego 75,3% -> Shasta 78,5% -> Napa 81,6% (Hạt thứ 7 chạm mốc 82%). Tổng toàn bang = 73.818 công trình.", "Số liệu kiểm tra chuẩn: ")
-    add_bullet_point(doc, "Chỉ 7/49 Hạt có thiệt hại (chiếm 14% số Hạt) đã gây ra tới 82% tổng thiệt hại nhà cửa toàn bang California. Theo từng vụ: Chỉ 17 vụ (0,23% tổng số vụ) đã gây ra 80% số nhà bị phá hủy.", "Ý nghĩa khoa học: ")
+    add_bullet_point(doc, "Số kiểm tra % tích lũy: Butte 30,5% -> Los Angeles 56,5% -> Sonoma 66,5% -> Lake 70,2% -> San Diego 73,7% -> Napa 76,8% -> Shasta 80,0% (Hạt thứ 7 chạm mốc 80%). Tổng toàn bang = 73.818 công trình.", "Số liệu kiểm tra chuẩn: ")
+    add_bullet_point(doc, "Chỉ 7/49 Hạt có thiệt hại (chiếm 14% số Hạt) đã gây ra tới 80% tổng thiệt hại nhà cửa toàn bang California. Theo từng vụ: Chỉ 17 vụ (0,23% tổng số vụ) đã gây ra 80% số nhà bị phá hủy.", "Ý nghĩa khoa học: ")
     add_image_placeholder(doc, "SHEET 09 - COMBO PARETO 80/20 TỔN THẤT NHÀ CỬA", "Dán ảnh chụp màn hình Worksheet Sheet 09 (09_Pareto_Damage) từ Tableau vào khung này")
 
     # Sheet 10
@@ -1256,7 +1254,7 @@ def build_chapter_5(doc):
     )
     add_bullet_point(
         doc,
-        "Toàn bang California có 58 Hạt, trong đó có 49 Hạt ghi nhận thiệt hại công trình. Tuy nhiên, chỉ 7 Hạt đầu bảng (Butte, Los Angeles, Sonoma, Lake, San Diego, Shasta, Napa) — chiếm vỏn vẹn 14% số Hạt — đã gánh chịu tới 82% tổng số công trình bị phá hủy toàn bang (60.203 / 73.818 công trình). Riêng 2 Hạt dẫn đầu là Butte (23.834 công trình) và Los Angeles (19.066 công trình) đã chiếm tới 58% tổng tổn thất.",
+        "Toàn bang California có 58 Hạt, trong đó có 49 Hạt ghi nhận thiệt hại công trình. Tuy nhiên, chỉ 7 Hạt đầu bảng (Butte, Los Angeles, Sonoma, Lake, San Diego, Napa, Shasta) — chiếm vỏn vẹn 14% số Hạt — đã gánh chịu tới 80% tổng số công trình bị phá hủy toàn bang (59.025 / 73.818 công trình). Riêng 2 Hạt dẫn đầu là Butte (22.523 công trình) và Los Angeles (19.181 công trình) đã chiếm tới 56,5% tổng tổn thất.",
         "Quy luật Pareto 80/20 trong thiệt hại tài sản: "
     )
     add_bullet_point(
@@ -1292,7 +1290,7 @@ def build_chapter_5(doc):
     )
     add_bullet_point(
         doc,
-        "Mô hình hồi quy log-log trên Sheet 08 hoàn thiện câu chuyện với năng lực lượng hóa mối quan hệ: log10(Destroyed) = 0.433444 * log10(Acres) - 0.377448 (R² = 0.356). Khi diện tích tăng 10 lần, thiệt hại tăng bình quân 2,71 lần, cho phép cơ quan chức năng ước tính nhanh mức độ tàn phá tài sản ngay khi diện tích đám cháy được xác định từ vệ tinh.",
+        "Mô hình hồi quy log-log trên Sheet 08 hoàn thiện câu chuyện với năng lực lượng hóa mối quan hệ: log10(Destroyed) = 0.445429 * log10(Acres) - 0.419530 (R² = 0.374). Khi diện tích tăng 10 lần, thiệt hại tăng bình quân 2,79 lần, cho phép cơ quan chức năng ước tính nhanh mức độ tàn phá tài sản ngay khi diện tích đám cháy được xác định từ vệ tinh.",
         "Khả năng lượng hóa dự báo thiệt hại: "
     )
     add_image_placeholder(
@@ -1339,12 +1337,12 @@ def build_chapter_5(doc):
     )
     add_bullet_point(
         doc,
-        "Quy luật Pareto 80/20 chi phối toàn bộ thiệt hại tài sản: Chỉ 7 Hạt đầu bảng gánh chịu 82% tổng số công trình bị phá hủy toàn bang. Riêng Butte (23.834) và Los Angeles (19.066) chiếm 58%. Nhà ở dân sinh chiếm 64% công trình bị phá hủy, khẳng định cháy rừng tại California là hiểm họa trực tiếp đe dọa khu dân cư.",
+        "Quy luật Pareto 80/20 chi phối toàn bộ thiệt hại tài sản: Chỉ 7 Hạt đầu bảng gánh chịu 80% tổng số công trình bị phá hủy toàn bang. Riêng Butte (22.523) và Los Angeles (19.181) chiếm 56,5%. Nhà ở dân sinh chiếm 64% công trình bị phá hủy, khẳng định cháy rừng tại California là hiểm họa trực tiếp đe dọa khu dân cư.",
         "Insight cốt lõi Dashboard D2: "
     )
     add_bullet_point(
         doc,
-        "Nghịch lý căn nguyên: Sét đánh tự nhiên có xác suất tạo thành siêu đám cháy cao gấp 4 lần do khởi phát ở vùng xa xôi hiểm trở. Ngược lại, con người chiếm 64% các vụ đã rõ nguyên nhân và bùng phát sát khu dân cư nên gây ra hầu hết các thảm họa về người và của. Mô hình hồi quy log-log (R² = 0.356) cho thấy diện tích tăng 10 lần thì thiệt hại tăng 2,71 lần.",
+        "Nghịch lý căn nguyên: Sét đánh tự nhiên có xác suất tạo thành siêu đám cháy cao gấp 4 lần do khởi phát ở vùng xa xôi hiểm trở. Ngược lại, con người chiếm 64% các vụ đã rõ nguyên nhân và bùng phát sát khu dân cư nên gây ra hầu hết các thảm họa về người và của. Mô hình hồi quy log-log (R² = 0.374) cho thấy diện tích tăng 10 lần thì thiệt hại tăng 2,79 lần.",
         "Insight cốt lõi Dashboard D3: "
     )
     add_bullet_point(
@@ -1391,16 +1389,16 @@ def build_chapter_6(doc):
     )
     add_bullet_point(doc, "log10(Destroyed) = β1 * log10(Acres) + β0", "Dạng hàm hồi quy log-log: ")
     add_body_paragraph(doc, "Kết quả huấn luyện và kiểm định mô hình trên 391 sự cố cháy có ghi nhận thiệt hại tài sản:")
-    add_bullet_point(doc, "log10(Destroyed) = 0.433444 * log10(Acres) - 0.377448", "Phương trình hồi quy log-log: ")
-    add_bullet_point(doc, "Hệ số xác định R² = 0.356, tăng gấp 13 lần khả năng giải thích so với hồi quy số gốc (R² = 0.026).", "Độ phù hợp của mô hình (R²): ")
-    add_bullet_point(doc, "Kiểm định t-test cho hệ số góc: t = 14.658, p-value < 0.0001 (Bác bỏ giả thuyết H0 ở mức ý nghĩa 99.9%); Sai số chuẩn StdErr = 0.02957. Hệ số chặn: t = -3.742, p-value = 0.0002, StdErr = 0.10087.", "Kiểm định thống kê: ")
-    add_bullet_point(doc, "Khi diện tích cháy tăng gấp 10 lần, số công trình bị phá hủy tăng trung bình khoảng 2,71 lần (10^0.433 ≈ 2.71). Công thức dự phóng nhanh: Đám cháy 1.000 mẫu ≈ 8 công trình; 10.000 mẫu ≈ 23 công trình; 100.000 mẫu ≈ 62 công trình bị phá hủy.", "Diễn giải ý nghĩa dự báo: ")
-    add_bullet_point(doc, "Dữ liệu là các vụ cháy độc lập (dữ liệu cắt ngang, không phải chuỗi thời gian) nên mô hình được đánh giá bằng kiểm định chéo 5-fold xáo trộn ngẫu nhiên. R² ngoài mẫu trên thang log đạt 0.348, gần như bằng R² khi huấn luyện trên toàn bộ dữ liệu (0.356), chứng tỏ mô hình không bị quá khớp. Sai số tuyệt đối trung bình trên thang log10 là 0.575, tương ứng dự báo lệch trung bình khoảng 3,8 lần so với thực tế, tốt hơn mốc so sánh bỏ qua diện tích cháy (lệch khoảng 5,2 lần).", "Kiểm định chéo 5-fold: ")
-    add_bullet_point(doc, "Khoảng dự báo 95% rất rộng (ví dụ đám cháy 100.000 mẫu Anh: từ khoảng 2 đến 1.565 công trình). Các thảm họa cháy lan vào khu dân cư như Camp 2018 (18.804 công trình) hay Eaton 2025 (9.419 công trình) vượt xa dự báo, vì số công trình bị phá hủy còn phụ thuộc vào mật độ dân cư - yếu tố mô hình một biến chưa xét đến. Các giá trị dự phóng là trung vị (10^dự báo log), không phải trung bình cộng.", "Hạn chế: ")
+    add_bullet_point(doc, "log10(Destroyed) = 0.445429 * log10(Acres) - 0.419530", "Phương trình hồi quy log-log: ")
+    add_bullet_point(doc, "Hệ số xác định R² = 0.374, tăng gấp 14 lần khả năng giải thích so với hồi quy số gốc (R² = 0.026).", "Độ phù hợp của mô hình (R²): ")
+    add_bullet_point(doc, "Kiểm định t-test cho hệ số góc: t = 15.254, p-value < 0.0001 (Bác bỏ giả thuyết H0 ở mức ý nghĩa 99.9%); Sai số chuẩn StdErr = 0.02957. Hệ số chặn: t = -3.742, p-value = 0.0002, StdErr = 0.10087.", "Kiểm định thống kê: ")
+    add_bullet_point(doc, "Khi diện tích cháy tăng gấp 10 lần, số công trình bị phá hủy tăng trung bình khoảng 2,79 lần (10^0.445 ≈ 2.79). Công thức dự phóng nhanh: Đám cháy 1.000 mẫu ≈ 8 công trình; 10.000 mẫu ≈ 23 công trình; 100.000 mẫu ≈ 64 công trình bị phá hủy.", "Diễn giải ý nghĩa dự báo: ")
+    add_bullet_point(doc, "Dữ liệu là các vụ cháy độc lập (dữ liệu cắt ngang, không phải chuỗi thời gian) nên mô hình được đánh giá bằng kiểm định chéo 5-fold xáo trộn ngẫu nhiên. R² ngoài mẫu trên thang log đạt 0.366, gần như bằng R² khi huấn luyện trên toàn bộ dữ liệu (0.374), chứng tỏ mô hình không bị quá khớp. Sai số tuyệt đối trung bình trên thang log10 là 0.572, tương ứng dự báo lệch trung bình khoảng 3,7 lần so với thực tế, tốt hơn mốc so sánh bỏ qua diện tích cháy (lệch khoảng 5,2 lần).", "Kiểm định chéo 5-fold: ")
+    add_bullet_point(doc, "Khoảng dự báo 95% rất rộng (ví dụ đám cháy 100.000 mẫu Anh: từ khoảng 3 đến 1.556 công trình). Các thảm họa cháy lan vào khu dân cư như Camp 2018 (18.804 công trình) hay Eaton 2025 (9.419 công trình) vượt xa dự báo, vì số công trình bị phá hủy còn phụ thuộc vào mật độ dân cư - yếu tố mô hình một biến chưa xét đến. Các giá trị dự phóng là trung vị (10^dự báo log), không phải trung bình cộng.", "Hạn chế: ")
 
     add_academic_figure(
         doc,
-        "reports/figures/model_05_damage_loglog.png",
+        "reports/figures/model_03_damage_loglog.png",
         "Hình 6.1. Hồi quy tuyến tính log-log giữa diện tích cháy và số công trình bị phá hủy, kèm khoảng dự báo 95%",
         "Mỗi điểm là một trong 391 vụ cháy có phá hủy công trình; đường xanh là dự báo của mô hình, vùng xanh nhạt là khoảng dự báo 95%",
         5.8
@@ -1408,33 +1406,34 @@ def build_chapter_6(doc):
 
     add_academic_figure(
         doc,
-        "reports/figures/model_06_damage_cv.png",
+        "reports/figures/model_04_damage_cv.png",
         "Hình 6.2. Kiểm định chéo 5-fold: số công trình thực tế so với số công trình mô hình dự báo ngoài mẫu",
         "Điểm càng gần đường chéo nét đứt thì dự báo càng sát thực tế; các điểm cao phía trên là những thảm họa phá hủy cả khu dân cư",
         5.0
     )
 
-    add_sub_heading(doc, "6.1.2. Mô hình Hồi quy Tuyến tính Dự Báo Chuỗi Thời Gian 10 Năm (2026–2035) & Rolling Origin")
+    add_sub_heading(doc, "6.1.2. Mô hình Hồi quy Logistic Phân Loại Nguyên Nhân Cháy (Con Người / Sét)")
     add_body_paragraph(
         doc,
-        "Nhóm xây dựng mô hình dự báo chuỗi thời gian 10 năm tới (2026–2035) cho cả 3 chỉ số Metric: Số vụ cháy (Hồi quy tuyến tính Linear), Diện tích cháy và Công trình bị phá hủy (Hồi quy tuyến tính trên thang log1p, tương đương xu thế hàm mũ Exponential trên thang gốc). Để đánh giá độ tin cậy của mô hình mà không vi phạm tính thứ tự thời gian, nhóm áp dụng phương pháp kiểm định Rolling Origin (Walk-forward): huấn luyện trên 2006 đến năm (t-1) và dự báo năm t, với t chạy từ 2016 đến 2025 (10 lần kiểm định). Mốc so sánh là dự báo bằng trung bình các năm trước đó:"
+        "Có 3.084 trong 7.216 vụ cháy (43%) không xác định được nguyên nhân, và tỷ lệ này tăng từ khoảng 24% (2006) lên khoảng 60% (2023–2024). Nhóm xây dựng mô hình Hồi quy logistic phân loại vụ cháy do sét (Natural) hay do con người (Human), học trên 4.132 vụ đã biết nguyên nhân với các biến: đơn vị quản lý, Hạt, tháng báo cháy, log diện tích và log thời gian cháy. Mô hình được đánh giá bằng kiểm định chéo 5-fold có phân tầng và kiểm tra theo thời gian (học đến 2015, dự báo 2016–2025), với ngưỡng phân loại 0,4:"
     )
-    add_bullet_point(doc, "Số vụ cháy: MAE = 115,9 vụ/năm, RMSE = 138,3 vụ/năm (mốc trung bình: MAE = 111,7 vụ/năm). Diện tích cháy: MAE = 402.296 ha (mốc: 370.762 ha). Công trình bị phá hủy: MAE = 6.388 công trình (mốc: 5.929 công trình).", "Chỉ số sai số dự báo: ")
-    add_bullet_point(doc, "Số vụ cháy tăng trung bình +7,87 vụ/năm (p = 0,055, tiệm cận ngưỡng ý nghĩa 5%); dự phóng đạt 515 vụ/năm vào năm 2035 [251 – 780 vụ]. Xu thế của diện tích cháy (+2,28%/năm, p = 0,521) và công trình bị phá hủy (+10,68%/năm, p = 0,151) chưa có ý nghĩa thống kê.", "Xu thế dự phóng: ")
-    add_bullet_point(doc, "Sai số dự báo 1 năm tới của cả 3 chỉ số đều lớn hơn mốc trung bình, do biến động giữa các năm (hạn hán, gió Santa Ana, các thảm họa đơn lẻ) lớn hơn nhiều so với xu thế tuyến tính dài hạn. Vì vậy đường dự phóng 2026–2035 chỉ nên đọc như xu hướng tham khảo kèm dải tin cậy 95% rộng, không phải dự báo chính xác cho từng năm.", "Hạn chế: ")
-    
+    add_bullet_point(doc, "AUC = 0,899; Accuracy = 0,838; Balanced Accuracy = 0,831; Precision = 0,763; Recall = 0,806; F1 = 0,784 (mốc đoán tất cả là Human: Accuracy = 0,636, F1 = 0). Mô hình nhận ra đúng 86% vụ do con người và 81% vụ do sét.", "Kiểm định chéo 5-fold: ")
+    add_bullet_point(doc, "AUC = 0,885; F1 = 0,697. Khả năng xếp hạng giữ vững nhưng mô hình ước tính thừa khoảng 35% số vụ do sét (770 so với 571 thực tế) do tỷ lệ cháy do sét giảm sau năm 2015.", "Kiểm tra theo thời gian: ")
+    add_bullet_point(doc, "Rừng và vườn quốc gia vùng núi nghiêng mạnh về cháy do sét (Mendocino - MNF: tỷ số odds 7,6; Yosemite - YNP: 3,5), các đơn vị CAL FIRE gần khu dân cư nghiêng về cháy do con người (Sonoma-Lake-Napa - LNU: 0,22). Áp dụng cho nhóm không rõ nguyên nhân, mô hình ước tính khoảng 722/3.084 vụ (23%) có đặc điểm của cháy do sét.", "Diễn giải: ")
+    add_bullet_point(doc, "Nhóm Undetermined khác nhóm đã biết nguyên nhân về quy mô và cơ quan quản lý, nên kết quả áp dụng là ước tính, không phải nguyên nhân đã được xác minh. Mô hình không phân biệt được cháy do con người xảy ra đúng nơi và mùa của sét (lửa trại, đường sắt trong rừng quốc gia).", "Hạn chế: ")
+
     add_academic_figure(
         doc,
-        "reports/figures/model_01_forecast.png",
-        "Hình 6.3. Dự phóng xu thế biến động diện tích cháy rừng California 10 năm (2026–2035) bằng mô hình Hồi quy tuyến tính kèm dải tin cậy 95%",
-        "Dải tin cậy mở rộng phản ánh độ bất định khí hậu ngày càng tăng trong tương lai",
+        "reports/figures/model_01_cause_classifier.png",
+        "Hình 6.3. Đường ROC và ma trận nhầm lẫn của mô hình phân loại nguyên nhân cháy (kiểm định chéo 5-fold)",
+        "AUC = 0,899; ma trận nhầm lẫn tại ngưỡng 0,4 với tỷ lệ phân loại đúng theo từng nhóm nguyên nhân thực tế",
         5.8
     )
     add_academic_figure(
         doc,
-        "reports/figures/model_02_metrics.png",
-        "Hình 6.4. Đánh giá sai số kiểm định mô hình (MSE, RMSE, MAE, R²) qua các nếp gấp thời gian Rolling Origin",
-        "Kiểm định Walk-forward xác nhận mô hình không bị quá khớp (Overfitting) trên dữ liệu thời gian",
+        "reports/figures/model_02_cause_insights.png",
+        "Hình 6.4. Số vụ cháy theo nguyên nhân mỗi năm sau khi phân bổ nhóm không rõ nguyên nhân theo xác suất dự đoán",
+        "Màu nhạt là phần ước tính của nhóm Undetermined; phần ước tính do con người chiếm khoảng 77% nhóm này",
         5.8
     )
 
@@ -1501,8 +1500,8 @@ def build_chapter_7(doc):
     )
     add_bullet_point(doc, "Giới thiệu đề tài cháy rừng California 2006–2025, tính cấp thiết và quy mô 5 bộ dữ liệu thô (vượt 157.000 dòng). Nêu bật việc xử lý đứt gãy DINS bằng ICS-209-PLUS và chuẩn hóa 207 tử vong NOAA.", "Phút 00:00 – 01:00 (Mở đầu & Bối cảnh): ")
     add_bullet_point(doc, "Trình diễn Story Point 1 nhúng Dashboard D1. Chỉ ra 4 thẻ KPI vĩ mô, giải thích hiện tượng mùa cháy nở rộng ra 2 đầu mùa (+70% T4-T5, +73% T10) và sự bùng nổ của các năm cực đoan đỏ rực sau 2017 trên Diverging Bar.", "Phút 01:00 – 02:30 (Chu kỳ thời gian & Mùa vụ): ")
-    add_bullet_point(doc, "Chuyển sang Story Point 2 nhúng Dashboard D2. Thao tác tương tác nhấp chọn Hạt Butte và Los Angeles trên Bản đồ để lọc chéo Treemap và Bar chart. Chứng minh quy luật Pareto 80/20: 7 Hạt chịu 82% tổng thiệt hại nhà cửa toàn bang.", "Phút 02:30 – 04:00 (Không gian địa lý & Pareto 80/20): ")
-    add_bullet_point(doc, "Chuyển sang Story Point 3 nhúng Dashboard D3. Trình diễn Highlight Action từ Donut sang Heatmap và Scatter plot. Phân tích nghịch lý tự nhiên (sét đánh dễ tạo siêu đám cháy) vs con người (chiếm 64% vụ gây thiệt hại gần đô thị). Giải thích mô hình hồi quy log-log R² = 0.356.", "Phút 04:00 – 05:00 (Căn nguyên & Mô hình hồi quy): ")
+    add_bullet_point(doc, "Chuyển sang Story Point 2 nhúng Dashboard D2. Thao tác tương tác nhấp chọn Hạt Butte và Los Angeles trên Bản đồ để lọc chéo Treemap và Bar chart. Chứng minh quy luật Pareto 80/20: 7 Hạt chịu 80% tổng thiệt hại nhà cửa toàn bang.", "Phút 02:30 – 04:00 (Không gian địa lý & Pareto 80/20): ")
+    add_bullet_point(doc, "Chuyển sang Story Point 3 nhúng Dashboard D3. Trình diễn Highlight Action từ Donut sang Heatmap và Scatter plot. Phân tích nghịch lý tự nhiên (sét đánh dễ tạo siêu đám cháy) vs con người (chiếm 64% vụ gây thiệt hại gần đô thị). Giải thích mô hình hồi quy log-log R² = 0.374.", "Phút 04:00 – 05:00 (Căn nguyên & Mô hình hồi quy): ")
     add_bullet_point(doc, "Chuyển sang Story Point 4 nhúng Dashboard D4. Trình diễn 3 biểu đồ dự báo xu thế 10 năm F1, F2, F3 có dải tin cậy 95%. Nhấn mạnh dự phóng năm 2035 đạt 515 vụ và thiệt hại 7.041 căn nhà/năm, kết luận 3 khuyến nghị chính sách và kết thúc phần trình bày.", "Phút 05:00 – 06:00 (Dự báo 10 năm & Khuyến nghị chính sách): ")
 
     add_section_heading(doc, "7.4. Liên Kết Video Demo Chính Thức, Video Backup Tóm Tắt & Kho Lưu Trữ GitHub")
@@ -1541,7 +1540,7 @@ def build_chapter_8(doc):
     )
     add_bullet_point(
         doc,
-        "Triển khai thành công mô hình hồi quy tuyến tính log-log giữa diện tích và công trình (R² = 0.356) cùng hệ thống dự báo chuỗi thời gian 10 năm (2026–2035) có dải tin cậy 95% cho 3 chỉ số Metric, đáp ứng trọn vẹn barem dự báo nâng cao.",
+        "Triển khai thành công mô hình hồi quy logistic phân loại nguyên nhân cháy (AUC = 0,899; F1 = 0,78) để ước tính thành phần của 3.084 vụ không rõ nguyên nhân, cùng mô hình hồi quy tuyến tính log-log giữa diện tích và công trình (R² = 0.374) có khoảng dự báo 95%.",
         "4. Mô hình học máy dự báo có giá trị thực tiễn: "
     )
 
@@ -1556,7 +1555,7 @@ def build_chapter_8(doc):
         [
             "Thành viên 1\n(Trần Phong Đăng Khoa)",
             "Data & ML Engineer\n(Kỹ sư Dữ liệu & Học máy)",
-            "Thu thập 5 bộ dữ liệu thô (src/01_download.py); Khảo sát EDA (02_eda.py); Làm sạch dữ liệu theo quy tắc & tích hợp DINS + ICS-209 + NOAA (03_clean.py); Xây dựng mô hình học máy làm sạch (Isolation Forest, MICE); Thiết kế Dashboard D1 và Sheet 01, 02, 03, 14, 15.",
+            "Thu thập 5 bộ dữ liệu thô (src/01_download.py); Khảo sát EDA (02_eda.py); Làm sạch dữ liệu theo quy tắc & tích hợp DINS + ICS-209 + NOAA (03_clean.py); Phát hiện ngoại lai (Tukey IQR trên thang log); Thiết kế Dashboard D1 và Sheet 01, 02, 03, 14, 15.",
             "100% Hoàn thành",
             "100%"
         ],
@@ -1570,7 +1569,7 @@ def build_chapter_8(doc):
         [
             "Thành viên 3\n(Phạm Đăng Di Khang)",
             "Dashboard & Story Lead\n(Trưởng nhóm Trực quan)",
-            "Thiết kế Dashboard D3, D4 và Tableau Story 4 Story Points; Triển khai mô hình hồi quy log-log và dự báo 10 năm 2026–2035 (08_predictive_model.py); Dựng 3 sheet dự báo F1, F2, F3; Thiết lập Actions tương tác đa cấp; Biên tập video demo.",
+            "Thiết kế Dashboard D3, D4 và Tableau Story 4 Story Points; Triển khai mô hình phân loại nguyên nhân cháy và hồi quy log-log (08_predictive_model.py); Dựng 3 sheet dự báo F1, F2, F3; Thiết lập Actions tương tác đa cấp; Biên tập video demo.",
             "100% Hoàn thành",
             "100%"
         ]
@@ -1592,12 +1591,12 @@ def build_chapter_8(doc):
     tbl_rubric_headers = ["Tiêu Chí Barem", "Trọng Số", "Yêu Cầu Chuẩn", "Kết Quả Đạt Được Của Đề Tài", "Tự Đánh Giá"]
     tbl_rubric_data = [
         ["1. Thu thập & Tiền xử lý dữ liệu", "1.5 đ", "≥ 5.000 dòng, ≥ 3 bảng, làm sạch đầy đủ", "7.235 dòng fact lõi, 114.726 dòng fact chi tiết (tổng > 157.000 dòng), 5 bảng độc lập, làm sạch 6 bước chuẩn.", "1.5 / 1.5 đ"],
-        ["2. Ứng dụng Học máy làm sạch", "0.5 đ", "Có mô hình ML phát hiện ngoại lai/điền khuyết", "Triển khai Isolation Forest gán nhãn 73 ngoại lai cực đoan; áp dụng MICE Bayesian Ridge điền khuyết diện tích.", "0.5 / 0.5 đ"],
+        ["2. Ứng dụng Học máy làm sạch", "0.5 đ", "Có mô hình ML phát hiện ngoại lai/điền khuyết", "Không thực hiện. Ngoại lai được phát hiện bằng Tukey IQR trên thang log (không dùng học máy) và giá trị thiếu được giữ nguyên.", "0 / 0.5 đ"],
         ["3. Mô hình hóa dữ liệu Star Schema", "1.5 đ", "Tách ≥ 3 bảng, quan hệ chuẩn, toàn vẹn khóa", "Tách 5 bảng Star Schema chuẩn (3 Dim, 2 Fact), 0 lỗi khóa ngoại (Zero Orphan FK), tích hợp Noodle model.", "1.5 / 1.5 đ"],
         ["4. Trực quan hóa cơ bản (8 biểu đồ)", "2.0 đ", "Đầy đủ các dạng biểu đồ chuẩn, đẹp, rõ ràng", "Thiết kế 10 sheet cơ bản & nâng cao + 2 sheet thương vong: Line, Area, Map, Donut, Bar, Heatmap, Treemap, Diverging...", "2.0 / 2.0 đ"],
         ["5. Thiết kế Dashboard tương tác", "1.5 đ", "≥ 2 dashboards, bố cục chuẩn, filter đa cấp", "Xây dựng 4 Dashboards chuyên đề (D1, D2, D3, D4), chuẩn 1366x768, lọc chéo 2 chiều, Drill-down, Viz-in-Tooltip.", "1.5 / 1.5 đ"],
         ["6. Data Storytelling & Insight", "1.0 đ", "Có Tableau Story logic, khai phá insight sâu", "Tableau Story 4 Story Points dẫn dắt 4 hồi tự sự, bóc tách quy luật Pareto 80/20, mùa cháy dài ra và căn nguyên con người.", "1.0 / 1.0 đ"],
-        ["7. Mô hình học máy dự báo", "0.5 đ", "Thuật toán dự báo có kiểm định khoa học", "Mô hình hồi quy tuyến tính log-log R² = 0.356 và mô hình chuỗi thời gian 10 năm 2026–2035 kiểm định Rolling Origin.", "0.5 / 0.5 đ"],
+        ["7. Mô hình học máy dự báo", "0.5 đ", "Thuật toán dự báo có kiểm định khoa học", "Hồi quy logistic phân loại nguyên nhân cháy (AUC = 0,899; F1 = 0,78; kiểm định chéo 5-fold và kiểm tra theo thời gian) và hồi quy tuyến tính log-log R² = 0.374.", "0.5 / 0.5 đ"],
         ["8. Trực quan hóa kết quả dự báo", "0.5 đ", "Tích hợp đường dự báo/dải tin cậy lên visual", "Scatter Sheet 08 tích hợp trend line log-log 95% CI; Dashboard D4 dựng 3 biểu đồ F1, F2, F3 có dải phễu tin cậy 95%.", "0.5 / 0.5 đ"],
         ["9. Báo cáo Word & Video Demo", "1.0 đ", "Báo cáo chuẩn học thuật, video rõ ràng", "Báo cáo IDV_Nhom17.docx 8 chương công phu, chuẩn IEEE, kèm video demo 5–7 phút và kho lưu trữ GitHub công khai.", "1.0 / 1.0 đ"],
         ["TỔNG ĐIỂM ĐÁNH GIÁ", "10.0 đ", "Đáp ứng trọn vẹn và vượt chuẩn mọi tiêu chí", "Hệ thống hoàn chỉnh 100%, sẵn sàng bảo vệ và chuyển giao ứng dụng.", "10.0 / 10.0 đ"]
@@ -1639,8 +1638,8 @@ def build_chapter_8(doc):
     add_bullet_point(doc, "[6] E. R. Tufte, 'The Visual Display of Quantitative Information', 2nd ed. Cheshire, CT: Graphics Press, 2001.")
     add_bullet_point(doc, "[7] W3C Web Accessibility Initiative, 'Web Content Accessibility Guidelines (WCAG) 2.1', W3C Recommendation, 2018. [Trực tuyến]. Địa chỉ: https://www.w3.org/TR/WCAG21/")
     add_bullet_point(doc, "[8] M. Okabe and K. Ito, 'Color Universal Design (CUD): How to make figures and presentations that are friendly to colorblind people', J*FLY Data Repository, 2008.")
-    add_bullet_point(doc, "[9] F. T. Liu, K. M. Ting, and Z.-H. Zhou, 'Isolation Forest', in Proc. IEEE 8th Int. Conf. Data Mining (ICDM), 2008, pp. 413–422.")
-    add_bullet_point(doc, "[10] S. van Buuren and K. Groothuis-Oudshoorn, 'MICE: Multivariate Imputation by Chained Equations in R', Journal of Statistical Software, vol. 45, no. 3, pp. 1–67, 2011.")
+    add_bullet_point(doc, "[9] D. W. Hosmer, S. Lemeshow, and R. X. Sturdivant, 'Applied Logistic Regression', 3rd ed. Hoboken, NJ: Wiley, 2013.")
+    add_bullet_point(doc, "[10] F. Pedregosa et al., 'Scikit-learn: Machine Learning in Python', Journal of Machine Learning Research, vol. 12, pp. 2825–2830, 2011.")
 
 
 def main():

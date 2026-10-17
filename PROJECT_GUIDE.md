@@ -24,7 +24,7 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu cùng cá
 ## 2. Bảng Danh Sách Thành Viên & Vai Trò (Mô Hình Pipeline Tuần Tự - Bàn Giao Độc Lập)
 
 > **Mô hình phối hợp tuần tự (Decoupled Pipeline)**:  
-> - **Thành viên 1**: Đảm nhiệm toàn bộ phần Tiền xử lý, EDA tĩnh và Huấn luyện Mô hình ML Dự báo trên Python $\to$ Bàn giao `master_clean.csv` và kết quả dự báo `forecast_results.csv` cho TV2. (TV1 phụ trách 2 biểu đồ #1, #2).  
+> - **Thành viên 1**: Đảm nhiệm toàn bộ phần Tiền xử lý, EDA tĩnh và Huấn luyện Mô hình ML Dự báo trên Python $\to$ Bàn giao `master_clean.csv` và kết quả mô hình `cause_classifier_predictions.csv` cho TV2. (TV1 phụ trách 2 biểu đồ #1, #2).  
 > - **Thành viên 2**: Nhận dữ liệu sạch từ TV1 $\to$ Thiết kế Star Schema $\ge 3$ bảng, nạp CSDL SQLite, kiểm thử toàn vẹn $\to$ Bàn giao CSDL SQLite và truy vấn dữ liệu cho TV3. (TV2 phụ trách 4 biểu đồ #3–#6).  
 > - **Thành viên 3**: Nhận dữ liệu và kết quả dự báo từ TV1/TV2 $\to$ Dựng 3 Dashboard tương tác, trực quan hóa kết quả dự báo của TV1 lên Dashboard, và xây dựng toàn bộ Tableau Story (Storytelling). (TV3 phụ trách 4 biểu đồ #7–#10).
 
@@ -126,7 +126,7 @@ Trong giai đoạn 20 năm qua (2006–2025), biến đổi khí hậu cùng cá
   3. *(Khuyến khích)*: *Random Forest Classifier* dự đoán `cause_group` khi mã nguyên nhân khuyết thiếu, gắn cờ `cause_is_predicted`.
 - [ ] **Yêu cầu cứng**: `data/clean/master_clean.csv` sau khi xử lý phải có $\ge 5.000$ dòng; script phải có lệnh `assert len(df) >= 5000`.
 - [ ] **Xây dựng Mô hình dự báo trên Python (`src/08_predictive_model.py`) (Barem 0.5 điểm)**: Áp dụng thuật toán **Hồi quy tuyến tính (Linear Regression)** hoặc **Hồi quy Logistic** bằng thư viện `scikit-learn`; huấn luyện và đánh giá sai số ($R^2$, RMSE, MAE).
-- [ ] **Bàn giao kết quả dự báo cho Pipeline**: Xuất tệp kết quả dự báo `data/clean/forecast_results.csv` (chứa các mốc năm tương lai và giá trị dự báo diện tích cháy / số công trình hư hại) và bàn giao lại cho TV2/TV3 sử dụng trực tiếp trên Dashboard.
+- [ ] **Bàn giao kết quả mô hình cho Pipeline**: Xuất tệp `data/clean/cause_classifier_predictions.csv` (xác suất cháy do sét và nguyên nhân dự đoán cho từng vụ, kể cả nhóm không rõ nguyên nhân) và `data/clean/damage_model_fires.csv` (dự báo log-log số công trình bị phá hủy theo diện tích), bàn giao lại cho TV2/TV3 sử dụng trực tiếp trên Dashboard.
 - [ ] Hoàn thiện `docs/ML_CLEANING_REPORT.md`, `docs/CLEANING_LOG.md` và `docs/DATA_DICTIONARY.md`.
 - [ ] Chịu trách nhiệm dựng 2 biểu đồ độc lập: **#1 (`Sheet_01_Combo_Trend`), #2 (`Sheet_02_Stacked_Area`)** (TV1 dựng khung biểu đồ cơ bản và đường Trend Line).
 - [ ] Đảm bảo cơ chế tự động tương thích: Khi refresh dữ liệu trong Tableau là biểu đồ tự cập nhật.

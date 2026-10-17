@@ -93,8 +93,8 @@
   * Tạo parameter `[Top N]` (Integer, Range 5–20, mặc định 10).
   * Filter `[county_name]` loại bỏ `Unknown` $\to$ **Add to Context**.
   * Filter `[county_name]` thứ 2 $\to$ Tab Top $\to$ Chọn `Top [Top N]` theo `SUM([total_structures_destroyed])`.
-* **Số kiểm tra (Top 10 Hạt)**: Butte (23.834), Los Angeles (19.066), Sonoma (7.413), Lake (2.711), San Diego (2.553), Shasta (2.354), Napa (2.336), Santa Barbara (1.562), Santa Cruz (1.543), El Dorado (1.403).
-* **Insight**: Riêng 2 Hạt dẫn đầu (Butte và Los Angeles) đã chiếm 58% tổng số công trình bị phá hủy toàn bang California.
+* **Số kiểm tra (Top 10 Hạt)**: Butte (22.523), Los Angeles (19.181), Sonoma (7.413), Lake (2.711), San Diego (2.553), Napa (2.336), Shasta (2.308), Santa Cruz (1.543), Ventura (1.370), Plumas (1.353).
+* **Insight**: Riêng 2 Hạt dẫn đầu (Butte và Los Angeles) đã chiếm 56,5% tổng số công trình bị phá hủy toàn bang California.
 
 ---
 
@@ -147,7 +147,7 @@
 
 ---
 
-### Sheet 9: `09_Pareto_Damage` (Pareto 80/20: 7 Hạt Gây Ra 82% Thiệt Hại Toàn Bang)
+### Sheet 9: `09_Pareto_Damage` (Pareto 80/20: 7 Hạt Gây Ra 80% Thiệt Hại Toàn Bang)
 * **Loại biểu đồ**: Dual-Axis Combo Pareto (Bar + Line).
 * **Cấu hình trục**:
   * **Columns**: `[dim_county].[county_name]`, Sort giảm dần theo `SUM([total_structures_destroyed])`.
@@ -157,8 +157,8 @@
   * Secondary Calc: `Percent of Total` (Table across).
   * Trục phải: Định dạng Percentage 0–100%.
 * **Reference Line**: Tab Analytics $\to$ Reference Line thả vào trục phải $\to$ Value chọn Parameter `[Mốc 80%]` ($0.8$) $\to$ Label: *"Ngưỡng Pareto 80%"*.
-* **Số kiểm tra % tích lũy**: Butte 32,3% $\to$ Los Angeles 58,1% $\to$ Sonoma 68,2% $\to$ Lake 71,8% $\to$ San Diego 75,3% $\to$ Shasta 78,5% $\to$ **Napa 81,6% (Hạt thứ 7 chạm mốc 82%)**.
-* **Insight**: Quy luật bất cân xứng cực đoan: Chỉ 7/49 Hạt có thiệt hại (14% số Hạt) đã gây ra tới 82% tổng thiệt hại nhà cửa toàn bang California.
+* **Số kiểm tra % tích lũy**: Butte 30,5% $\to$ Los Angeles 56,5% $\to$ Sonoma 66,5% $\to$ Lake 70,2% $\to$ San Diego 73,7% $\to$ Napa 76,8% $\to$ **Shasta 80,0% (Hạt thứ 7 chạm mốc 80%)**.
+* **Insight**: Quy luật bất cân xứng cực đoan: Chỉ 7/49 Hạt có thiệt hại (14% số Hạt) đã gây ra tới 80% tổng thiệt hại nhà cửa toàn bang California.
 
 ---
 

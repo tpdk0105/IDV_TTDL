@@ -32,13 +32,13 @@ Hệ thống gồm đúng **10 Worksheets** (8 biểu đồ cơ bản + 2 biểu
 
 ### 👤 Thành viên 2: Sheet 04 – 07 (Căn Nguyên & Thiệt Hại Chi Tiết)
 * **Sheet 4**: `04_Donut_Cause_Share` (Donut Chart: Tỷ trọng 7.235 vụ cháy theo nhóm nguyên nhân; Con người 36,4%, Tự nhiên 20,9%, Chưa xác định 42,7%).
-* **Sheet 5**: `05_Bar_Top_Counties` (Horizontal Bar Chart + Parameter Top N: Xếp hạng các Hạt mất nhiều công trình nhất; Butte 23.834, Los Angeles 19.066...).
+* **Sheet 5**: `05_Bar_Top_Counties` (Horizontal Bar Chart + Parameter Top N: Xếp hạng các Hạt mất nhiều công trình nhất; Butte 22.523, Los Angeles 19.181...).
 * **Sheet 6**: `06_Heatmap_Cause_Size` (Heatmap ma trận: Nhóm nguyên nhân $\times$ Quy mô đám cháy; tính % theo hàng Table across).
 * **Sheet 7**: `07_Treemap_Damage` (Treemap 1 tầng: Phân bổ công trình bị phá hủy theo loại nhà và Top 8 Hạt; Nhà 1 hộ Single Family chiếm ưu thế).
 
 ### 👤 Thành viên 3: Sheet 08 – 10 & 4 Thẻ KPI (Dự Báo, Phân Tích Nâng Cao & Story)
 * **Sheet 8**: `08_Scatter_Regression` (Scatter Plot + Hồi quy log-log: Mô hình $\log_{10}(Y) = 0{,}433436 \times \log_{10}(X) - 0{,}377417$, $R^2 = 0{,}356$, $p < 0{,}0001$. Đạt chuẩn Barem Dự báo).
-* **Sheet 9**: `09_Pareto_Damage` (Pareto Dual-Axis: 7 Hạt chịu 82% tổng số công trình bị phá hủy toàn bang; Reference Line mốc 80%).
+* **Sheet 9**: `09_Pareto_Damage` (Pareto Dual-Axis: 7 Hạt chịu 80% tổng số công trình bị phá hủy toàn bang; Reference Line mốc 80%).
 * **Sheet 10**: `10_Diverging_vs_Avg` (Diverging Bar quanh 0: Số vụ cháy từng năm so với trung bình 20 năm = 362 vụ/năm; năm 2017 vượt đỉnh +243 vụ).
 * **Hệ thống 4 KPI**: `KPI_1_So_vu` (7.235 vụ), `KPI_2_Dien_tich` (19,39M mẫu), `KPI_3_Pha_huy` (73.818 công trình), `KPI_4_Tu_vong` (207 người – `SUM([deaths_direct])` trên nguồn `casualties_by_year.csv`, xem bước 5 mục 1).
 
@@ -65,6 +65,6 @@ Hệ thống gồm đúng **10 Worksheets** (8 biểu đồ cơ bản + 2 biểu
 1. **Story Point 1: Biến Động Chu Kỳ 20 Năm & Xu Thế Mùa Cháy Kéo Dài**
    * Nhúng **Dashboard D1**. Nêu bật phát hiện: Mùa cháy T6–T10 chiếm 80% vụ, các tháng đầu mùa và cuối mùa tăng vọt ~70% trong thập kỷ gần đây.
 2. **Story Point 2: Tâm Chấn Thảm Họa Địa Lý & Quy Luật Bất Cân Xứng Pareto**
-   * Nhúng **Dashboard D2**. Nhấn mạnh quy luật 80/20: Chỉ 7 Hạt đã gánh chịu 82% tổng số nhà cửa bị thiêu rụi toàn bang, dẫn đầu là Butte và Los Angeles.
+   * Nhúng **Dashboard D2**. Nhấn mạnh quy luật 80/20: Chỉ 7 Hạt đã gánh chịu 80% tổng số nhà cửa bị thiêu rụi toàn bang, dẫn đầu là Butte và Los Angeles.
 3. **Story Point 3: Nghịch Lý Căn Nguyên & Khả Năng Dự Báo Thiệt Hại**
    * Nhúng **Dashboard D3**. Minh họa mô hình hồi quy log-log ($R^2 = 0{,}356$): Diện tích tăng 10 lần thì thiệt hại tăng ~2,7 lần; hoạt động con người gần khu dân cư là nguyên nhân chính gây mất mát tài sản.

@@ -43,7 +43,7 @@ Theo yêu cầu chính thức của môn học Tương tác Dữ liệu Trực q
 - **5.1. Thuật toán dự báo trên Python (0.5 đ barem - Thành viên 1 thực hiện)**: 
   - Thành viên 1 áp dụng thuật toán **Hồi quy tuyến tính (Linear Regression)** dự báo xu hướng diện tích cháy rừng / tổn thất theo thời gian hoặc **Hồi quy Logistic** phân lớp rủi ro siêu thảm họa bằng thư viện `scikit-learn`.
   - Đánh giá hiệu năng mô hình ($R^2$, MAE, RMSE đối với Linear; Accuracy, Precision, Recall, F1 đối với Logistic).
-  - Xuất bảng kết quả dự báo `forecast_results.csv` bàn giao cho pipeline.
+  - Xuất bảng kết quả mô hình `cause_classifier_predictions.csv` (phân loại nguyên nhân cháy bằng Hồi quy Logistic) và `damage_model_fires.csv` (hồi quy log-log) bàn giao cho pipeline.
 - **5.2. Trực quan hóa kết quả dự báo trên Dashboard (0.5 đ barem - Thành viên 3 thực hiện)**:
   - Thành viên 3 nhận kết quả dự báo của TV1, trực tiếp cấu hình đường xu hướng dự báo (**Trend Line / Forecast**) lên Dashboard D1 (trên `Sheet_01_Combo_Trend`).
   - Lồng ghép đường dự báo vào Story Point 1 để hoàn thiện câu chuyện phân tích.

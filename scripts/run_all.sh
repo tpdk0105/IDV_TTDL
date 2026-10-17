@@ -3,7 +3,7 @@
 # Pipeline Execution Script for Linux / macOS Bash
 # Project: Global Wildfire & Natural Disasters (2006-2025)
 # Sequence: 01_download -> 02_eda -> 03_clean -> 08_predictive_model ->
-#           04_split_tables -> 05_build_db -> 06_export_json -> 07_validate
+#           04_split_tables -> 07_validate
 # ==============================================================================
 
 set -e
@@ -22,7 +22,7 @@ echo -e "\n>>> Running Step 3: Rule-based Data Cleaning..."
 python src/03_clean.py
 
 
-echo -e "\n>>> Running Step 8: Linear Regression Forecast 2026-2035..."
+echo -e "\n>>> Running Step 8: Cause Classifier & Log-Log Damage Model..."
 python src/08_predictive_model.py
 
 echo -e "\n>>> Running Step 4: Star Schema Table Splitting..."

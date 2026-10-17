@@ -23,7 +23,7 @@
 6. **Xây dựng Mô hình dự báo (Predictive Modeling - Barem 1.0 Điểm)**:
    - Áp dụng thuật toán **Hồi quy tuyến tính (Linear Regression)** để dự báo diện tích rừng cháy / mức độ thiệt hại tài sản theo thời gian (hoặc **Hồi quy Logistic** phân loại cấp độ rủi ro).
    - Đánh giá các chỉ số sai số ($R^2$, RMSE, MAE).
-   - Xuất file kết quả dự báo `data/clean/forecast_results.csv` bàn giao cho TV2/TV3 sử dụng trên Dashboard.
+   - Xuất file kết quả mô hình `data/clean/cause_classifier_predictions.csv` bàn giao cho TV2/TV3 sử dụng trên Dashboard.
 7. Hoàn thành 2 biểu đồ độc lập được giao (**#1 `Sheet_01_Combo_Trend`**, **#2 `Sheet_02_Stacked_Area`**) trên Tableau.
 
 ---
@@ -88,10 +88,11 @@
 
 ### E. Xây Dựng Mô Hình Dự Báo Trên Python (Barem 0.5 Điểm)
 - [ ] Viết script `src/08_predictive_model.py` bằng `scikit-learn`:
-  - [ ] Huấn luyện mô hình **Hồi quy tuyến tính (Linear Regression)** dự báo diện tích cháy rừng hoặc thiệt hại qua các năm theo chuỗi thời gian 2006–2025.
-  - [ ] Đánh giá các chỉ số sai số: $R^2$, MAE, RMSE.
+  - [ ] Huấn luyện mô hình **Hồi quy Logistic** phân loại nguyên nhân cháy (con người / sét) và áp dụng cho nhóm không rõ nguyên nhân.
+  - [ ] Đánh giá bằng kiểm định chéo 5-fold và kiểm tra theo thời gian: AUC, Precision, Recall, F1, ma trận nhầm lẫn.
+  - [ ] Huấn luyện mô hình **Hồi quy tuyến tính log-log** giữa diện tích cháy và số công trình bị phá hủy; đánh giá $R^2$, MAE.
 - [ ] **Đầu ra bàn giao cho Pipeline**:
-  - Xuất bảng kết quả dự báo `data/clean/forecast_results.csv` (chứa các mốc năm tương lai và giá trị dự báo).
+  - Xuất bảng kết quả mô hình `data/clean/cause_classifier_predictions.csv` (xác suất cháy do sét và nguyên nhân dự đoán cho từng vụ) và `data/clean/damage_model_fires.csv`.
   - Bàn giao kết quả này cho TV2 nạp vào DB và TV3 sử dụng trực tiếp để hiển thị lên Dashboard.
 
 ---

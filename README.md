@@ -24,7 +24,7 @@ Dự án tập trung nghiên cứu, làm sạch, mô hình hóa và trực quan 
 5. **California Counties Demographics**: 58 Hạt của California kèm diện tích dặm vuông và dân số điều tra Census, phục vụ phân tích theo không gian và chuẩn hóa tỷ lệ thiệt hại trên đầu người.
 
 ### Điểm nổi bật về kỹ thuật:
-- **Kỹ thuật dữ liệu vững chắc (Python Pipeline)**: Tự động tải từ các nguồn dữ liệu uy tín $\to$ làm sạch quy tắc $\to$ làm sạch thông minh bằng **Học máy (Isolation Forest, LOF, MICE/KNN)** *(chưa triển khai)* $\to$ cam kết tập dữ liệu sạch đạt $\ge 5.000$ dòng.
+- **Kỹ thuật dữ liệu vững chắc (Python Pipeline)**: Tự động tải từ các nguồn dữ liệu uy tín $\to$ làm sạch theo quy tắc (phát hiện ngoại lai bằng Tukey IQR trên thang log, giữ nguyên giá trị thiếu) $\to$ cam kết tập dữ liệu sạch đạt $\ge 5.000$ dòng.
 - **Mô hình hóa chuẩn hình sao (Star Schema $\ge 3$ bảng)**: Tách dữ liệu đạt chuẩn tối thiểu 3NF (`dim_county`, `dim_cause`, `dim_date`, `fact_fire_incident`, `fact_structure_damage`), nạp vào SQLite với toàn bộ hệ thống ràng buộc toàn vẹn tham chiếu (PK, FK, CHECK, UNIQUE, NOT NULL).
 - **Trực quan hóa chuyên nghiệp trên Tableau Public**:
   - **10 Biểu đồ chuyên sâu (Worksheets)**: Thuộc 9 loại biểu đồ khác nhau, phân chia theo tỷ lệ 2/4/4 cho 3 thành viên.
@@ -40,7 +40,7 @@ Dự án tập trung nghiên cứu, làm sạch, mô hình hóa và trực quan 
 
 | Thành viên | Phụ trách chính | Nhánh Git | Phạm vi công việc tuần tự | Biểu đồ đảm nhiệm |
 |---|---|---|---|---|
-| **Thành viên 1** | Kỹ sư Dữ liệu & Học máy (ML Engineer) | `member-1-data` | Thu thập 5 nguồn California, EDA với **3–5 biểu đồ tĩnh** (Matplotlib/Seaborn), Làm sạch dữ liệu, **Huấn luyện Mô hình dự báo (Linear/Logistic Regression)** trên Python, bàn giao `master_clean.csv` và `forecast_results.csv` | **#1, #2** (2 Tableau Sheets) |
+| **Thành viên 1** | Kỹ sư Dữ liệu & Học máy (ML Engineer) | `member-1-data` | Thu thập 5 nguồn California, EDA với **3–5 biểu đồ tĩnh** (Matplotlib/Seaborn), Làm sạch dữ liệu, **Huấn luyện Mô hình dự báo (Linear/Logistic Regression)** trên Python, bàn giao `master_clean.csv` và `cause_classifier_predictions.csv` | **#1, #2** (2 Tableau Sheets) |
 | **Thành viên 2** | Kỹ sư Mô hình Dữ liệu (Data Modeling) | `member-2-model` | Star Schema $\ge 3$ bảng 3NF, CSDL SQLite (PK, FK, CHECK), Kiểm thử toàn vẹn tự động (pytest), Tách bảng tự động, Viết truy vấn SQL, bàn giao `database.sqlite` | **#3, #4, #5, #6** (4 Tableau Sheets) |
 | **Thành viên 3** | Kỹ sư Dashboard & Triển khai (DevOps) | `member-3-dashboard` | Thiết kế 3 Dashboards, **Trực quan hóa kết quả dự báo của TV1**, Xây dựng Tableau Story (3 Story Points), Xuất bản Tableau Public, Nhúng Web, **Video Demo & Backup**, Báo cáo IEEE ($\ge 40$ trang) | **#7, #8, #9, #10** (4 Tableau Sheets) |
 
@@ -79,7 +79,7 @@ IDV_TTDL/
 ├── data/                      # Dữ liệu qua các công đoạn (không commit file > 90MB)
 │   ├── raw/calfire/           # Dữ liệu gốc 5 bảng chính thức (đủ 20 năm) + MANIFEST.md
 │   ├── interim/               # master_rules_cleaned.csv (sau làm sạch quy tắc)
-│   ├── clean/                 # master_clean.csv (sau làm sạch ML, >= 5.000 dòng) + forecast_results.csv + damage_model_*.csv + casualties_by_year.csv
+│   ├── clean/                 # master_clean.csv (>= 5.000 dòng) + cause_classifier_*.csv + damage_model_*.csv + casualties_by_year.csv
 │   └── tables/                # Các bảng Star Schema CSV + database.sqlite
 ├── notebooks/                 # Jupyter Notebooks thực hiện EDA và kiểm thử ML
 ├── sql/                       # Mã nguồn CSDL SQLite
@@ -90,11 +90,10 @@ IDV_TTDL/
 │   ├── 01_download.py         # Thu thập dữ liệu thô (TV1)
 │   ├── 02_eda.py              # Khám phá dữ liệu và thống kê thiếu (TV1)
 │   ├── 03_clean.py            # Làm sạch theo quy tắc (TV1)
-│   ├── 03b_ml_clean.py        # Làm sạch bằng học máy Isolation Forest & MICE (TV1) — chưa triển khai
 │   ├── 04_split_tables.py     # Tách bảng Star Schema chuẩn 3NF (TV2)
 │   ├── 05_build_db.py         # Nạp CSDL database.sqlite kích hoạt FK (TV2)
 │   ├── 07_validate.py         # Kiểm thử tự động toàn vẹn tham chiếu và CHECK (TV2)
-│   └── 08_predictive_model.py # Linear Regression: dự báo 10 năm theo năm + log-log diện tích → công trình phá hủy (TV1)
+│   └── 08_predictive_model.py # Logistic: phân loại nguyên nhân cháy + log-log diện tích → công trình phá hủy (TV1)
 ├── tests/                     # Bộ kiểm thử pytest
 │   └── test_pipeline.py
 ├── docs/                      # Hồ sơ tài liệu kỹ thuật hoàn chỉnh

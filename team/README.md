@@ -20,7 +20,7 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
 │        ├─ Tiền xử lý, EDA tĩnh (3-5 hình Seaborn)                      │
 │        ├─ Huấn luyện Mô hình ML Dự báo (Linear/Logistic)               │
 │        ▼                                                               │
-│   BÀN GIAO: master_clean.csv (>= 5.000 dòng) + forecast_results.csv    │
+│   BÀN GIAO: master_clean.csv (>= 5.000 dòng) + kết quả mô hình (CSV)   │
 │        │                                                               │
 │        ▼                                                               │
 │   [Thành viên 2]                                                       │
@@ -60,7 +60,7 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
 5. **Làm sạch bằng Học máy (Machine Learning Cleaning)**: Viết [src/03b_ml_clean.py](../src/03b_ml_clean.py) áp dụng **tối thiểu 2 mô hình ML**:
    - *Phát hiện ngoại lai*: Áp dụng **Isolation Forest** (đối soát với LOF) trên biến logarit, gắn cờ `is_outlier_ml` và điểm số `outlier_score`.
    - *Điền giá trị khuyết thiếu*: Áp dụng **KNN Imputer** hoặc **Iterative Imputer (MICE)**, gắn cờ `<col>_is_imputed`. Thử nghiệm che ngẫu nhiên 10–20% đối soát sai số MAE/RMSE so với Baseline (Median).
-6. **Xây dựng Mô hình dự báo trên Python (Barem 0.5 Điểm)**: Áp dụng thuật toán **Hồi quy tuyến tính (Linear Regression)** hoặc **Hồi quy Logistic** bằng `scikit-learn` theo barem Mục II.3; đánh giá độ chính xác ($R^2$, MAE, RMSE); xuất bảng kết quả dự báo `data/clean/forecast_results.csv` bàn giao cho TV2/TV3 sử dụng trên Dashboard.
+6. **Xây dựng Mô hình dự báo trên Python (Barem 0.5 Điểm)**: Áp dụng thuật toán **Hồi quy tuyến tính (Linear Regression)** hoặc **Hồi quy Logistic** bằng `scikit-learn` theo barem Mục II.3; đánh giá độ chính xác ($R^2$, MAE, RMSE cho Linear; AUC, Precision, Recall, F1 cho Logistic); xuất kết quả mô hình `data/clean/cause_classifier_predictions.csv` (phân loại nguyên nhân cháy) và `data/clean/damage_model_fires.csv` (log-log) bàn giao cho TV2/TV3 sử dụng trên Dashboard.
 7. **Tài liệu làm sạch & mô hình**: Hoàn thiện [docs/ML_CLEANING_REPORT.md](../docs/ML_CLEANING_REPORT.md), [docs/CLEANING_LOG.md](../docs/CLEANING_LOG.md) và [docs/DATA_DICTIONARY.md](../docs/DATA_DICTIONARY.md).
 8. **Phụ trách 2 Worksheets trên Tableau**:
    - `Sheet_01_Combo_Trend`: Combo Dual-Axis cột số vụ cháy + đường diện tích cháy theo năm 2006–2025 (kèm Trend Line dự báo).
@@ -164,7 +164,7 @@ Mỗi đầu việc chỉ do **ĐÚNG MỘT** thành viên chịu trách nhiệm
 - **Dữ liệu trung gian (`data/interim/`)**:
   - File: `data/interim/master_rules_cleaned.csv`.
 - **Dữ liệu sạch hoàn chỉnh (`data/clean/`)**:
-  - File bắt buộc: `data/clean/master_clean.csv` ($\ge 5.000$ dòng) và `data/clean/forecast_results.csv`.
+  - File bắt buộc: `data/clean/master_clean.csv` ($\ge 5.000$ dòng) và `data/clean/cause_classifier_predictions.csv`.
 - **Dữ liệu các bảng phân rã (`data/tables/`)**:
   - Tên file CSV **bắt buộc trùng khớp 100% với tên bảng trong CSDL SQLite**:
     - ✅ `dim_date.csv`

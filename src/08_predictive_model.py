@@ -10,9 +10,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy import stats
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_absolute_error, r2_score, root_mean_squared_error
-from sklearn.model_selection import KFold
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.metrics import (accuracy_score, balanced_accuracy_score, confusion_matrix, f1_score,
+                             mean_absolute_error, precision_score, r2_score, recall_score, roc_auc_score,
+                             roc_curve, root_mean_squared_error)
+from sklearn.model_selection import KFold, StratifiedKFold, cross_val_predict
+from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 # Dung lai ham dinh dang so kieu Viet Nam tu 02_eda.py
 _spec = importlib.util.spec_from_file_location("eda", Path(__file__).parent / "02_eda.py")
@@ -20,52 +26,32 @@ eda = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(eda)
 
 INPUT_PATH = Path("data/interim/master_rules_cleaned.csv")
-FORECAST_PATH = Path("data/clean/forecast_results.csv")
-METRICS_PATH = Path("data/clean/forecast_metrics.csv")
-FIGURE_PATH = Path("reports/figures/model_01_forecast.png")
-METRICS_FIGURE_PATH = Path("reports/figures/model_02_metrics.png")
+CLF_PREDICTIONS_PATH = Path("data/clean/cause_classifier_predictions.csv")
+CLF_METRICS_PATH = Path("data/clean/cause_classifier_metrics.csv")
+CLF_FIGURE_PATH = Path("reports/figures/model_01_cause_classifier.png")
+CLF_INSIGHT_FIGURE_PATH = Path("reports/figures/model_02_cause_insights.png")
 DAMAGE_METRICS_PATH = Path("data/clean/damage_model_metrics.csv")
 DAMAGE_CURVE_PATH = Path("data/clean/damage_model_curve.csv")
-DAMAGE_FIGURE_PATH = Path("reports/figures/model_05_damage_loglog.png")
-DAMAGE_CV_FIGURE_PATH = Path("reports/figures/model_06_damage_cv.png")
-CAUSE_FORECAST_PATH = Path("data/clean/forecast_by_cause.csv")
-CAUSE_METRICS_PATH = Path("data/clean/forecast_by_cause_metrics.csv")
-CAUSE_FIGURE_PATH = Path("reports/figures/model_03_forecast_by_cause.png")
-CAUSE_METRICS_FIGURE_PATH = Path("reports/figures/model_04_cause_metrics.png")
+DAMAGE_FIRES_PATH = Path("data/clean/damage_model_fires.csv")
+DAMAGE_FIGURE_PATH = Path("reports/figures/model_03_damage_loglog.png")
+DAMAGE_CV_FIGURE_PATH = Path("reports/figures/model_04_damage_cv.png")
 
-FIRST_TEST_YEAR = 2016                # rolling origin: du bao lan luot 2016..2025 (10 lan)
-FORECAST_YEARS = range(2026, 2036)    # 10 nam tuong lai
 CONFIDENCE = 0.95
-SIGNIFICANCE = 0.05                   # nguong p-value
 
-# Mo hinh log-log: du lieu cat ngang (tung vu chay) -> K-fold xao tron, khong can rolling origin
+# Ca 2 mo hinh dung du lieu cat ngang (tung vu chay) -> kiem dinh cheo K-fold xao tron
 CV_FOLDS = 5
 RANDOM_STATE = 42
 CURVE_ACRES = [100, 1_000, 10_000, 100_000, 1_000_000]  # cac moc dien tich de tra cuu nhanh
 
-# (ten cot, co huan luyen tren log1p khong, nhan hien thi)
-FORECAST_TARGETS = [
-    ("n_fires", False, "Số vụ cháy"),
-    ("area_ha", True, "Tổng diện tích cháy (ha)"),
-    ("destroyed", True, "Công trình bị phá hủy"),
-]
-# So vu chay moi nam theo nguyen nhan. Chi lay nhom lon + Vehicle: Arson / Powerline / Miscellaneous
-# chi 17-38 vu/nam, sai so rolling origin con kem hon moc trung binh
-CAUSE_TARGETS = [
-    ("human", False, "Con người\n(Human)"),
-    ("natural", True, "Tự nhiên – sét\n(Natural)"),
-    ("undetermined", False, "Không rõ\n(Undetermined)"),
-    ("vehicle", False, "Xe cộ\n(Vehicle)"),
-]
-# Nhan 2 dong cho truc cua bieu do thong so mo hinh
-METRIC_AXIS_LABELS = {
-    "n_fires": "Số vụ cháy\n(n_fires)",
-    "area_ha": "Tổng diện tích\n(area_ha)",
-    "destroyed": "Công trình phá hủy\n(destroyed)",
-    **{target: label for target, _, label in CAUSE_TARGETS},
-}
-# Don vi trend_unit trong forecast_metrics.csv -> nhan hien thi tren bieu do
-TREND_UNIT_LABELS = {"%/nam": "%/năm", "don vi/nam": "vụ/năm"}
+# Phan loai nguyen nhan Human / Natural: hoc tren vu da biet nguyen nhan, ap dung cho nhom Undetermined.
+# Dia diem (don vi, hat) la bien manh nhat; cuoi tuan / ngay 4-7 / ngay trong nam khong cai thien AUC
+CLF_NUMERIC = ["log_acres", "log_duration"]
+CLF_CATEGORICAL = ["month", "unit_id", "county"]
+CLF_FEATURES = CLF_NUMERIC + CLF_CATEGORICAL
+CLF_THRESHOLD = 0.4          # nguong cho F1 cao nhat trong kiem dinh cheo
+CLF_TEMPORAL_SPLIT = 2015    # kiem tra theo thoi gian: hoc <= 2015, du bao 2016-2025
+CLF_MIN_CATEGORY = 20        # don vi / hat it hon 20 vu gop chung mot nhom
+CLF_TOP_UNITS = 5            # so don vi in ra moi phia (nghieng ve set / ve nguoi) khi chay
 
 # Mau theo docs/COLOR_GUIDE.md
 COLOR_ACTUAL = "#D94801"
@@ -73,8 +59,6 @@ COLOR_FIT = "#7F7F7F"
 COLOR_FORECAST = "#2171B5"
 COLOR_BAND = "#9ECAE1"
 COLOR_LABEL = "#084594"
-COLOR_THRESHOLD = "#B2182B"
-MAE_BAR_COLORS = ["#6BAED6", "#9ECAE1", "#4292C6", "#2171B5"]
 TEXT_BOX = {"boxstyle": "round,pad=0.3", "facecolor": "white", "edgecolor": "none", "alpha": 0.85}
 
 
@@ -82,43 +66,27 @@ def load_data(path: Path = INPUT_PATH) -> pd.DataFrame:
     return pd.read_csv(path, dtype={"county_fips": str}, parse_dates=["alarm_date", "cont_date"])
 
 
-def build_yearly(df: pd.DataFrame) -> pd.DataFrame:
-    return (
-        df.groupby("year")
-        .agg(
-            n_fires=("year", "size"),
-            area_ha=("burned_area_ha", "sum"),
-            destroyed=("structures_destroyed", "sum"),
-        )
-        .reset_index()
-    )
-
-
-def build_yearly_by_cause(df: pd.DataFrame) -> pd.DataFrame:
-    years = pd.Index(sorted(df["year"].unique()), name="year")
-    by_group = pd.crosstab(df["year"], df["cause_group"]).reindex(years, fill_value=0)
-    by_group.columns = by_group.columns.str.lower()
-    vehicle = df[df["cause_name"] == "Vehicle"].groupby("year").size().reindex(years, fill_value=0)
-    return by_group.assign(vehicle=vehicle).reset_index()[["year", *[t for t, _, _ in CAUSE_TARGETS]]]
+def build_cause_data(df: pd.DataFrame) -> pd.DataFrame:
+    # Can ngay bao chay de lay thang -> bo cac vu thieu alarm_date
+    fires = df.dropna(subset=["alarm_date"]).copy()
+    fires["month"] = fires["alarm_date"].dt.month.astype(str)
+    fires["log_acres"] = np.log10(fires["acres_burned"].clip(lower=0.01))
+    fires["log_duration"] = np.log1p(fires["duration_days"])  # NaN -> dien trung vi trong pipeline
+    fires["county"] = fires["county"].fillna("Unknown")
+    # 1 = Natural, 0 = Human, NaN = Undetermined (nhom can du doan)
+    fires["is_natural"] = fires["cause_group"].map({"Natural": 1, "Human": 0})
+    return fires[["incident_id", "year", "fire_name", "cause_group", "is_natural", *CLF_FEATURES]].reset_index(drop=True)
 
 
 def build_damage(df: pd.DataFrame) -> pd.DataFrame:
     # Chi cac vu co pha huy cong trinh: log10(0) khong xac dinh
     damage = df.loc[df["structures_destroyed"] > 0,
-                    ["incident_id", "year", "fire_name", "acres_burned", "structures_destroyed"]].copy()
+                    ["incident_id", "year", "fire_name", "county", "cause_group", "acres_burned",
+                     "burned_area_ha", "structures_destroyed", "structures_damaged"]].copy()
     assert (damage["acres_burned"] > 0).all(), "dien tich chay phai > 0 de lay log"
     damage["log_acres"] = np.log10(damage["acres_burned"])
     damage["log_destroyed"] = np.log10(damage["structures_destroyed"])
     return damage.reset_index(drop=True)
-
-
-def _fit(train: pd.DataFrame, target: str, use_log: bool) -> LinearRegression:
-    y = np.log1p(train[target]) if use_log else train[target]
-    return LinearRegression().fit(train[["year"]], y)
-
-
-def _to_original_scale(values, use_log: bool):
-    return np.expm1(values) if use_log else values
 
 
 def _prediction_interval(x: np.ndarray, y: np.ndarray, model: LinearRegression, x0: np.ndarray):
@@ -130,62 +98,6 @@ def _prediction_interval(x: np.ndarray, y: np.ndarray, model: LinearRegression, 
     std_error = residual_std * np.sqrt(1 + 1 / n + (x0 - x.mean()) ** 2 / ((x - x.mean()) ** 2).sum())
     t_critical = stats.t.ppf((1 + CONFIDENCE) / 2, df=n - 2)
     return pred, pred - t_critical * std_error, pred + t_critical * std_error
-
-
-def evaluate_trend(yearly: pd.DataFrame, target: str, use_log: bool) -> dict:
-    preds, naive_preds, actuals = [], [], []
-    for t in range(FIRST_TEST_YEAR, int(yearly["year"].max()) + 1):
-        train = yearly[yearly["year"] < t]
-        test = yearly[yearly["year"] == t]
-        model = _fit(train, target, use_log)
-        preds.append(_to_original_scale(model.predict(test[["year"]])[0], use_log))
-        naive_preds.append(train[target].mean())  # moc so sanh: doan bang trung binh qua khu
-        actuals.append(test[target].iat[0])
-
-    # Moi lan chi co 1 diem -> R2 tinh 1 lan tren ca 10 cap (thuc te, du bao)
-    return {
-        "metric": target,
-        "n_folds": len(actuals),
-        "r2": r2_score(actuals, preds),
-        "mae": mean_absolute_error(actuals, preds),
-        "rmse": root_mean_squared_error(actuals, preds),
-        "mae_naive_mean": mean_absolute_error(actuals, naive_preds),
-    }
-
-
-def describe_trend(yearly: pd.DataFrame, target: str, use_log: bool) -> dict:
-    y = np.log1p(yearly[target]) if use_log else yearly[target]
-    res = stats.linregress(yearly["year"], y)
-    return {
-        "metric": target,
-        "trained_on_log": use_log,
-        # Thang log: do doc = % thay doi moi nam; thang goc: don vi / nam
-        "trend_per_year": np.expm1(res.slope) * 100 if use_log else res.slope,
-        "trend_unit": "%/nam" if use_log else "don vi/nam",
-        "r2_fit_all_years": res.rvalue ** 2,
-        "p_value": res.pvalue,
-    }
-
-
-def forecast_trend(yearly: pd.DataFrame, target: str, use_log: bool) -> pd.DataFrame:
-    x = yearly["year"].to_numpy()
-    y_fit = np.log1p(yearly[target].to_numpy(dtype=float)) if use_log else yearly[target].to_numpy(dtype=float)
-    model = _fit(yearly, target, use_log)
-
-    all_years = pd.DataFrame({"year": list(x) + list(FORECAST_YEARS)})
-    pred, lower, upper = _prediction_interval(x, y_fit, model, all_years["year"].to_numpy())
-    pred, lower, upper = (_to_original_scale(v, use_log) for v in (pred, lower, upper))
-
-    result = all_years.assign(
-        metric=target,
-        predicted=pred,
-        lower_95=np.clip(lower, 0, None),  # so vu / dien tich / cong trinh khong the am
-        upper_95=upper,
-    )
-    actual = yearly[["year", target]].rename(columns={target: "actual"})
-    result = result.merge(actual, on="year", how="left")
-    result["is_forecast"] = result["year"] > x.max()
-    return result[["year", "metric", "actual", "predicted", "lower_95", "upper_95", "is_forecast"]]
 
 
 def describe_damage(damage: pd.DataFrame) -> dict:
@@ -241,6 +153,59 @@ def damage_curve(damage: pd.DataFrame, acres) -> pd.DataFrame:
         "lower_95": np.clip(10 ** lower, 1, None),
         "upper_95": 10 ** upper,
     })
+
+
+def _cause_classifier() -> Pipeline:
+    features = ColumnTransformer([
+        ("num", make_pipeline(SimpleImputer(strategy="median"), StandardScaler()), CLF_NUMERIC),
+        ("cat", OneHotEncoder(handle_unknown="ignore", min_frequency=CLF_MIN_CATEGORY), CLF_CATEGORICAL),
+    ])
+    return make_pipeline(features, LogisticRegression(max_iter=5000))
+
+
+def _classification_scores(y_true: np.ndarray, proba: np.ndarray, label: str) -> dict:
+    pred = (proba >= CLF_THRESHOLD).astype(int)
+    return {
+        "evaluation": label,
+        "n_fires": len(y_true),
+        "auc": roc_auc_score(y_true, proba),
+        # 64% la Human -> accuracy de danh lua, can xem them balanced accuracy va F1
+        "accuracy": accuracy_score(y_true, pred),
+        "balanced_accuracy": balanced_accuracy_score(y_true, pred),
+        "precision": precision_score(y_true, pred, zero_division=0),
+        "recall": recall_score(y_true, pred),
+        "f1": f1_score(y_true, pred),
+        "natural_actual": int(y_true.sum()),
+        "natural_expected": float(proba.sum()),  # tong xac suat ~ so vu Natural neu xac suat hieu chinh tot
+    }
+
+
+def evaluate_cause_classifier(known: pd.DataFrame) -> tuple[pd.DataFrame, np.ndarray]:
+    X, y = known[CLF_FEATURES], known["is_natural"].astype(int).to_numpy()
+    cv = StratifiedKFold(CV_FOLDS, shuffle=True, random_state=RANDOM_STATE)
+    oof = cross_val_predict(_cause_classifier(), X, y, cv=cv, method="predict_proba")[:, 1]
+
+    # Hoc qua khu, du bao cac nam sau: kiem tra mo hinh con dung khi du lieu troi theo thoi gian
+    past = (known["year"] <= CLF_TEMPORAL_SPLIT).to_numpy()
+    temporal = _cause_classifier().fit(X[past], y[past]).predict_proba(X[~past])[:, 1]
+
+    metrics = pd.DataFrame([
+        _classification_scores(y, np.zeros(len(y)), "moc: doan tat ca la Human"),
+        _classification_scores(y, oof, f"kiem dinh cheo {CV_FOLDS}-fold"),
+        _classification_scores(y[~past], temporal, f"hoc <= {CLF_TEMPORAL_SPLIT}, du bao {CLF_TEMPORAL_SPLIT + 1}-2025"),
+    ])
+    return metrics, oof
+
+
+def cause_odds_ratios(model: Pipeline) -> pd.DataFrame:
+    # Ty so odds > 1: nghieng ve Natural. Bien so: cho moi +1 do lech chuan
+    names = model[0].get_feature_names_out()
+    odds = pd.DataFrame({"feature": names, "odds_ratio": np.exp(model[-1].coef_[0])})
+    odds["group"] = odds["feature"].str.extract(r"^(?:num|cat)__(log_acres|log_duration|month|unit_id|county)",
+                                                expand=False)
+    odds["level"] = odds.apply(lambda r: r["feature"].split(f"{r['group']}_", 1)[-1] if r["group"] in CLF_CATEGORICAL
+                               else r["group"], axis=1)
+    return odds
 
 
 def _save_figure(fig: plt.Figure, output_path: Path, label: str) -> None:
@@ -302,43 +267,68 @@ def plot_damage_cv(damage: pd.DataFrame, metrics: dict, predicted: pd.Series,
     return fig
 
 
-def plot_forecasts(forecast: pd.DataFrame, output_path: Path = FIGURE_PATH, targets: list = FORECAST_TARGETS,
-                   title: str = "Dự báo hồi quy tuyến tính") -> plt.Figure:
-    fig, axes = plt.subplots(len(targets), 1, figsize=(12, 3.7 * len(targets)), sharex=True)
-    last_year = forecast.loc[~forecast["is_forecast"], "year"].max()
+def plot_cause_classifier(known: pd.DataFrame, oof: np.ndarray, metrics: pd.DataFrame,
+                          output_path: Path = CLF_FIGURE_PATH) -> plt.Figure:
+    y = known["is_natural"].astype(int).to_numpy()
+    cv_row = metrics.iloc[1]
+    fig, (ax_roc, ax_cm) = plt.subplots(1, 2, figsize=(13, 5.2), gridspec_kw={"width_ratios": [1.15, 1]})
 
-    for ax, (target, use_log, label) in zip(axes, targets):
-        label = label.replace("\n", " ")
-        data = forecast[forecast["metric"] == target]
-        hist, future = data[~data["is_forecast"]], data[data["is_forecast"]]
+    fpr, tpr, _ = roc_curve(y, oof)
+    ax_roc.plot(fpr, tpr, color=COLOR_FORECAST, linewidth=2.2,
+                label=f"Hồi quy logistic (AUC = {eda.vn_number(cv_row['auc'], 3)})")
+    ax_roc.plot([0, 1], [0, 1], color=COLOR_FIT, linestyle="--", linewidth=1, label="Đoán ngẫu nhiên (AUC = 0,5)")
+    ax_roc.set_xlabel("Tỷ lệ vụ do người bị đoán nhầm là do sét")
+    ax_roc.set_ylabel("Tỷ lệ vụ do sét được nhận ra (Recall)")
+    ax_roc.legend(frameon=False, loc="lower right", fontsize=9)
+    _style_metric_panel(ax_roc, f"1. Đường ROC (kiểm định chéo {CV_FOLDS}-fold)")
 
-        ax.fill_between(data["year"], data["lower_95"], data["upper_95"], color=COLOR_BAND, alpha=0.35,
-                        label=f"Khoảng dự báo {CONFIDENCE:.0%}")
-        ax.plot(hist["year"], hist["predicted"], color=COLOR_FIT, linewidth=1.5, label="Đường xu hướng")
-        ax.plot(future["year"], future["predicted"], color=COLOR_FORECAST, linewidth=2.2, marker="o", markersize=4,
-                label=f"Dự báo {future['year'].min()}–{future['year'].max()}")
-        ax.scatter(hist["year"], hist["actual"], color=COLOR_ACTUAL, zorder=3, s=25, label="Thực tế")
-        ax.axvline(last_year + 0.5, color=COLOR_FIT, linestyle=":", linewidth=1)
+    cm = confusion_matrix(y, (oof >= CLF_THRESHOLD).astype(int))
+    ax_cm.imshow(cm / cm.sum(axis=1, keepdims=True), cmap="Blues", vmin=0, vmax=1)
+    for (i, j), value in np.ndenumerate(cm):
+        share = value / cm[i].sum()
+        ax_cm.text(j, i, f"{eda.vn_number(value)}\n({eda.vn_number(share * 100, 0)}%)", ha="center", va="center",
+                   fontsize=12, fontweight="bold", color="white" if share > 0.5 else COLOR_LABEL)
+    ax_cm.set_xticks([0, 1], ["Dự đoán: Người", "Dự đoán: Sét"])
+    ax_cm.set_yticks([0, 1], ["Thực tế: Người", "Thực tế: Sét"])
+    ax_cm.set_title(f"2. Ma trận nhầm lẫn (ngưỡng {eda.vn_number(CLF_THRESHOLD, 1)})\n"
+                    f"F1 = {eda.vn_number(cv_row['f1'], 2)} · Balanced accuracy = "
+                    f"{eda.vn_number(cv_row['balanced_accuracy'], 2)}", fontsize=11, fontweight="bold", loc="left")
 
-        # Ghi gia tri du bao nam cuoi kem khoang [thap - cao]
-        end = future.iloc[-1]
-        ax.annotate(f"{eda.vn_number(end['predicted'])}\n"
-                    f"[{eda.vn_number(end['lower_95'])} – {eda.vn_number(end['upper_95'])}]",
-                    xy=(end["year"], end["predicted"]), xytext=(8, 0), textcoords="offset points",
-                    va="center", fontsize=8, color=COLOR_FORECAST)
-        if use_log:
-            ax.set_yscale("log")  # khoang du bao lech manh, truc log de doc ca 2 dau
-        else:
-            ax.yaxis.set_major_formatter(eda.VN_TICK_FORMATTER)
-        ax.set_ylabel(label + (" (log)" if use_log else ""))
-        ax.spines[["top", "right"]].set_visible(False)
+    fig.suptitle(f"Phân loại nguyên nhân cháy: con người hay sét ({eda.vn_number(len(known))} vụ đã biết nguyên nhân)",
+                 fontsize=12, fontweight="bold", x=0.01, ha="left")
+    fig.tight_layout()
+    _save_figure(fig, output_path, "bieu do phan loai nguyen nhan")
+    return fig
 
-    axes[0].legend(frameon=False, loc="upper left", fontsize=8, ncol=4)
-    axes[-1].set_xticks(range(int(forecast["year"].min()), int(forecast["year"].max()) + 1, 2))
-    fig.suptitle(f"{title} {min(FORECAST_YEARS)}–{max(FORECAST_YEARS)} "
-                 f"(vùng xanh = khoảng dự báo {CONFIDENCE:.0%})", fontsize=13, x=0.01, ha="left")
-    fig.tight_layout(rect=(0, 0, 1, 0.98))  # chua cho tieu de, khong de len chu giai
-    _save_figure(fig, output_path, "bieu do du bao")
+
+def plot_cause_insights(predictions: pd.DataFrame, output_path: Path = CLF_INSIGHT_FIGURE_PATH) -> plt.Figure:
+    fig, ax_year = plt.subplots(figsize=(12, 5.8))
+
+    # Thanh phan moi nam: da biet + uoc tinh cho nhom Undetermined (tong xac suat)
+    und = predictions[predictions["cause_is_predicted"] == 1]
+    by_year = pd.DataFrame({
+        "Người (đã biết)": predictions[predictions["cause_group"] == "Human"].groupby("year").size(),
+        "Sét (đã biết)": predictions[predictions["cause_group"] == "Natural"].groupby("year").size(),
+        "Không rõ → ước tính người": und.groupby("year")["p_natural"].apply(lambda s: (1 - s).sum()),
+        "Không rõ → ước tính sét": und.groupby("year")["p_natural"].sum(),
+    }).fillna(0)
+    colors = [COLOR_FORECAST, COLOR_ACTUAL, COLOR_BAND, eda.COLOR_FIRE_LIGHT]
+    bottom = np.zeros(len(by_year))
+    for (label, values), color in zip(by_year.items(), colors):
+        ax_year.bar(by_year.index, values, bottom=bottom, color=color, label=label, width=0.75)
+        bottom += values.to_numpy()
+    ax_year.set_ylabel("Số vụ cháy")
+    ax_year.yaxis.set_major_formatter(eda.VN_TICK_FORMATTER)
+    ax_year.set_xticks(by_year.index[::2])
+    ax_year.legend(frameon=False, loc="upper left", fontsize=9, ncol=2)
+    _style_metric_panel(ax_year, "Số vụ cháy theo nguyên nhân mỗi năm, nhóm không rõ nguyên nhân được phân bổ theo xác suất dự đoán")
+
+    human_like = (1 - und["p_natural"]).sum()
+    fig.suptitle(f"Phần lớn vụ cháy không rõ nguyên nhân mang đặc điểm cháy do con người: ước tính "
+                 f"{eda.vn_number(human_like)} / {eda.vn_number(len(und))} vụ ({eda.vn_number(human_like / len(und) * 100, 0)}%)",
+                 fontsize=12, fontweight="bold", x=0.01, ha="left")
+    fig.tight_layout()
+    _save_figure(fig, output_path, "bieu do dien giai phan loai")
     return fig
 
 
@@ -347,108 +337,49 @@ def _style_metric_panel(ax: plt.Axes, title: str) -> None:
     ax.spines[["top", "right"]].set_visible(False)
 
 
-def _plot_trend_panel(ax: plt.Axes, metrics: pd.DataFrame, labels: list[str]) -> None:
-    bars = ax.barh(labels, metrics["trend_per_year"], color=COLOR_FORECAST, alpha=0.85, height=0.55)
-    ax.axvline(0, color=COLOR_FIT, linestyle="--", linewidth=1)
-    # Xu huong co the am (vd cháy do sét giam) -> truc mo ra ca 2 phia cua 0
-    max_trend = max(float(metrics["trend_per_year"].max()), 0)
-    min_trend = min(float(metrics["trend_per_year"].min()), 0)
-    pad = (max_trend - min_trend) * 0.03
-    for bar, (_, row) in zip(bars, metrics.iterrows()):
-        value = row["trend_per_year"]
-        unit = TREND_UNIT_LABELS.get(row["trend_unit"], row["trend_unit"])
-        sign = "+" if value >= 0 else "-"
-        ax.text(value + (pad if value >= 0 else -pad), bar.get_y() + bar.get_height() / 2,
-                f"{sign}{eda.vn_number(abs(value), 2)} {unit}",
-                va="center", ha="left" if value >= 0 else "right", fontsize=9, fontweight="bold", color=COLOR_LABEL)
-    _style_metric_panel(ax, "1. Tốc độ thay đổi hằng năm (xu hướng)")
-    ax.set_xlabel("Giá trị thay đổi mỗi năm")
-    ax.set_xlim(min_trend * 2.2, max_trend * 1.5)
-    ax.xaxis.set_major_formatter(eda.VN_TICK_FORMATTER)
+def run_cause_classifier() -> pd.DataFrame:
+    fires = build_cause_data(load_data())
+    known = fires[fires["is_natural"].notna()].reset_index(drop=True)
+    undetermined = fires[fires["is_natural"].isna()].reset_index(drop=True)
+    print(f"[TV1 - MODEL] Phan loai nguyen nhan: hoc tren {len(known)} vu da biet "
+          f"(Natural = {known['is_natural'].mean() * 100:.1f}%), du doan {len(undetermined)} vu Undetermined")
 
+    metrics, oof = evaluate_cause_classifier(known)
+    final = _cause_classifier().fit(known[CLF_FEATURES], known["is_natural"].astype(int))
 
-def _plot_pvalue_panel(ax: plt.Axes, metrics: pd.DataFrame, labels: list[str]) -> None:
-    colors = [COLOR_ACTUAL if p < SIGNIFICANCE else (COLOR_BAND if p < 0.1 else COLOR_FIT) for p in metrics["p_value"]]
-    bars = ax.bar(labels, metrics["p_value"], color=colors, alpha=0.85, width=0.5)
-    ax.axhline(SIGNIFICANCE, color=COLOR_THRESHOLD, linestyle=":", linewidth=1.5,
-               label=f"Ngưỡng p = {eda.vn_number(SIGNIFICANCE, 2)} (độ tin cậy 95%)")
-    # Truc luon chua duong nguong (moi p < 0,05 thi truc van phai cao hon 0,05)
-    y_top = max(float(metrics["p_value"].max()), SIGNIFICANCE) * 1.45
-    for bar, (_, row) in zip(bars, metrics.iterrows()):
-        p_text = "p < 0,001" if row["p_value"] < 0.001 else f"p = {eda.vn_number(row['p_value'], 3)}"
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + y_top * 0.03,
-                f"{p_text}\nR² = {eda.vn_number(row['r2_fit_all_years'] * 100, 1)}%",
-                ha="center", va="bottom", fontsize=8.5)
-    _style_metric_panel(ax, "2. Kiểm định ý nghĩa thống kê (p-value)")
-    ax.set_ylabel("Giá trị p-value")
-    ax.set_ylim(0, y_top)
-    ax.yaxis.set_major_formatter(eda.VN_TICK_FORMATTER)
-    ax.legend(frameon=False, loc="upper right", fontsize=8.5)
+    # Vu da biet: xac suat ngoai mau (CV) de danh gia; vu Undetermined: mo hinh hoc tren toan bo vu da biet
+    predictions = pd.concat([
+        known.assign(p_natural=oof, p_source="cv_out_of_fold", cause_is_predicted=0),
+        undetermined.assign(p_natural=final.predict_proba(undetermined[CLF_FEATURES])[:, 1],
+                            p_source="final_model", cause_is_predicted=1),
+    ], ignore_index=True)
+    predictions["cause_predicted"] = np.where(predictions["p_natural"] >= CLF_THRESHOLD, "Natural", "Human")
+    # Khong ghi de nguyen nhan goc: du doan nam o cot rieng, danh dau bang cause_is_predicted
+    predictions["prediction_correct"] = (predictions["cause_predicted"] == predictions["cause_group"]).where(
+        predictions["cause_is_predicted"] == 0)
+    assert len(predictions) == len(fires) and predictions["incident_id"].is_unique
+    assert predictions["p_natural"].between(0, 1).all()
 
+    CLF_METRICS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    metrics.to_csv(CLF_METRICS_PATH, index=False, encoding="utf-8")
+    predictions.drop(columns=["is_natural"]).to_csv(CLF_PREDICTIONS_PATH, index=False, encoding="utf-8")
 
-def _plot_mae_panel(ax: plt.Axes, metrics: pd.DataFrame, labels: list[str]) -> None:
-    relative_mae = (metrics["mae"] / metrics["mae_naive_mean"]) * 100
-    bars = ax.bar(labels, relative_mae, color=MAE_BAR_COLORS, alpha=0.9, width=0.5)
-    ax.axhline(100, color=COLOR_FIT, linestyle="--", linewidth=1.2, label="Mốc so sánh: đoán bằng trung bình (100%)")
-    for bar, (_, row), rel in zip(bars, metrics.iterrows(), relative_mae):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 1.5,
-                f"{eda.vn_number(rel, 1)}%\n(MAE: {eda.vn_number(row['mae'])})",
-                ha="center", va="bottom", fontsize=8)
-    _style_metric_panel(ax, "3. So sánh MAE mô hình với mốc trung bình")
-    ax.set_ylabel("Tỷ lệ MAE mô hình / MAE mốc (%)")
-    ax.set_ylim(0, float(relative_mae.max()) * 1.25)
-    ax.yaxis.set_major_formatter(eda.VN_TICK_FORMATTER)
-    ax.legend(frameon=False, loc="upper right", fontsize=8.5)
+    odds = cause_odds_ratios(final)
+    print(metrics.to_string(index=False, float_format=lambda v: f"{v:,.3f}"))
+    und = predictions[predictions["cause_is_predicted"] == 1]
+    print(f"  Undetermined: uoc {und['p_natural'].sum():.0f} / {len(und)} vu co dac diem chay do set "
+          f"({und['p_natural'].mean() * 100:.1f}%), nguong {CLF_THRESHOLD} -> "
+          f"{(und['cause_predicted'] == 'Natural').sum()} vu gan nhan Natural")
+    numeric = odds[odds["group"].isin(CLF_NUMERIC)].set_index("level")["odds_ratio"]
+    print("  Ty so odds bien so (moi +1 do lech chuan):", numeric.round(2).to_dict())
+    # Don vi quan ly nghieng ve set / ve nguoi nhieu nhat (bo nhom gop "infrequent")
+    units = odds[(odds["group"] == "unit_id") & ~odds["level"].str.startswith("infrequent")].set_index("level")
+    print("  Don vi nghieng ve set nhat:", units["odds_ratio"].nlargest(CLF_TOP_UNITS).round(2).to_dict())
+    print("  Don vi nghieng ve nguoi nhat:", units["odds_ratio"].nsmallest(CLF_TOP_UNITS).round(2).to_dict())
 
-
-def plot_model_metrics(metrics: pd.DataFrame, output_path: Path = METRICS_FIGURE_PATH,
-                       title: str = "Tổng hợp các thông số đánh giá mô hình hồi quy tuyến tính (2006–2025)") -> plt.Figure:
-    fig, (ax_trend, ax_pvalue, ax_mae) = plt.subplots(1, 3, figsize=(5 * len(metrics), 4.5))
-    labels = [METRIC_AXIS_LABELS.get(m, m) for m in metrics["metric"]]
-
-    _plot_trend_panel(ax_trend, metrics, labels)
-    _plot_pvalue_panel(ax_pvalue, metrics, labels)
-    _plot_mae_panel(ax_mae, metrics, labels)
-
-    fig.suptitle(title, fontsize=12, fontweight="bold", x=0.01, ha="left")
-    fig.tight_layout()
-    _save_figure(fig, output_path, "bieu do thong so mo hinh")
-    return fig
-
-
-def _run_targets(yearly: pd.DataFrame, targets: list, forecast_path: Path, metrics_path: Path):
-    forecasts, metrics = [], []
-    for target, use_log, _ in targets:
-        metrics.append({**describe_trend(yearly, target, use_log), **evaluate_trend(yearly, target, use_log)})
-        forecasts.append(forecast_trend(yearly, target, use_log))
-
-    forecast = pd.concat(forecasts, ignore_index=True)
-    metrics = pd.DataFrame(metrics)
-
-    expected_rows = len(targets) * (len(yearly) + len(FORECAST_YEARS))
-    assert len(forecast) == expected_rows, f"forecast co {len(forecast)} dong, ky vong {expected_rows}"
-    assert (forecast["lower_95"] <= forecast["predicted"]).all() and (forecast["predicted"] <= forecast["upper_95"]).all()
-    assert (forecast["predicted"] >= 0).all(), "du bao am"
-
-    forecast_path.parent.mkdir(parents=True, exist_ok=True)
-    forecast.to_csv(forecast_path, index=False, encoding="utf-8")
-    metrics.to_csv(metrics_path, index=False, encoding="utf-8")
-
-    print(metrics[["metric", "trend_per_year", "trend_unit", "p_value", "r2", "mae", "rmse", "mae_naive_mean"]]
-          .to_string(index=False, float_format=lambda v: f"{v:,.3f}"))
-
-    edge = forecast[forecast["year"].isin([min(FORECAST_YEARS), max(FORECAST_YEARS)])]
-    print(edge.drop(columns=["actual", "is_forecast"]).to_string(index=False, float_format=lambda v: f"{v:,.0f}"))
-    return forecast, metrics
-
-
-def run_predictive_models() -> pd.DataFrame:
-    yearly = build_yearly(load_data())
-    print(f"[TV1 - MODEL] Du lieu theo nam: {yearly['year'].min()}-{yearly['year'].max()} ({len(yearly)} nam)")
-    forecast, metrics = _run_targets(yearly, FORECAST_TARGETS, FORECAST_PATH, METRICS_PATH)
-    plt.close(plot_forecasts(forecast))
-    plt.close(plot_model_metrics(metrics))
-    return forecast
+    plt.close(plot_cause_classifier(known, oof, metrics))
+    plt.close(plot_cause_insights(predictions))
+    return predictions
 
 
 def run_damage_model() -> pd.DataFrame:
@@ -462,6 +393,11 @@ def run_damage_model() -> pd.DataFrame:
     DAMAGE_METRICS_PATH.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame([{**summary, **metrics}]).to_csv(DAMAGE_METRICS_PATH, index=False, encoding="utf-8")
     curve.to_csv(DAMAGE_CURVE_PATH, index=False, encoding="utf-8")
+    # Tung vu chay kem du bao cua mo hinh -> dung cho Tableau
+    fitted = damage_curve(damage, damage["acres_burned"]).drop(columns="acres_burned")
+    fires = pd.concat([damage, fitted], axis=1).assign(predicted_destroyed_cv=predicted)
+    assert len(fires) == summary["n_fires"]
+    fires.to_csv(DAMAGE_FIRES_PATH, index=False, encoding="utf-8")
 
     print(f"\n[TV1 - MODEL] Hoi quy log-log tren {summary['n_fires']} vu co pha huy cong trinh:")
     print(f"  log10(destroyed) = {summary['slope']:.6f} * log10(acres) + {summary['intercept']:.6f}")
@@ -477,19 +413,6 @@ def run_damage_model() -> pd.DataFrame:
     return curve
 
 
-def run_cause_forecasts() -> pd.DataFrame:
-    df = load_data()
-    yearly = build_yearly_by_cause(df)
-    assert yearly[["human", "natural", "undetermined"]].sum(axis=1).eq(df.groupby("year").size().to_numpy()).all()
-    print(f"\n[TV1 - MODEL] So vu chay theo nguyen nhan: {yearly['year'].min()}-{yearly['year'].max()}")
-    forecast, metrics = _run_targets(yearly, CAUSE_TARGETS, CAUSE_FORECAST_PATH, CAUSE_METRICS_PATH)
-    plt.close(plot_forecasts(forecast, CAUSE_FIGURE_PATH, CAUSE_TARGETS, "Dự báo số vụ cháy theo nguyên nhân"))
-    plt.close(plot_model_metrics(metrics, CAUSE_METRICS_FIGURE_PATH,
-                                 "Thông số đánh giá mô hình dự báo số vụ cháy theo nguyên nhân (2006–2025)"))
-    return forecast
-
-
 if __name__ == "__main__":
-    run_predictive_models()
+    run_cause_classifier()
     run_damage_model()
-    run_cause_forecasts()
